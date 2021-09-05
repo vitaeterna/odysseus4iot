@@ -4,13 +4,16 @@ import percom.graph.operator.meta.Operator;
 
 public class TimewindowOperator extends Operator
 {
+	public Integer size = null;
+	public Integer slide = null;
+	
 	public static final String QUERY = 
-			  "sensorMagWindowed = TIMEWINDOW\r\n"
+			  "%s = TIMEWINDOW\r\n"
 			+ "(\r\n"
 			+ "\t{\r\n"
-			+ "\t\tsize=5000,\r\n"
-			+ "\t\tslide=5000\r\n"
+			+ "\t\tsize=%d,\r\n"
+			+ "\t\tslide=%d\r\n"
 			+ "\t},\r\n"
-			+ "\tsensorMagnitudes\r\n"
+			+ "\t%s\r\n"
 			+ ")";
 }

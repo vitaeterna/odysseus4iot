@@ -1,21 +1,42 @@
 package percom.graph.operator;
 
+import java.util.List;
+
 import percom.graph.operator.meta.Operator;
 
 public class MapOperator extends Operator
 {
-	public static final String QUERY = 
-			  "sensorMagnitudes = MAP\r\n"
+	public List<String> expressions = null;
+	
+	@Override
+	public String toString ()
+	{
+		String expressionsString = "";
+		
+		String currentExpression = null;
+		
+		for(int index = 0; index < this.expressions.size(); index++)
+		{
+			currentExpression = this.expressions.get(index);
+			
+			expressionsString += String.format(QUERY_EXPRESSION, currentExpression, index==this.expressions.size()?"":",");
+		}
+		
+		return String.format(QUERY, this.outputName, expressionsString, this.inputName);
+	}
+	
+	private static final String QUERY = 
+			  "%s = MAP\r\n"
 			+ "(\r\n"
 			+ "\t{\r\n"
 			+ "\t\texpressions =\r\n"
 			+ "\t\t[\r\n"
-			+ "\t\t\t'timestamp',\r\n"
-			+ "\t\t\t'cattle_id',\r\n"
-			+ "\t\t\t['sqrt((ax*ax)+(ay*ay)+(az*az))','Amag'],\r\n"
-			+ "\t\t\t['sqrt((gx*gx)+(gy*gy)+(gz*gz))','Gmag']\r\n"
+			+ "%s"
 			+ "\t\t]\r\n"
 			+ "\t},\r\n"
-			+ "\tsensorDataRate\r\n"
+			+ "\t%s\r\n"
 			+ ")";
+	
+	private static final String QUERY_EXPRESSION = 
+			  "\t\t\t%s%s\r\n";
 }

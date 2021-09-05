@@ -1,10 +1,21 @@
 package percom.graph.operator.meta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Schema
 {
 	public List<Column> columns = null;
+	
+	public void addColumn(Column column)
+	{
+		if(this.columns == null)
+		{
+			this.columns = new ArrayList<>();
+		}
+		
+		this.columns.add(column);
+	}
 	
 	public int getSize()
 	{
