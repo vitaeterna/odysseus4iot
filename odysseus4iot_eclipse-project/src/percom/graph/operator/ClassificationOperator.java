@@ -4,20 +4,30 @@ import percom.graph.operator.meta.Operator;
 
 public class ClassificationOperator extends Operator
 {
+	public String database = null;
+	public String host = null;
+	public Integer port = null;
+	public String rpcServer = null;
+	public String table = null;
+	public String username = null;
+	public String password = null;
+	public String selectmodelbycolumn = null;
+	public String selectmodelbyvalue = null;
+	
 	public static final String QUERY = 
-			  "prediction = ACTIVITYPREDICT\r\n"
+			  "%s = ACTIVITYPREDICT\r\n"
 			+ "(\r\n"
 			+ "\t{\r\n"
-			+ "\t\tdatabase='procdb',\r\n"
-			+ "\t\thost='141.13.162.179',\r\n"
-			+ "\t\tport='5432',\r\n"
-			+ "\t\trpcServer='localhost:9000',\r\n"
-			+ "\t\ttable='experiment_result',\r\n"
-			+ "\t\tusername=<username>,\r\n"
-			+ "\t\tpassword=<password>,\r\n"
-			+ "\t\tselectmodelbycolumn='model_title',\r\n"
-			+ "\t\tselectmodelbyvalue='3Cattle1FarmRF_Lying'\r\n"
+			+ "\t\tdatabase='%s',\r\n"
+			+ "\t\thost='%s',\r\n"
+			+ "\t\tport='%d',\r\n"
+			+ "\t\trpcServer='%s',\r\n"
+			+ "\t\ttable='%s',\r\n"
+			+ "\t\tusername='%s',\r\n"
+			+ "\t\tpassword='%s',\r\n"
+			+ "\t\tselectmodelbycolumn='%s',\r\n"
+			+ "\t\tselectmodelbyvalue='%s'\r\n"
 			+ "\t},\r\n"
-			+ "\taggFeaturesRate\r\n"
+			+ "\t%s\r\n"
 			+ ")";
 }

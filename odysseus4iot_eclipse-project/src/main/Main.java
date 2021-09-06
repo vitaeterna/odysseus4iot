@@ -9,8 +9,6 @@ public class Main
 	public static void main(String[] args)
 	{
 		System.out.println(Locale.getDefault());
-		
-		System.out.println(Double.class.getSimpleName().toUpperCase());
 	}
 	
     /*
