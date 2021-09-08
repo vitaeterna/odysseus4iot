@@ -14,6 +14,12 @@ public class ClassificationOperator extends Operator
 	public String selectmodelbycolumn = null;
 	public String selectmodelbyvalue = null;
 	
+	@Override
+	public String toString ()
+	{
+		return String.format(QUERY, this.outputName, this.database, this.host, this.port, this.rpcServer, this.table, this.username, this.password, this.selectmodelbycolumn, this.selectmodelbyvalue, this.inputName);
+	}
+	
 	public static final String QUERY = 
 			  "%s = ACTIVITYPREDICT\r\n"
 			+ "(\r\n"
