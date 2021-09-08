@@ -14,7 +14,7 @@ public class DatabasesourceOperator extends Operator
 	public Integer waiteach = null;
 	
 	@Override
-	public String toString ()
+	public String toString()
 	{
 		String attributesString = "";
 		

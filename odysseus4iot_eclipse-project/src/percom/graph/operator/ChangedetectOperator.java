@@ -4,14 +4,23 @@ import percom.graph.operator.meta.Operator;
 
 public class ChangedetectOperator extends Operator
 {
+	public String attr = null;
+	public String group_by = null;
+	
+	@Override
+	public String toString()
+	{
+		return String.format(QUERY, this.outputName, this.attr, this.group_by, this.inputName);
+	}
+	
 	public static final String QUERY = 
-			  "output = CHANGEDETECT\r\n"
+			  "%s = CHANGEDETECT\r\n"
 			+ "(\r\n"
 			+ "\t{\r\n"
-			+ "\t\tattr = ['label'],\r\n"
-			+ "\t\tgroup_by = ['id'],\r\n"
+			+ "\t\tattr = ['%s'],\r\n"
+			+ "\t\tgroup_by = ['%s'],\r\n"
 			+ "\t\tdeliverFirstElement = true\r\n"
 			+ "\t},\r\n"
-			+ "\tunnest\r\n"
+			+ "\t%s\r\n"
 			+ ")";
 }

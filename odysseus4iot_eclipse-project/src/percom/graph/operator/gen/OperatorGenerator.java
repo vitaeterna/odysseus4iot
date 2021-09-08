@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import percom.graph.operator.AggregateOperator;
+import percom.graph.operator.ChangedetectOperator;
 import percom.graph.operator.ClassificationOperator;
 import percom.graph.operator.DatabasesourceOperator;
 import percom.graph.operator.MapOperator;
+import percom.graph.operator.OutlierRemovingOperator;
+import percom.graph.operator.ProjectOperator;
 import percom.graph.operator.TimewindowOperator;
 import percom.graph.operator.meta.Column;
 import percom.graph.operator.meta.Schema;
 
 //TODO: Warum kann integer timestamp nicht als starttimestamp verwendet werden? Muss timestamp in String vorliegen?
-//TODO: Werden metadaten, wie start und end, immer mitübertragen, auch wenn diese null sind?
-//TODO: Wie können Input-Columns bei Aggregate einfach durchgereicht werden?
 public class OperatorGenerator
 {
 	public DatabasesourceOperator generateDatabasesourceOperator()
@@ -222,6 +223,142 @@ public class OperatorGenerator
 		return aggregateOperator;
 	}
 	
+	public ProjectOperator generateProjectOperator()
+	{
+		ProjectOperator projectOperator = new ProjectOperator();
+		
+		List<String> attributes = new ArrayList<>();
+		attributes.add("'cattle_id'");
+		attributes.add("'car_amag_min'");
+		attributes.add("'car_omag_min'");
+		attributes.add("'car_amag_max'");
+		attributes.add("'car_omag_max'");
+		attributes.add("'car_amag_avg'");
+		attributes.add("'car_omag_avg'");
+		attributes.add("'car_amag_median'");
+		attributes.add("'car_omag_median'");
+		attributes.add("'car_amag_stddev'");
+		attributes.add("'car_omag_stddev'");
+		attributes.add("'car_amag_kurtosis'");
+		attributes.add("'car_omag_kurtosis'");
+		attributes.add("'car_amag_skewness'");
+		attributes.add("'car_omag_skewness'");
+		attributes.add("'car_amag_iqr'");
+		attributes.add("'car_omag_iqr'");
+		attributes.add("'car_amag_mcr'");
+		attributes.add("'car_omag_mcr'");
+		attributes.add("'car_amag_rms'");
+		attributes.add("'car_omag_rms'");
+		attributes.add("'car_amag_FrEnergy'");
+		attributes.add("'car_omag_FrEnergy'");
+		attributes.add("'car_amag_FrDmEntroPy'");
+		attributes.add("'car_omag_FrDmEntroPy'");
+		attributes.add("'car_amag_FrPeakFreq'");
+		attributes.add("'car_omag_FrPeakFreq'");
+		attributes.add("'car_amag_FrMag1'");
+		attributes.add("'car_amag_FrMag2'");
+		attributes.add("'car_amag_FrMag3'");
+		attributes.add("'car_amag_FrMag4'");
+		attributes.add("'car_amag_FrMag5'");
+		attributes.add("'car_omag_FrMag1'");
+		attributes.add("'car_omag_FrMag2'");
+		attributes.add("'car_omag_FrMag3'");
+		attributes.add("'car_omag_FrMag4'");
+		attributes.add("'car_omag_FrMag5'");
+		
+		Schema inputSchema = new Schema();
+		inputSchema.addColumn(new Column("cattle_id", Integer.class));
+		inputSchema.addColumn(new Column("car_amag_min", Double.class));
+		inputSchema.addColumn(new Column("car_omag_min", Double.class));
+		inputSchema.addColumn(new Column("car_amag_max", Double.class));
+		inputSchema.addColumn(new Column("car_omag_max", Double.class));
+		inputSchema.addColumn(new Column("car_amag_avg", Double.class));
+		inputSchema.addColumn(new Column("car_omag_avg", Double.class));
+		inputSchema.addColumn(new Column("car_amag_median", Double.class));
+		inputSchema.addColumn(new Column("car_omag_median", Double.class));
+		inputSchema.addColumn(new Column("car_amag_stddev", Double.class));
+		inputSchema.addColumn(new Column("car_omag_stddev", Double.class));
+		inputSchema.addColumn(new Column("car_amag_kurtosis", Double.class));
+		inputSchema.addColumn(new Column("car_omag_kurtosis", Double.class));
+		inputSchema.addColumn(new Column("car_amag_skewness", Double.class));
+		inputSchema.addColumn(new Column("car_omag_skewness", Double.class));
+		inputSchema.addColumn(new Column("car_amag_iqr", Double.class));
+		inputSchema.addColumn(new Column("car_omag_iqr", Double.class));
+		inputSchema.addColumn(new Column("car_amag_mcr", Double.class));
+		inputSchema.addColumn(new Column("car_omag_mcr", Double.class));
+		inputSchema.addColumn(new Column("car_amag_rms", Double.class));
+		inputSchema.addColumn(new Column("car_omag_rms", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrEnergy", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrEnergy", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrDmEntroPy", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrDmEntroPy", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrPeakFreq", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrPeakFreq", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrMag1", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrMag2", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrMag3", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrMag4", Double.class));
+		inputSchema.addColumn(new Column("car_amag_FrMag5", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrMag1", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrMag2", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrMag3", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrMag4", Double.class));
+		inputSchema.addColumn(new Column("car_omag_FrMag5", Double.class));
+		inputSchema.addColumn(new Column("start_timestamp", Long.class));
+		inputSchema.addColumn(new Column("end_timestamp", Long.class));
+		
+		projectOperator.inputSchema = inputSchema;
+		projectOperator.inputRate = 0.2d;
+		projectOperator.inputName = "features";
+		
+		Schema outputSchema = new Schema();
+		outputSchema.addColumn(new Column("cattle_id", Integer.class));
+		outputSchema.addColumn(new Column("car_amag_min", Double.class));
+		outputSchema.addColumn(new Column("car_omag_min", Double.class));
+		outputSchema.addColumn(new Column("car_amag_max", Double.class));
+		outputSchema.addColumn(new Column("car_omag_max", Double.class));
+		outputSchema.addColumn(new Column("car_amag_avg", Double.class));
+		outputSchema.addColumn(new Column("car_omag_avg", Double.class));
+		outputSchema.addColumn(new Column("car_amag_median", Double.class));
+		outputSchema.addColumn(new Column("car_omag_median", Double.class));
+		outputSchema.addColumn(new Column("car_amag_stddev", Double.class));
+		outputSchema.addColumn(new Column("car_omag_stddev", Double.class));
+		outputSchema.addColumn(new Column("car_amag_kurtosis", Double.class));
+		outputSchema.addColumn(new Column("car_omag_kurtosis", Double.class));
+		outputSchema.addColumn(new Column("car_amag_skewness", Double.class));
+		outputSchema.addColumn(new Column("car_omag_skewness", Double.class));
+		outputSchema.addColumn(new Column("car_amag_iqr", Double.class));
+		outputSchema.addColumn(new Column("car_omag_iqr", Double.class));
+		outputSchema.addColumn(new Column("car_amag_mcr", Double.class));
+		outputSchema.addColumn(new Column("car_omag_mcr", Double.class));
+		outputSchema.addColumn(new Column("car_amag_rms", Double.class));
+		outputSchema.addColumn(new Column("car_omag_rms", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrEnergy", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrEnergy", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrDmEntroPy", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrDmEntroPy", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrPeakFreq", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrPeakFreq", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrMag1", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrMag2", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrMag3", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrMag4", Double.class));
+		outputSchema.addColumn(new Column("car_amag_FrMag5", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrMag1", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrMag2", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrMag3", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrMag4", Double.class));
+		outputSchema.addColumn(new Column("car_omag_FrMag5", Double.class));
+		outputSchema.addColumn(new Column("start_timestamp", Long.class));
+		outputSchema.addColumn(new Column("end_timestamp", Long.class));
+		
+		projectOperator.outputSchema = outputSchema;
+		projectOperator.outputRate = 0.2d;
+		projectOperator.outputName = "features_projected";
+		
+		return projectOperator;
+	}
+	
 	public ClassificationOperator generateClassificationOperator()
 	{
 		ClassificationOperator classificationOperator = new ClassificationOperator();
@@ -292,5 +429,64 @@ public class OperatorGenerator
 		classificationOperator.outputName = "classification";
 		
 		return classificationOperator;
+	}
+	
+	public OutlierRemovingOperator generateOutlierRemovingOperator()
+	{
+		OutlierRemovingOperator outlierRemovingOperator = new OutlierRemovingOperator();
+		
+		outlierRemovingOperator.group_by = "cattle_id";
+		
+		Schema inputSchema = new Schema();
+		inputSchema.addColumn(new Column("cattle_id", Integer.class));
+		inputSchema.addColumn(new Column("prediction", String.class));
+		inputSchema.addColumn(new Column("start_timestamp", Long.class));
+		inputSchema.addColumn(new Column("end_timestamp", Long.class));
+		
+		outlierRemovingOperator.inputSchema = inputSchema;
+		outlierRemovingOperator.inputRate = 0.2d;
+		outlierRemovingOperator.inputName = "classification";
+		
+		Schema outputSchema = new Schema();
+		outputSchema.addColumn(new Column("cattle_id", Integer.class));
+		outputSchema.addColumn(new Column("prediction", String.class));
+		outputSchema.addColumn(new Column("start_timestamp", Long.class));
+		outputSchema.addColumn(new Column("end_timestamp", Long.class));
+		
+		outlierRemovingOperator.outputSchema = outputSchema;
+		outlierRemovingOperator.outputRate = 0.2d;
+		outlierRemovingOperator.outputName = "classification_cleaned";
+		
+		return outlierRemovingOperator;
+	}
+	
+	public ChangedetectOperator generateChangedetectOperator()
+	{
+		ChangedetectOperator changedetectOperator = new ChangedetectOperator();
+		
+		changedetectOperator.attr = "prediction";
+		changedetectOperator.group_by = "cattle_id";
+		
+		Schema inputSchema = new Schema();
+		inputSchema.addColumn(new Column("cattle_id", Integer.class));
+		inputSchema.addColumn(new Column("prediction", String.class));
+		inputSchema.addColumn(new Column("start_timestamp", Long.class));
+		inputSchema.addColumn(new Column("end_timestamp", Long.class));
+		
+		changedetectOperator.inputSchema = inputSchema;
+		changedetectOperator.inputRate = 0.2d;
+		changedetectOperator.inputName = "classification_cleaned";
+		
+		Schema outputSchema = new Schema();
+		outputSchema.addColumn(new Column("cattle_id", Integer.class));
+		outputSchema.addColumn(new Column("prediction", String.class));
+		outputSchema.addColumn(new Column("start_timestamp", Long.class));
+		outputSchema.addColumn(new Column("end_timestamp", Long.class));
+		
+		changedetectOperator.outputSchema = outputSchema;
+		changedetectOperator.outputRate = null;
+		changedetectOperator.outputName = "output";
+		
+		return changedetectOperator;
 	}
 }

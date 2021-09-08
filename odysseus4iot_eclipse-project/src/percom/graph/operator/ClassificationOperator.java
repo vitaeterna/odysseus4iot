@@ -15,7 +15,7 @@ public class ClassificationOperator extends Operator
 	public String selectmodelbyvalue = null;
 	
 	@Override
-	public String toString ()
+	public String toString()
 	{
 		return String.format(QUERY, this.outputName, this.database, this.host, this.port, this.rpcServer, this.table, this.username, this.password, this.selectmodelbycolumn, this.selectmodelbyvalue, this.inputName);
 	}

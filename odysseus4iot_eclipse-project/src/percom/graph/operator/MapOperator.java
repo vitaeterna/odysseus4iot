@@ -9,7 +9,7 @@ public class MapOperator extends Operator
 	public List<String> expressions = null;
 	
 	@Override
-	public String toString ()
+	public String toString()
 	{
 		String expressionsString = "";
 		

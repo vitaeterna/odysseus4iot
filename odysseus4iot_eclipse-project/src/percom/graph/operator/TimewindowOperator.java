@@ -8,7 +8,7 @@ public class TimewindowOperator extends Operator
 	public Integer slide = null;
 	
 	@Override
-	public String toString ()
+	public String toString()
 	{
 		return String.format(QUERY, this.outputName, this.size, this.slide, this.inputName);
 	}

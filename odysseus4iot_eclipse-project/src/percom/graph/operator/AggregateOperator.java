@@ -10,7 +10,7 @@ public class AggregateOperator extends Operator
 	public List<String> aggregations = null;
 	
 	@Override
-	public String toString ()
+	public String toString()
 	{
 		String aggregationsString = "";
 		
