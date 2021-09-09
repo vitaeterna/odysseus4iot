@@ -1,0 +1,136 @@
+#PARSER PQL
+
+///#REQUIRED de.uniol.inf.is.odysseus.database.feature.feature.group false
+
+#ADDQUERY
+
+///Requires de.uniol.inf.is.odysseus.database.feature.feature.group to be installed
+sensorData = DATABASESOURCE
+(
+	{
+		table='sensor_data_19',
+		jdbc='jdbc:postgresql://localhost:5432/CattleDB',
+		user='postgres',
+		password='postgres',
+		connection='connection',
+		attributes=
+		[
+			['cattle_id','Integer'],
+			['timestamp','Long'],
+			['ax','Double'],
+			['ay','Double'],
+			['az','Double'],
+			['ox','Double'],
+			['oy','Double'],
+			['oz','Double']
+		],
+		waiteach=100
+	}
+)
+
+sensorDataMag = MAP
+(
+	{
+		expressions =
+		[
+			'cattle_id',
+			'timestamp',
+			['sqrt((ax*ax)+(ay*ay)+(az*az))','amag'],
+			['sqrt((ox*ox)+(oy*oy)+(oz*oz))','omag']
+		]
+	},
+	sensorData
+)
+
+sensorDataMagWindowed = TIMEWINDOW
+(
+	{
+		size=5000,
+		slide=5000
+	},
+	sensorDataMag
+)
+
+features = AGGREGATE
+(
+	{
+		group_by = ['cattle_id'],
+		aggregations=
+		[
+			['min', ['amag'], 'car_amag_min', 'Double'],
+			['min', ['omag'], 'car_omag_min', 'Double'],
+			['max', ['amag'], 'car_amag_max', 'Double'],
+			['max', ['omag'], 'car_omag_max', 'Double'],
+			['avg', ['amag'], 'car_amag_avg', 'Double'],
+			['avg', ['omag'], 'car_omag_avg', 'Double'],
+			['median', ['amag'], 'car_amag_median', 'Double'],
+			['median', ['omag'], 'car_omag_median', 'Double'],
+			['stddev', ['amag'], 'car_amag_stddev', 'Double'],
+			['stddev', ['omag'], 'car_omag_stddev', 'Double'],
+			['kurtosis', ['amag'], 'car_amag_kurtosis', 'Double'],
+			['kurtosis', ['omag'], 'car_omag_kurtosis', 'Double'],
+			['skewness', ['amag'], 'car_amag_skewness', 'Double'],
+			['skewness', ['omag'], 'car_omag_skewness', 'Double'],
+			['iqr', ['amag'], 'car_amag_iqr', 'Double'],
+			['iqr', ['omag'], 'car_omag_iqr', 'Double'],
+			['mcr', ['amag'], 'car_amag_mcr', 'Double'],
+			['mcr', ['omag'], 'car_omag_mcr', 'Double'],
+			['rms', ['amag'], 'car_amag_rms', 'Double'],
+			['rms', ['omag'], 'car_omag_rms', 'Double'],
+			['FrEnergy', ['amag'], 'car_amag_FrEnergy', 'Double'],
+			['FrEnergy', ['omag'], 'car_omag_FrEnergy', 'Double'],
+			['FrDmEntropy', ['amag'], 'car_amag_FrDmEntroPy', 'Double'],
+			['FrDmEntropy', ['omag'], 'car_omag_FrDmEntroPy', 'Double'],
+			['FrPeakFreq', ['amag'], 'car_amag_FrPeakFreq', 'Double'],
+			['FrPeakFreq', ['omag'], 'car_omag_FrPeakFreq', 'Double'],
+			['FrMag1', ['amag'], 'car_amag_FrMag1', 'Double'],
+			['FrMag2', ['amag'], 'car_amag_FrMag2', 'Double'],
+			['FrMag3', ['amag'], 'car_amag_FrMag3', 'Double'],
+			['FrMag4', ['amag'], 'car_amag_FrMag4', 'Double'],
+			['FrMag5', ['amag'], 'car_amag_FrMag5', 'Double'],
+			['FrMag1', ['omag'], 'car_omag_FrMag1', 'Double'],
+			['FrMag2', ['omag'], 'car_omag_FrMag2', 'Double'],
+			['FrMag3', ['omag'], 'car_omag_FrMag3', 'Double'],
+			['FrMag4', ['omag'], 'car_omag_FrMag4', 'Double'],
+			['FrMag5', ['omag'], 'car_omag_FrMag5', 'Double']
+		]
+	},
+	sensorDataMagWindowed
+)
+
+///Requires custom activitypredict feature to be installed and pythonrpc server up and running
+classification = ACTIVITYPREDICT
+(
+	{
+		database='CattleDB',
+		host='localhost',
+		port='5432',
+		rpcServer='localhost:9000',
+		table='experiment_result',
+		username='postgres',
+		password='postgres',
+		selectmodelbycolumn='model_title',
+		selectmodelbyvalue='3Cattle1FarmRF_Lying'
+	},
+	features
+)
+
+elements = ELEMENTWINDOW({SIZE = 2, ADVANCE = 1, DRAINATDONE = true, PARTITION = ['cattle_id']}, classification)
+
+aggregation = AGGREGATE({AGGREGATIONS = [['nest', '*', 'nested']], GROUP_BY = ['cattle_id']}, elements)
+
+filter = SELECT({PREDICATE = 'size(nested) = 2 && elementAt(nested[0],1) = elementAt(nested[1],1)'}, aggregation)
+
+mapped = MAP({EXPRESSIONS = [['nested[0]','nested']]}, filter)
+
+unnest = UNNEST({ATTRIBUTE = 'nested'}, mapped)
+
+output = CHANGEDETECT
+(
+	{
+		attr = ['prediction'],
+		group_by = ['cattle_id'],
+		deliverFirstElement = true
+	},
+	unnest
+)
