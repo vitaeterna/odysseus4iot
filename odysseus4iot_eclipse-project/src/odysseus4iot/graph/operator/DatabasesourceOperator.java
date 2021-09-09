@@ -1,8 +1,8 @@
-package percom.graph.operator;
+package odysseus4iot.graph.operator;
 
-import percom.graph.operator.meta.Column;
-import percom.graph.operator.meta.Operator;
-import percom.graph.operator.meta.Schema;
+import odysseus4iot.graph.operator.meta.Column;
+import odysseus4iot.graph.operator.meta.Operator;
+import odysseus4iot.graph.operator.meta.Schema;
 
 public class DatabasesourceOperator extends Operator
 {

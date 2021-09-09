@@ -1,16 +1,10 @@
-package main;
+package odysseus4iot.util;
 
-import java.util.HashSet;
-import java.util.Locale;
 import java.util.Collections;
+import java.util.HashSet;
 
-public class Main
+public class Util
 {
-	public static void main(String[] args)
-	{
-		System.out.println(Locale.getDefault());
-	}
-	
     /*
      * Source: http://www.java2s.com/example/java/reflection/find-the-closest-common-superclass-of-multiple-classes.html
      * 

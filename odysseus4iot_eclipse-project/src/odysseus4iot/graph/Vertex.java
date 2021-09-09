@@ -1,4 +1,4 @@
-package percom.graph;
+package odysseus4iot.graph;
 
 public class Vertex
 {

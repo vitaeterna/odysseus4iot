@@ -1,6 +1,6 @@
-package percom.graph.operator;
+package odysseus4iot.graph.operator;
 
-import percom.graph.operator.meta.Operator;
+import odysseus4iot.graph.operator.meta.Operator;
 
 public class ClassificationOperator extends Operator
 {

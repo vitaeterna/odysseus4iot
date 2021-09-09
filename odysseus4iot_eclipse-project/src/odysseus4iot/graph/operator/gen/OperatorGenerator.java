@@ -1,18 +1,18 @@
-package percom.graph.operator.gen;
+package odysseus4iot.graph.operator.gen;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import percom.graph.operator.AggregateOperator;
-import percom.graph.operator.ChangedetectOperator;
-import percom.graph.operator.ClassificationOperator;
-import percom.graph.operator.DatabasesourceOperator;
-import percom.graph.operator.MapOperator;
-import percom.graph.operator.OutlierRemovingOperator;
-import percom.graph.operator.ProjectOperator;
-import percom.graph.operator.TimewindowOperator;
-import percom.graph.operator.meta.Column;
-import percom.graph.operator.meta.Schema;
+import odysseus4iot.graph.operator.AggregateOperator;
+import odysseus4iot.graph.operator.ChangedetectOperator;
+import odysseus4iot.graph.operator.ClassificationOperator;
+import odysseus4iot.graph.operator.DatabasesourceOperator;
+import odysseus4iot.graph.operator.MapOperator;
+import odysseus4iot.graph.operator.OutlierRemovingOperator;
+import odysseus4iot.graph.operator.ProjectOperator;
+import odysseus4iot.graph.operator.TimewindowOperator;
+import odysseus4iot.graph.operator.meta.Column;
+import odysseus4iot.graph.operator.meta.Schema;
 
 //TODO: Warum kann integer timestamp nicht als starttimestamp verwendet werden? Muss timestamp in String vorliegen?
 public class OperatorGenerator

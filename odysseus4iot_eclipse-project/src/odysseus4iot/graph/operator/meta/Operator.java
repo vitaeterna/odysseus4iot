@@ -1,6 +1,6 @@
-package percom.graph.operator.meta;
+package odysseus4iot.graph.operator.meta;
 
-import percom.graph.Vertex;
+import odysseus4iot.graph.Vertex;
 
 public class Operator extends Vertex
 {

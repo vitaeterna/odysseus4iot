@@ -1,8 +1,8 @@
-package percom.graph.operator;
+package odysseus4iot.graph.operator;
 
 import java.util.List;
 
-import percom.graph.operator.meta.Operator;
+import odysseus4iot.graph.operator.meta.Operator;
 
 public class AggregateOperator extends Operator
 {
