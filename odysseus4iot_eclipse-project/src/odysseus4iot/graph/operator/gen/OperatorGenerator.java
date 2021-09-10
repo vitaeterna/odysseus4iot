@@ -17,15 +17,15 @@ import odysseus4iot.graph.operator.meta.Schema;
 //TODO: Warum kann integer timestamp nicht als starttimestamp verwendet werden? Muss timestamp in String vorliegen?
 public class OperatorGenerator
 {
-	public DatabasesourceOperator generateDatabasesourceOperator()
+	public static DatabasesourceOperator generateDatabasesourceOperator(String sensor, Integer waiteach)
 	{
 		DatabasesourceOperator databasesourceOperator = new DatabasesourceOperator();
 		
-		databasesourceOperator.table = "sensor_data_19";
+		databasesourceOperator.table = sensor;
 		databasesourceOperator.jdbc = "jdbc:postgresql://localhost:5432/CattleDB";
 		databasesourceOperator.user = "postgres";
 		databasesourceOperator.password = "postgres";
-		databasesourceOperator.waiteach = 100;
+		databasesourceOperator.waiteach = waiteach;
 		
 		Schema attributes = new Schema();
 		attributes.addColumn(new Column("cattle_id", Integer.class));
@@ -40,13 +40,13 @@ public class OperatorGenerator
 		databasesourceOperator.attributes = attributes;
 		
 		databasesourceOperator.outputSchema = databasesourceOperator.attributes;
-		databasesourceOperator.outputRate = 10.0d;
+		databasesourceOperator.outputRate = 1000.0d/((double)waiteach);
 		databasesourceOperator.outputName = "sensorData";
 		
 		return databasesourceOperator;
 	}
 	
-	public MapOperator generateMapOperator()
+	public static MapOperator generateMapOperator()
 	{
 		MapOperator mapOperator = new MapOperator();
 		
@@ -85,7 +85,7 @@ public class OperatorGenerator
 		return mapOperator;
 	}
 	
-	public TimewindowOperator generateTimewindowOperator()
+	public static TimewindowOperator generateTimewindowOperator()
 	{
 		TimewindowOperator timewindowOperator = new TimewindowOperator();
 		
@@ -116,7 +116,7 @@ public class OperatorGenerator
 		return timewindowOperator;
 	}
 	
-	public AggregateOperator generateAggregateOperator()
+	public static AggregateOperator generateAggregateOperator()
 	{
 		AggregateOperator aggregateOperator = new AggregateOperator();
 		
@@ -223,7 +223,7 @@ public class OperatorGenerator
 		return aggregateOperator;
 	}
 	
-	public ProjectOperator generateProjectOperator()
+	public static ProjectOperator generateProjectOperator()
 	{
 		ProjectOperator projectOperator = new ProjectOperator();
 		
@@ -359,7 +359,7 @@ public class OperatorGenerator
 		return projectOperator;
 	}
 	
-	public ClassificationOperator generateClassificationOperator()
+	public static ClassificationOperator generateClassificationOperator()
 	{
 		ClassificationOperator classificationOperator = new ClassificationOperator();
 		
@@ -431,7 +431,7 @@ public class OperatorGenerator
 		return classificationOperator;
 	}
 	
-	public OutlierRemovingOperator generateOutlierRemovingOperator()
+	public static OutlierRemovingOperator generateOutlierRemovingOperator()
 	{
 		OutlierRemovingOperator outlierRemovingOperator = new OutlierRemovingOperator();
 		
@@ -460,7 +460,7 @@ public class OperatorGenerator
 		return outlierRemovingOperator;
 	}
 	
-	public ChangedetectOperator generateChangedetectOperator()
+	public static ChangedetectOperator generateChangedetectOperator()
 	{
 		ChangedetectOperator changedetectOperator = new ChangedetectOperator();
 		

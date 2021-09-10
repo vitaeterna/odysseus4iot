@@ -1,14 +1,12 @@
 package odysseus4iot.main;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 
 import odysseus4iot.graph.Graph;
+import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 /*
  * Operator Placement Query Optimization
@@ -40,6 +38,14 @@ public class Main
 {
 	public static void main(String[] args)
 	{
+		//1 - Input to System (sensors/nodes/labels)
+		List<String> sensors = new ArrayList<>();
+		sensors.add("sensor_data_19");
+		
+		List<String> nodes = new ArrayList<>();
+		
+		List<String> labels = new ArrayList<>();
+		
 		//1 - Retrieving Model Information from Model Management System
 		//PostgresImport.url = "jdbc:postgresql://141.13.162.179:5432/procdb";
 		//PostgresImport.user = "script";
@@ -62,11 +68,7 @@ public class Main
 			
 			System.out.println(currentModel+"\r\n");
 			
-			Graph graph = new Graph();
-			
-			//TODO
-			
-			graphs.add(graph);
+			graphs.add(OperatorGraphGenerator.generateOperatorGraph(sensors, currentModel));
 		}
 	}
 }
