@@ -1,0 +1,3 @@
+load globalquery1.json
+deploy GlobalQuery1
+undeploy GlobalQuery1

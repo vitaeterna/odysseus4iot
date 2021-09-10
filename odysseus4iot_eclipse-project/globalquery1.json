@@ -1,0 +1,17 @@
+{
+	"name": "GlobalQuery1",
+	"partialQueries":
+	[
+		{
+			"name": "PartialQuery1",
+			"parser": "OdysseusScript",
+			"queryText": "#PARSER PQL\n\n#DROPALLQUERIES\n#DROPALLSINKS\n#DROPALLSOURCES\n\n#DOQUERYSHARING true\n#DOREWRITE true\n#OPTIMIZE_PREDICATES true\n\n#QNAME query1\n#ADDQUERY\nnexmark:person = ACCESS\n(\n\u0009{\n\u0009\u0009source='nexmark:person',\n\u0009\u0009wrapper='GenericPush',\n\u0009\u0009transport='TCPClient',\n\u0009\u0009protocol='SizeByteBuffer',\n\u0009\u0009dataHandler='Tuple',\n\u0009\u0009options=\n\u0009\u0009[\n\u0009\u0009\u0009['host','localhost'],\n\u0009\u0009\u0009['port','65440'],\n\u0009\u0009\u0009['ByteOrder','LittleEndian']\n\u0009\u0009],\n\u0009\u0009schema=\n\u0009\u0009[\n\u0009\u0009\u0009['timestamp','STARTTIMESTAMP'],\n\u0009\u0009\u0009['id','INTEGER'],\n\u0009\u0009\u0009['name','STRING'],\n\u0009\u0009\u0009['email','STRING'],\n\u0009\u0009\u0009['creditcard','STRING'],\n\u0009\u0009\u0009['city','STRING'],\n\u0009\u0009\u0009['state','STRING']\n\u0009\u0009]\n\u0009}\n)\n\n#QNAME query2\n#ADDQUERY\nout = System.nexmark:person",
+			"server":
+			{
+				"socket": "localhost:8888",
+				"username": "System",
+				"password": "manager"
+			}
+		}
+	]
+}
