@@ -1,9 +1,14 @@
 package odysseus4iot.model;
 
 import java.util.List;
+import java.util.Map;
 
 public class Model
 {
+	private static Map<String, List<String>> schemaMapping = null;
+	private static Map<String, String> preprocessingMapping = null;
+	private static Map<String, String> featureMapping = null;
+	
 	private String model_title = null;
 	private String features_json_content = null;
 	private String list_of_predicted_classes = null;
@@ -97,6 +102,24 @@ public class Model
 	}
 	public Integer getWindow_slide() {
 		return window_slide;
+	}
+	public List<String> getSchema() {
+		return schema;
+	}
+	public void setSchema(List<String> schema) {
+		this.schema = schema;
+	}
+	public List<String> getPreprocessing() {
+		return preprocessing;
+	}
+	public void setPreprocessing(List<String> preprocessing) {
+		this.preprocessing = preprocessing;
+	}
+	public List<String> getFeatures() {
+		return features;
+	}
+	public void setFeatures(List<String> features) {
+		this.features = features;
 	}
 	
 	@Override

@@ -3,7 +3,14 @@ package odysseus4iot.model;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class PostgresImport
 {
@@ -60,6 +67,21 @@ public class PostgresImport
 				model.setWindow_stride(resultSet.getString(9));
 				model.setAccuracy_test(resultSet.getDouble(10));
 				model.setF1_test(resultSet.getDouble(11));
+				
+				List<String> schema = null;
+				List<String> preprocessing = null;
+				List<String> features = null;
+				
+				JsonElement jsonElement = JsonParser.parseString(model.getFeatures_json_content());
+				JsonObject jsonObject = jsonElement.getAsJsonObject();
+				Set<Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
+				
+				for(Entry<String, JsonElement> entry : entrySet)
+				{
+					
+					
+					System.out.println(entry.getKey() + " - " + entry.getValue());
+				}
 				
 				models.add(model);
 			}

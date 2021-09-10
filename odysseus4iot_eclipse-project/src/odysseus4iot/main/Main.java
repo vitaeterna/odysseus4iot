@@ -1,6 +1,11 @@
 package odysseus4iot.main;
 
 import java.util.List;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import odysseus4iot.graph.Graph;
@@ -38,6 +43,33 @@ public class Main
 {
 	public static void main(String[] args)
 	{
+		//0 - Load property file
+		InputStream input = null;
+		
+		try
+		{
+			input = new FileInputStream("./config.properties");
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+
+        Properties properties = new Properties();
+
+        try
+        {
+			properties.load(input);
+		}
+        catch(IOException e)
+        {
+			e.printStackTrace();
+			System.exit(0);
+		}
+        
+        properties.getProperty("db.url");
+		
 		//1 - Input to System (sensors/nodes/labels)
 		List<String> sensors = new ArrayList<>();
 		sensors.add("sensor_data_19");
