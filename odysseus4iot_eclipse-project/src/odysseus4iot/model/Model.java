@@ -1,14 +1,9 @@
 package odysseus4iot.model;
 
 import java.util.List;
-import java.util.Map;
 
 public class Model
 {
-	private static Map<String, List<String>> schemaMapping = null;
-	private static Map<String, String> preprocessingMapping = null;
-	private static Map<String, String> featureMapping = null;
-	
 	private String model_title = null;
 	private String features_json_content = null;
 	private String list_of_predicted_classes = null;
@@ -75,7 +70,7 @@ public class Model
 		this.window_size = window_size;
 		if(this.window_size != null && this.window_stride != null)
 		{
-			this.window_slide = this.window_size - ((int) (this.window_size * (Double.parseDouble(window_stride.replace("%", "")) / 100.0d)));
+			this.window_slide = (int) (this.window_size * (Double.parseDouble(window_stride.replace("%", "")) / 100.0d));
 		}
 	}
 	public String getWindow_stride() {
@@ -85,7 +80,7 @@ public class Model
 		this.window_stride = window_stride;
 		if(this.window_size != null && this.window_stride != null)
 		{
-			this.window_slide = this.window_size - ((int) (this.window_size * (Double.parseDouble(window_stride.replace("%", "")) / 100.0d)));
+			this.window_slide = (int) (this.window_size * (Double.parseDouble(window_stride.replace("%", "")) / 100.0d));
 		}
 	}
 	public Double getAccuracy_test() {
@@ -135,9 +130,12 @@ public class Model
 		stringBuilder.append("list_of_functions:        " + list_of_functions + "\r\n");
 		stringBuilder.append("list_of_axes:             " + list_of_axes + "\r\n");
 		stringBuilder.append("window_size:              " + window_size + "\r\n");
-		stringBuilder.append("window_stride:            " + window_stride + "\r\n");
+		stringBuilder.append("window_stride:            " + window_stride + " (window_slide:" + window_slide + ")\r\n");
 		stringBuilder.append("accuracy_test:            " + accuracy_test + "\r\n");
-		stringBuilder.append("f1_test:                  " + f1_test);
+		stringBuilder.append("f1_test:                  " + f1_test + "\r\n");
+		stringBuilder.append("schema:                   " + schema + "\r\n");
+		stringBuilder.append("preprocessing:            " + preprocessing + "\r\n");
+		stringBuilder.append("features:                 " + features);
 		
 		return stringBuilder.toString();
 	}

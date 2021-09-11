@@ -2,6 +2,8 @@ package odysseus4iot.model;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -14,6 +16,8 @@ import com.google.gson.JsonParser;
 
 public class PostgresImport
 {
+	public static Properties properties = null;
+	
 	public static String url = null;
 	public static String user = null;
 	public static String password = null;
@@ -32,15 +36,15 @@ public class PostgresImport
 	
 	public static List<Model> importFromDB()
 	{
-		Properties properties = new Properties();
-		properties.setProperty("user",user);
-		properties.setProperty("password",password);
+		Properties dbProperties = new Properties();
+		dbProperties.setProperty("user",user);
+		dbProperties.setProperty("password",password);
 		
 		List<Model> models = new ArrayList<>();
 		
 		try
 		{
-			Connection connection = DriverManager.getConnection(url, properties);
+			Connection connection = DriverManager.getConnection(url, dbProperties);
 			connection.setAutoCommit(true);
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(SQL_QUERY);
@@ -68,20 +72,78 @@ public class PostgresImport
 				model.setAccuracy_test(resultSet.getDouble(10));
 				model.setF1_test(resultSet.getDouble(11));
 				
-				List<String> schema = null;
-				List<String> preprocessing = null;
-				List<String> features = null;
+				List<String> schema = new ArrayList<>();
+				List<String> preprocessing = new ArrayList<>();
+				List<String> features = new ArrayList<>();
 				
 				JsonElement jsonElement = JsonParser.parseString(model.getFeatures_json_content());
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				Set<Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
 				
+				String currentKey = null;
+				JsonArray currentValue = null;
+				
 				for(Entry<String, JsonElement> entry : entrySet)
 				{
+					currentKey = entry.getKey().toLowerCase();
+					currentValue = entry.getValue().getAsJsonArray();
 					
+					//Schema
+					if(properties.getProperty("schema." + currentKey) == null)
+					{
+						System.err.println("The schema property 'schema." + currentKey + "' could not be found.");
+						
+						System.exit(0);
+					}
 					
-					System.out.println(entry.getKey() + " - " + entry.getValue());
+					List<String> schemaElements = Arrays.asList(properties.getProperty("schema." + currentKey).split(","));
+					
+					String currentSchemaElement = null;
+					
+					for(int index = 0; index < schemaElements.size(); index++)
+					{
+						currentSchemaElement = schemaElements.get(index).toLowerCase();
+						
+						if(!schema.contains(currentSchemaElement))
+						{
+							schema.add(currentSchemaElement);
+						}
+					}
+					
+					//Preprocessing
+					if(properties.getProperty("preprocessing." + currentKey) == null)
+					{
+						System.err.println("The schema property 'preprocessing." + currentKey + "' could not be found.");
+						
+						System.exit(0);
+					}
+					
+					String preprocessingMapping = properties.getProperty("preprocessing." + currentKey);
+					
+					if(!preprocessing.contains(preprocessingMapping))
+					{
+						preprocessing.add(preprocessingMapping);
+					}
+					
+					//Features
+					//TODO: proper sorting of features
+					String currentSubValue = null;
+					
+					for(int index = 0; index < currentValue.size(); index++)
+					{
+						currentSubValue = currentValue.get(index).getAsString().toLowerCase();
+						
+						features.add(currentKey + "_" + currentSubValue);
+					}
 				}
+				
+				Collections.sort(schema);
+				Collections.sort(preprocessing);
+				Collections.sort(features);
+				
+				model.setSchema(schema);
+				model.setPreprocessing(preprocessing);
+				model.setFeatures(features);
 				
 				models.add(model);
 			}

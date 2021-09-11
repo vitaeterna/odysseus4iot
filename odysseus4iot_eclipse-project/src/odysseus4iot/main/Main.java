@@ -7,11 +7,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
+import odysseus4iot.util.Util;
 
 /*
  * Operator Placement Query Optimization
@@ -67,12 +69,14 @@ public class Main
 			e.printStackTrace();
 			System.exit(0);
 		}
-        
-        properties.getProperty("db.url");
 		
+        Util.validateProperties(properties);
+        
 		//1 - Input to System (sensors/nodes/labels)
-		List<String> sensors = new ArrayList<>();
-		sensors.add("sensor_data_19");
+		List<String> sensors = Arrays.asList(properties.getProperty("input.sensors").split(","));
+		
+		System.out.println("Input - Sensors");
+		System.out.println(sensors);
 		
 		List<String> nodes = new ArrayList<>();
 		
@@ -82,9 +86,11 @@ public class Main
 		//PostgresImport.url = "jdbc:postgresql://141.13.162.179:5432/procdb";
 		//PostgresImport.user = "script";
 		//PostgresImport.password = "pAhXHnnFf6jgxO85";
-		PostgresImport.url = "jdbc:postgresql://localhost:5432/CattleDB";
-		PostgresImport.user = "postgres";
-		PostgresImport.password = "postgres";
+		
+		PostgresImport.properties = properties;
+		PostgresImport.url = properties.getProperty("modeldb.url");
+		PostgresImport.user = properties.getProperty("modeldb.user");
+		PostgresImport.password = properties.getProperty("modeldb.password");
 
 		List<Model> models = PostgresImport.importFromDB();
 		

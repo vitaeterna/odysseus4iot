@@ -16,7 +16,6 @@ sensorData = DATABASESOURCE
 		attributes=
 		[
 			['cattle_id','Integer'],
-			['timestamp','Long'],
 			['ax','Double'],
 			['ay','Double'],
 			['az','Double'],
@@ -34,7 +33,6 @@ sensorDataMag = MAP
 		expressions =
 		[
 			'cattle_id',
-			'timestamp',
 			['sqrt((ax*ax)+(ay*ay)+(az*az))','amag'],
 			['sqrt((ox*ox)+(oy*oy)+(oz*oz))','omag']
 		]

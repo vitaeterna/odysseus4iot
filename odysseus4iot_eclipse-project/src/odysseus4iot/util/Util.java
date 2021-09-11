@@ -1,10 +1,36 @@
 package odysseus4iot.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
 
 public class Util
 {
+	public static void validateProperties(Properties properties)
+	{
+		List<String> requiredProperties = new ArrayList<>();
+		requiredProperties.add("input.sensors");
+		requiredProperties.add("modeldb.url");
+		requiredProperties.add("modeldb.user");
+		requiredProperties.add("modeldb.password");
+		
+		String currentRequiredProperty = null;
+		
+		for(int index = 0; index < requiredProperties.size(); index++)
+		{
+			currentRequiredProperty = requiredProperties.get(index);
+			
+			if(properties.getProperty(currentRequiredProperty) == null)
+			{
+				System.err.println("The required property '" + currentRequiredProperty + "' could not be found.");
+				
+				System.exit(0);
+			}
+		}
+	}
+	
     /*
      * Source: http://www.java2s.com/example/java/reflection/find-the-closest-common-superclass-of-multiple-classes.html
      * 
