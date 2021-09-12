@@ -32,7 +32,7 @@ public class Graph
 			this.edges = new ArrayList<>();
 		}
 		
-		if(!this.vertices.contains(edge.vertex0) || !this.vertices.contains(edge.vertex1))
+		if(this.vertices.contains(edge.vertex0) && this.vertices.contains(edge.vertex1))
 		{
 			if(!this.edges.contains(edge))
 			{
@@ -102,6 +102,25 @@ public class Graph
 		}
 		
 		return predecessors;
+	}
+	
+	public List<Vertex> getVerticesByType(Class<? extends Vertex> type)
+	{
+		List<Vertex> requestedVertices = new ArrayList<>();
+		
+		Vertex currentVertex = null;
+		
+		for(int index = 0; index < this.vertices.size(); index++)
+		{
+			currentVertex = this.vertices.get(index);
+			
+			if(currentVertex.getClass() == type)
+			{
+				requestedVertices.add(currentVertex);
+			}
+		}
+		
+		return requestedVertices;
 	}
 	
 	private boolean containsEdge(Edge edge)

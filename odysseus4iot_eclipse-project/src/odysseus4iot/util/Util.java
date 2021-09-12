@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
+
+import odysseus4iot.main.Main;
 
 public class Util
 {
-	public static void validateProperties(Properties properties)
+	public static void validateProperties()
 	{
 		List<String> requiredProperties = new ArrayList<>();
 		requiredProperties.add("input.sensors");
+		requiredProperties.add("sensordb.url");
+		requiredProperties.add("sensordb.user");
+		requiredProperties.add("sensordb.password");
 		requiredProperties.add("modeldb.url");
 		requiredProperties.add("modeldb.user");
 		requiredProperties.add("modeldb.password");
@@ -22,7 +26,7 @@ public class Util
 		{
 			currentRequiredProperty = requiredProperties.get(index);
 			
-			if(properties.getProperty(currentRequiredProperty) == null)
+			if(Main.properties.getProperty(currentRequiredProperty) == null)
 			{
 				System.err.println("The required property '" + currentRequiredProperty + "' could not be found.");
 				

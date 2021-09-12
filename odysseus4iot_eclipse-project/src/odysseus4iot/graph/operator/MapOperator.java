@@ -19,7 +19,7 @@ public class MapOperator extends Operator
 		{
 			currentExpression = this.expressions.get(index);
 			
-			expressionsString += String.format(QUERY_EXPRESSION, currentExpression, index==this.expressions.size()?"":",");
+			expressionsString += String.format(QUERY_EXPRESSION, currentExpression, index==this.expressions.size()-1?"":",");
 		}
 		
 		return String.format(QUERY, this.outputName, expressionsString, this.inputName);

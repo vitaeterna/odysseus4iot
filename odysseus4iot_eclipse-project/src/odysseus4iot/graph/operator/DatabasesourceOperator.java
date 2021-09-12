@@ -24,7 +24,7 @@ public class DatabasesourceOperator extends Operator
 		{
 			currentColumn = this.attributes.columns.get(index);
 			
-			attributesString += String.format(QUERY_ATTRIBUTE, currentColumn.name, currentColumn.type.getSimpleName(), index==this.attributes.columns.size()?"":",");
+			attributesString += String.format(QUERY_ATTRIBUTE, currentColumn.name, currentColumn.type.getSimpleName(), index==this.attributes.columns.size()-1?"":",");
 		}
 		
 		return String.format(QUERY, this.outputName, this.table, this.jdbc, this.user, this.password, attributesString, this.waiteach);

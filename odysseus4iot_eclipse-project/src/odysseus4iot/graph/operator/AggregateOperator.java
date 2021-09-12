@@ -20,7 +20,7 @@ public class AggregateOperator extends Operator
 		{
 			currentAggregation = this.aggregations.get(index);
 			
-			aggregationsString += String.format(QUERY_AGGREGATION, currentAggregation, index==this.aggregations.size()?"":",");
+			aggregationsString += String.format(QUERY_AGGREGATION, currentAggregation, index==this.aggregations.size()-1?"":",");
 		}
 		
 		return String.format(QUERY, this.outputName, this.group_by, aggregationsString, this.inputName);

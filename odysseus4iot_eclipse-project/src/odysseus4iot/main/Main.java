@@ -43,6 +43,8 @@ import odysseus4iot.util.Util;
  */
 public class Main
 {
+	public static Properties properties = null;
+	
 	public static void main(String[] args)
 	{
 		//0 - Load property file
@@ -58,7 +60,7 @@ public class Main
 			System.exit(0);
 		}
 
-        Properties properties = new Properties();
+        properties = new Properties();
 
         try
         {
@@ -70,7 +72,7 @@ public class Main
 			System.exit(0);
 		}
 		
-        Util.validateProperties(properties);
+        Util.validateProperties();
         
 		//1 - Input to System (sensors/nodes/labels)
 		List<String> sensors = Arrays.asList(properties.getProperty("input.sensors").split(","));
@@ -86,8 +88,6 @@ public class Main
 		//PostgresImport.url = "jdbc:postgresql://141.13.162.179:5432/procdb";
 		//PostgresImport.user = "script";
 		//PostgresImport.password = "pAhXHnnFf6jgxO85";
-		
-		PostgresImport.properties = properties;
 		PostgresImport.url = properties.getProperty("modeldb.url");
 		PostgresImport.user = properties.getProperty("modeldb.user");
 		PostgresImport.password = properties.getProperty("modeldb.password");

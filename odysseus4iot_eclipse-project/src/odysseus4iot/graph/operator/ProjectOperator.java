@@ -19,7 +19,7 @@ public class ProjectOperator extends Operator
 		{
 			currentAttribute = this.attributes.get(index);
 			
-			attributesString += String.format(QUERY_ATTRIBUTE, currentAttribute, index==this.attributes.size()?"":",");
+			attributesString += String.format(QUERY_ATTRIBUTE, currentAttribute, index==this.attributes.size()-1?"":",");
 		}
 		
 		return String.format(QUERY, this.outputName, attributesString, this.inputName);

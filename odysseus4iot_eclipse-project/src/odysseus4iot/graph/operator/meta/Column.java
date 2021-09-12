@@ -15,4 +15,14 @@ public class Column
 		this.name = name;
 		this.type = type;
 	}
+	
+	public Column copy()
+	{
+		Column column = new Column();
+		
+		column.name = new String(this.name);
+		column.type = this.type;
+		
+		return column;
+	}
 }

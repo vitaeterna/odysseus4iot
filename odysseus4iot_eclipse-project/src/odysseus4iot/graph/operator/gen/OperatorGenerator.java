@@ -13,105 +13,98 @@ import odysseus4iot.graph.operator.ProjectOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Schema;
+import odysseus4iot.main.Main;
 
 //TODO: Warum kann integer timestamp nicht als starttimestamp verwendet werden? Muss timestamp in String vorliegen?
 public class OperatorGenerator
 {
-	public static DatabasesourceOperator generateDatabasesourceOperator(String sensor, Integer waiteach)
+	public static DatabasesourceOperator generateDatabasesourceOperator(String sensor, List<String> schema, Integer waiteach)
 	{
 		DatabasesourceOperator databasesourceOperator = new DatabasesourceOperator();
 		
 		databasesourceOperator.table = sensor;
-		databasesourceOperator.jdbc = "jdbc:postgresql://localhost:5432/CattleDB";
-		databasesourceOperator.user = "postgres";
-		databasesourceOperator.password = "postgres";
+		databasesourceOperator.jdbc = Main.properties.getProperty("sensordb.url");
+		databasesourceOperator.user = Main.properties.getProperty("sensordb.user");
+		databasesourceOperator.password = Main.properties.getProperty("sensordb.password");
 		databasesourceOperator.waiteach = waiteach;
 		
 		Schema attributes = new Schema();
 		attributes.addColumn(new Column("cattle_id", Integer.class));
-		attributes.addColumn(new Column("timestamp", Long.class));
-		attributes.addColumn(new Column("ax", Double.class));
-		attributes.addColumn(new Column("ay", Double.class));
-		attributes.addColumn(new Column("az", Double.class));
-		attributes.addColumn(new Column("ox", Double.class));
-		attributes.addColumn(new Column("oy", Double.class));
-		attributes.addColumn(new Column("oz", Double.class));
+		
+		String columnName = null;
+		
+		for(int index = 0; index < schema.size(); index++)
+		{
+			columnName = schema.get(index);
+			
+			attributes.addColumn(new Column(columnName, Double.class));
+		}
 		
 		databasesourceOperator.attributes = attributes;
 		
 		databasesourceOperator.outputSchema = databasesourceOperator.attributes;
 		databasesourceOperator.outputRate = 1000.0d/((double)waiteach);
-		databasesourceOperator.outputName = "sensorData";
+		databasesourceOperator.outputName = sensor;
 		
 		return databasesourceOperator;
 	}
 	
-	public static MapOperator generateMapOperator()
+	public static MapOperator generateMapOperator(List<String> preprocessing)
 	{
 		MapOperator mapOperator = new MapOperator();
 		
 		List<String> expressions = new ArrayList<>();
 		expressions.add("'cattle_id'");
-		expressions.add("'timestamp'");
-		expressions.add("['sqrt((ax*ax)+(ay*ay)+(az*az))','amag']");
-		expressions.add("['sqrt((ox*ox)+(oy*oy)+(oz*oz))','omag']");
+		
+		String expressionName = null;
+		
+		for(int index = 0; index < preprocessing.size(); index++)
+		{
+			expressionName = preprocessing.get(index);
+			
+			if(expressionName.equals("amag"))
+			{
+				expressions.add("['sqrt((ax*ax)+(ay*ay)+(az*az))','amag']");
+			}
+			else if(expressionName.equals("omag"))
+			{
+				expressions.add("['sqrt((ox*ox)+(oy*oy)+(oz*oz))','omag']");
+			}
+			else
+			{
+				expressions.add("'" + expressionName + "'");
+			}
+		}
 		
 		mapOperator.expressions = expressions;
 		
-		Schema inputSchema = new Schema();
-		inputSchema.addColumn(new Column("cattle_id", Integer.class));
-		inputSchema.addColumn(new Column("timestamp", Long.class));
-		inputSchema.addColumn(new Column("ax", Double.class));
-		inputSchema.addColumn(new Column("ay", Double.class));
-		inputSchema.addColumn(new Column("az", Double.class));
-		inputSchema.addColumn(new Column("ox", Double.class));
-		inputSchema.addColumn(new Column("oy", Double.class));
-		inputSchema.addColumn(new Column("oz", Double.class));
-		
-		mapOperator.inputSchema = inputSchema;
-		mapOperator.inputRate = 10.0d;
-		mapOperator.inputName = "sensorData";
-		
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
-		outputSchema.addColumn(new Column("timestamp", Long.class));
-		outputSchema.addColumn(new Column("amag", Double.class));
-		outputSchema.addColumn(new Column("omag", Double.class));
 		
+		for(int index = 0; index < preprocessing.size(); index++)
+		{
+			expressionName = preprocessing.get(index);
+			
+			outputSchema.addColumn(new Column(expressionName, Double.class));
+		}
+
 		mapOperator.outputSchema = outputSchema;
-		mapOperator.outputRate = 10.0d;
-		mapOperator.outputName = "sensorDataMag";
+		mapOperator.outputRate = null;
+		mapOperator.outputName = "sensor_data_map";
 		
 		return mapOperator;
 	}
 	
-	public static TimewindowOperator generateTimewindowOperator()
+	public static TimewindowOperator generateTimewindowOperator(Integer size, Integer slide)
 	{
 		TimewindowOperator timewindowOperator = new TimewindowOperator();
 		
-		timewindowOperator.size = 5000;
-		timewindowOperator.slide = 5000;
+		timewindowOperator.size = size;
+		timewindowOperator.slide = slide;
 		
-		Schema inputSchema = new Schema();
-		inputSchema.addColumn(new Column("cattle_id", Integer.class));
-		inputSchema.addColumn(new Column("timestamp", Long.class));
-		inputSchema.addColumn(new Column("amag", Double.class));
-		inputSchema.addColumn(new Column("omag", Double.class));
-		
-		timewindowOperator.inputSchema = inputSchema;
-		timewindowOperator.inputRate = 10.0d;
-		timewindowOperator.inputName = "sensorDataMag";
-		
-		Schema outputSchema = new Schema();
-		outputSchema.addColumn(new Column("cattle_id", Integer.class));
-		outputSchema.addColumn(new Column("timestamp", Long.class));
-		outputSchema.addColumn(new Column("amag", Double.class));
-		outputSchema.addColumn(new Column("omag", Double.class));
-		outputSchema.addColumn(new Column("end_timestamp", Long.class));
-		
-		timewindowOperator.outputSchema = outputSchema;
-		timewindowOperator.outputRate = 10.0d;
-		timewindowOperator.outputName = "sensorDataMagWindowed";
+		timewindowOperator.outputSchema = null;
+		timewindowOperator.outputRate = null;
+		timewindowOperator.outputName = "sensor_data_map_window";
 		
 		return timewindowOperator;
 	}
@@ -124,7 +117,6 @@ public class OperatorGenerator
 		
 		List<String> aggregations = new ArrayList<>();
 		
-		aggregations.add("['count', ['amag'], 'amag_count', 'Integer']");
 		aggregations.add("['min', ['amag'], 'amag_min', 'Double']");
 		aggregations.add("['min', ['omag'], 'omag_min', 'Double']");
 		aggregations.add("['max', ['amag'], 'amag_max', 'Integer']");
@@ -166,10 +158,8 @@ public class OperatorGenerator
 		
 		Schema inputSchema = new Schema();
 		inputSchema.addColumn(new Column("cattle_id", Integer.class));
-		inputSchema.addColumn(new Column("timestamp", Long.class));
 		inputSchema.addColumn(new Column("amag", Double.class));
 		inputSchema.addColumn(new Column("omag", Double.class));
-		inputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		aggregateOperator.inputSchema = inputSchema;
 		aggregateOperator.inputRate = 10.0d;
@@ -213,8 +203,6 @@ public class OperatorGenerator
 		outputSchema.addColumn(new Column("car_omag_FrMag3", Double.class));
 		outputSchema.addColumn(new Column("car_omag_FrMag4", Double.class));
 		outputSchema.addColumn(new Column("car_omag_FrMag5", Double.class));
-		outputSchema.addColumn(new Column("start_timestamp", Long.class));
-		outputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		aggregateOperator.outputSchema = outputSchema;
 		aggregateOperator.outputRate = 0.2d;
@@ -304,8 +292,6 @@ public class OperatorGenerator
 		inputSchema.addColumn(new Column("car_omag_FrMag3", Double.class));
 		inputSchema.addColumn(new Column("car_omag_FrMag4", Double.class));
 		inputSchema.addColumn(new Column("car_omag_FrMag5", Double.class));
-		inputSchema.addColumn(new Column("start_timestamp", Long.class));
-		inputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		projectOperator.inputSchema = inputSchema;
 		projectOperator.inputRate = 0.2d;
@@ -349,8 +335,6 @@ public class OperatorGenerator
 		outputSchema.addColumn(new Column("car_omag_FrMag3", Double.class));
 		outputSchema.addColumn(new Column("car_omag_FrMag4", Double.class));
 		outputSchema.addColumn(new Column("car_omag_FrMag5", Double.class));
-		outputSchema.addColumn(new Column("start_timestamp", Long.class));
-		outputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		projectOperator.outputSchema = outputSchema;
 		projectOperator.outputRate = 0.2d;
@@ -411,8 +395,6 @@ public class OperatorGenerator
 		inputSchema.addColumn(new Column("car_omag_FrMag3", Double.class));
 		inputSchema.addColumn(new Column("car_omag_FrMag4", Double.class));
 		inputSchema.addColumn(new Column("car_omag_FrMag5", Double.class));
-		inputSchema.addColumn(new Column("start_timestamp", Long.class));
-		inputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		classificationOperator.inputSchema = inputSchema;
 		classificationOperator.inputRate = 0.2d;
@@ -421,8 +403,6 @@ public class OperatorGenerator
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
 		outputSchema.addColumn(new Column("prediction", String.class));
-		outputSchema.addColumn(new Column("start_timestamp", Long.class));
-		outputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		classificationOperator.outputSchema = outputSchema;
 		classificationOperator.outputRate = 0.2d;
@@ -440,8 +420,6 @@ public class OperatorGenerator
 		Schema inputSchema = new Schema();
 		inputSchema.addColumn(new Column("cattle_id", Integer.class));
 		inputSchema.addColumn(new Column("prediction", String.class));
-		inputSchema.addColumn(new Column("start_timestamp", Long.class));
-		inputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		outlierRemovingOperator.inputSchema = inputSchema;
 		outlierRemovingOperator.inputRate = 0.2d;
@@ -450,8 +428,6 @@ public class OperatorGenerator
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
 		outputSchema.addColumn(new Column("prediction", String.class));
-		outputSchema.addColumn(new Column("start_timestamp", Long.class));
-		outputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		outlierRemovingOperator.outputSchema = outputSchema;
 		outlierRemovingOperator.outputRate = 0.2d;
@@ -470,8 +446,6 @@ public class OperatorGenerator
 		Schema inputSchema = new Schema();
 		inputSchema.addColumn(new Column("cattle_id", Integer.class));
 		inputSchema.addColumn(new Column("prediction", String.class));
-		inputSchema.addColumn(new Column("start_timestamp", Long.class));
-		inputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		changedetectOperator.inputSchema = inputSchema;
 		changedetectOperator.inputRate = 0.2d;
@@ -480,8 +454,6 @@ public class OperatorGenerator
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
 		outputSchema.addColumn(new Column("prediction", String.class));
-		outputSchema.addColumn(new Column("start_timestamp", Long.class));
-		outputSchema.addColumn(new Column("end_timestamp", Long.class));
 		
 		changedetectOperator.outputSchema = outputSchema;
 		changedetectOperator.outputRate = null;

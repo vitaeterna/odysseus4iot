@@ -14,10 +14,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import odysseus4iot.main.Main;
+
 public class PostgresImport
 {
-	public static Properties properties = null;
-	
 	public static String url = null;
 	public static String user = null;
 	public static String password = null;
@@ -89,14 +89,14 @@ public class PostgresImport
 					currentValue = entry.getValue().getAsJsonArray();
 					
 					//Schema
-					if(properties.getProperty("schema." + currentKey) == null)
+					if(Main.properties.getProperty("schema." + currentKey) == null)
 					{
 						System.err.println("The schema property 'schema." + currentKey + "' could not be found.");
 						
 						System.exit(0);
 					}
 					
-					List<String> schemaElements = Arrays.asList(properties.getProperty("schema." + currentKey).split(","));
+					List<String> schemaElements = Arrays.asList(Main.properties.getProperty("schema." + currentKey).split(","));
 					
 					String currentSchemaElement = null;
 					
@@ -111,14 +111,14 @@ public class PostgresImport
 					}
 					
 					//Preprocessing
-					if(properties.getProperty("preprocessing." + currentKey) == null)
+					if(Main.properties.getProperty("preprocessing." + currentKey) == null)
 					{
 						System.err.println("The schema property 'preprocessing." + currentKey + "' could not be found.");
 						
 						System.exit(0);
 					}
 					
-					String preprocessingMapping = properties.getProperty("preprocessing." + currentKey);
+					String preprocessingMapping = Main.properties.getProperty("preprocessing." + currentKey);
 					
 					if(!preprocessing.contains(preprocessingMapping))
 					{

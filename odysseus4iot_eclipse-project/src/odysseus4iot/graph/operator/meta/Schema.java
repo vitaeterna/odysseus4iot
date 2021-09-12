@@ -66,4 +66,21 @@ public class Schema
 		
 		return size;
 	}
+	
+	public Schema copy()
+	{
+		Schema schema = new Schema();
+		
+		if(this.columns != null)
+		{
+			List<Column> columns = new ArrayList<>();
+			
+			for(int index = 0; index < this.columns.size(); index++)
+			{
+				columns.add(this.columns.get(index).copy());
+			}
+		}
+		
+		return schema;
+	}
 }
