@@ -17,6 +17,7 @@ public class Model
 	private Double f1_test = null;
 	
 	private Integer window_slide = null;
+	private Double waiteach = null;
 	private List<String> schema = null;
 	private List<String> preprocessing = null;
 	private List<String> features = null;
@@ -97,6 +98,12 @@ public class Model
 	}
 	public Integer getWindow_slide() {
 		return window_slide;
+	}
+	public Double getWaiteach() {
+		return waiteach;
+	}
+	public void setWaiteach(Double waiteach) {
+		this.waiteach = waiteach;
 	}
 	public List<String> getSchema() {
 		return schema;

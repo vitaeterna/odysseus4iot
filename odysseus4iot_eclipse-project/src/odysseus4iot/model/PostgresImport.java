@@ -19,16 +19,17 @@ import odysseus4iot.main.Main;
 public class PostgresImport
 {
 	public static String url = null;
+	public static String table = null;
 	public static String user = null;
 	public static String password = null;
 	
 	public static String SQL_QUERY = 
 			  "SELECT model_title, features_json_content, list_of_predicted_classes, resampled_rate_in_hz, algorithm, list_of_functions, list_of_axes, window_size, window_stride, accuracy_test, f1_test\r\n"
-			+ "FROM public.experiment_result\r\n"
+			+ "FROM public.%s\r\n"
 			+ "WHERE model_title <> ''\r\n"
-			+ "AND algorithm LIKE '%Random%Forest%'\r\n"
+			+ "AND algorithm LIKE '%%Random%%Forest%%'\r\n"
 			+ "AND window_size = 5000\r\n"
-			+ "AND window_stride = '100%'\r\n"
+			+ "AND window_stride = '100%%'\r\n"
 			+ "AND list_of_axes = 'gyrMag_accMag'\r\n"
 			+ "AND accuracy_test >= 0.9\r\n"
 			+ "AND f1_test >= 0.9\r\n"
@@ -47,7 +48,7 @@ public class PostgresImport
 			Connection connection = DriverManager.getConnection(url, dbProperties);
 			connection.setAutoCommit(true);
 			
-			PreparedStatement preparedStatement = connection.prepareStatement(SQL_QUERY);
+			PreparedStatement preparedStatement = connection.prepareStatement(String.format(SQL_QUERY, table));
 			//preparedStatement.setInt(1, foovalue);
 			
 			preparedStatement.setFetchSize(0);
@@ -71,6 +72,8 @@ public class PostgresImport
 				model.setWindow_stride(resultSet.getString(9));
 				model.setAccuracy_test(resultSet.getDouble(10));
 				model.setF1_test(resultSet.getDouble(11));
+				
+				model.setWaiteach(1000.0d/model.getResampled_rate_in_hz());
 				
 				List<String> schema = new ArrayList<>();
 				List<String> preprocessing = new ArrayList<>();
@@ -118,7 +121,7 @@ public class PostgresImport
 						System.exit(0);
 					}
 					
-					String preprocessingMapping = Main.properties.getProperty("preprocessing." + currentKey);
+					String preprocessingMapping = Main.properties.getProperty("preprocessing." + currentKey).toLowerCase();
 					
 					if(!preprocessing.contains(preprocessingMapping))
 					{
@@ -133,7 +136,14 @@ public class PostgresImport
 					{
 						currentSubValue = currentValue.get(index).getAsString().toLowerCase();
 						
-						features.add(currentKey + "_" + currentSubValue);
+						if(Main.properties.getProperty("feature." + currentSubValue) == null)
+						{
+							System.err.println("The schema property 'feature." + currentSubValue + "' could not be found.");
+							
+							System.exit(0);
+						}
+						
+						features.add(preprocessingMapping + "_" + Main.properties.getProperty("feature." + currentSubValue));
 					}
 				}
 				

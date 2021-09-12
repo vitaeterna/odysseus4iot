@@ -6,20 +6,22 @@ public class OutlierRemovingOperator extends Operator
 {
 	public String group_by = null;
 	
+	public String model_title = null;
+	
 	@Override
 	public String toString()
 	{
-		return String.format(QUERY, this.group_by, this.inputName, this.group_by, this.outputName);
+		return String.format(QUERY, this.model_title, this.group_by, this.inputName, this.model_title, this.group_by, this.model_title, this.model_title, this.model_title, this.model_title, this.model_title, this.outputName, this.model_title);
 	}
 	
 	public static final String QUERY = 
-			  "elements = ELEMENTWINDOW({SIZE = 2, ADVANCE = 1, DRAINATDONE = true, PARTITION = ['%s']}, %s)\r\n"
+			  "outlier_window_%s = ELEMENTWINDOW({SIZE = 2, ADVANCE = 1, DRAINATDONE = true, PARTITION = ['%s']}, %s)\r\n"
 			+ "\r\n"
-			+ "aggregation = AGGREGATE({AGGREGATIONS = [['nest', '*', 'nested']], GROUP_BY = ['%s']}, elements)\r\n"
+			+ "outlier_aggregate_%s = AGGREGATE({AGGREGATIONS = [['nest', '*', 'nested']], GROUP_BY = ['%s']}, outlier_window_%s)\r\n"
 			+ "\r\n"
-			+ "filter = SELECT({PREDICATE = 'size(nested) = 2 && elementAt(nested[0],1) = elementAt(nested[1],1)'}, aggregation)\r\n"
+			+ "outlier_select_%s = SELECT({PREDICATE = 'size(nested) = 2 && elementAt(nested[0],1) = elementAt(nested[1],1)'}, outlier_aggregate_%s)\r\n"
 			+ "\r\n"
-			+ "mapped = MAP({EXPRESSIONS = [['nested[0]','nested']]}, filter)\r\n"
+			+ "outlier_map_%s = MAP({EXPRESSIONS = [['nested[0]','nested']]}, outlier_select_%s)\r\n"
 			+ "\r\n"
-			+ "%s = UNNEST({ATTRIBUTE = 'nested'}, mapped)";
+			+ "%s = UNNEST({ATTRIBUTE = 'nested'}, outlier_map_%s)";
 }

@@ -13,10 +13,15 @@ public class Util
 	{
 		List<String> requiredProperties = new ArrayList<>();
 		requiredProperties.add("input.sensors");
+		requiredProperties.add("input.labels");
 		requiredProperties.add("sensordb.url");
 		requiredProperties.add("sensordb.user");
 		requiredProperties.add("sensordb.password");
-		requiredProperties.add("modeldb.url");
+		requiredProperties.add("modeldb.host");
+		requiredProperties.add("modeldb.port");
+		requiredProperties.add("modeldb.database");
+		requiredProperties.add("modeldb.table");
+		requiredProperties.add("modeldb.column");
 		requiredProperties.add("modeldb.user");
 		requiredProperties.add("modeldb.password");
 		

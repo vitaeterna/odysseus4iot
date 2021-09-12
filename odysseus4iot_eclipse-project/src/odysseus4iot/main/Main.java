@@ -78,17 +78,21 @@ public class Main
 		List<String> sensors = Arrays.asList(properties.getProperty("input.sensors").split(","));
 		
 		System.out.println("Input - Sensors");
-		System.out.println(sensors);
+		System.out.println(sensors + "\r\n");
 		
-		List<String> nodes = new ArrayList<>();
+		List<String> labels = Arrays.asList(properties.getProperty("input.labels").split(","));
 		
-		List<String> labels = new ArrayList<>();
+		System.out.println("Input - Labels");
+		System.out.println(labels + "\r\n");
+		
+		//List<String> nodes = new ArrayList<>();
 		
 		//1 - Retrieving Model Information from Model Management System
 		//PostgresImport.url = "jdbc:postgresql://141.13.162.179:5432/procdb";
 		//PostgresImport.user = "script";
 		//PostgresImport.password = "pAhXHnnFf6jgxO85";
-		PostgresImport.url = properties.getProperty("modeldb.url");
+		PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
+		PostgresImport.table = properties.getProperty("modeldb.table");
 		PostgresImport.user = properties.getProperty("modeldb.user");
 		PostgresImport.password = properties.getProperty("modeldb.password");
 
