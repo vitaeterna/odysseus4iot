@@ -139,7 +139,7 @@ public class OperatorGenerator
 			currentFeature = features.get(index);
 			currentFeatureSplit = currentFeature.split("_");
 			
-			aggregations.add("['" + currentFeatureSplit[1] + "', ['" + currentFeatureSplit[0] + "'], '" + currentFeature + "', 'Double']");
+			aggregations.add("['" + currentFeatureSplit[1] + "', ['" + currentFeatureSplit[0] + "'], 'car_" + currentFeature + "', 'Double']");
 		}
 		
 		aggregateOperator.aggregations = aggregations;
@@ -207,6 +207,7 @@ public class OperatorGenerator
 		classificationOperator.password = Main.properties.getProperty("modeldb.password");
 		classificationOperator.selectmodelbycolumn = Main.properties.getProperty("modeldb.column");
 		classificationOperator.selectmodelbyvalue = model_title;
+		classificationOperator.columnName = model_title;
 		
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));

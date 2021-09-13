@@ -13,6 +13,7 @@ public class ClassificationOperator extends Operator
 	public String password = null;
 	public String selectmodelbycolumn = null;
 	public String selectmodelbyvalue = null;
+	public String columnName = null;
 	
 	public ClassificationOperator()
 	{
@@ -24,7 +25,7 @@ public class ClassificationOperator extends Operator
 	@Override
 	public String toString()
 	{
-		return String.format(QUERY, this.outputName, this.database, this.host, this.port, this.rpcServer, this.table, this.username, this.password, this.selectmodelbycolumn, this.selectmodelbyvalue, this.inputName);
+		return String.format(QUERY, this.outputName, this.database, this.host, this.port, this.rpcServer, this.table, this.username, this.password, this.selectmodelbycolumn, this.selectmodelbyvalue, this.columnName, this.inputName);
 	}
 	
 	public static final String QUERY = 
@@ -39,7 +40,8 @@ public class ClassificationOperator extends Operator
 			+ "\t\tusername='%s',\r\n"
 			+ "\t\tpassword='%s',\r\n"
 			+ "\t\tselectmodelbycolumn='%s',\r\n"
-			+ "\t\tselectmodelbyvalue='%s'\r\n"
+			+ "\t\tselectmodelbyvalue='%s',\r\n"
+			+ "\t\tcolumnName='%s'\r\n"
 			+ "\t},\r\n"
 			+ "\t%s\r\n"
 			+ ")";

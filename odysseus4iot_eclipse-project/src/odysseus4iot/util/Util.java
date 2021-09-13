@@ -141,6 +141,10 @@ public class Util
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		
+		stringBuilder.append("#PARSER PQL\r\n\r\n");
+		stringBuilder.append("#REQUIRED de.uniol.inf.is.odysseus.database.feature.feature.group false\r\n\r\n");
+		stringBuilder.append("#ADDQUERY\r\n\r\n");
+		
 		List<Vertex> vertices = graph.getVerticesBreadthFirst();
 		
 		Vertex currentVertex = null;
