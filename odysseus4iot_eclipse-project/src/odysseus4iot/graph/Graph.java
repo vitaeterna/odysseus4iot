@@ -1,11 +1,7 @@
 package odysseus4iot.graph;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
-
-import odysseus4iot.graph.operator.meta.Operator;
 
 public class Graph
 {

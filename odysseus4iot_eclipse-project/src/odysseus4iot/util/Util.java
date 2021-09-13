@@ -17,8 +17,6 @@ import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.Vertex.Type;
-import odysseus4iot.graph.operator.DatabasesourceOperator;
-import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.main.Main;
 
 public class Util
@@ -139,7 +137,7 @@ public class Util
         }
     }
 	
-	public static void pqlExport(String outputFilename, Graph graph)
+	public static void exportPQL(String outputFilename, Graph graph)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		
@@ -164,7 +162,7 @@ public class Util
 		System.out.print("Written to " + outputFilename + ".qry\n");
 	}
     
-    public static void graphDotExport(String outputFilename, Graph graph)
+    public static void exportDOTPNG(String outputFilename, Graph graph)
     {
         StringBuilder dot = new StringBuilder();
 

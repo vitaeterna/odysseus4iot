@@ -114,15 +114,17 @@ public class Main
 			
 			Graph graph = OperatorGraphGenerator.generateOperatorGraph(sensors, currentModel);
 			
-			Util.pqlExport(currentModel.getModel_title(), graph);
+			Util.exportPQL(currentModel.getModel_title(), graph);
 			
-			Util.graphDotExport(currentModel.getModel_title(), graph);
+			Util.exportDOTPNG(currentModel.getModel_title(), graph);
 			
 			graphs.add(graph);
 		}
 		
 		Graph graph = OperatorGraphRedundancyElimination.mergeAndEliminateRedundancy(graphs);
 		
-		//Util.graphDotExport("merged", graph);
+		Util.exportPQL("merged", graph);
+		
+		Util.exportDOTPNG("merged", graph);
 	}
 }
