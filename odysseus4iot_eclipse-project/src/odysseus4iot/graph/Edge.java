@@ -4,6 +4,7 @@ public class Edge
 {
 	public Vertex vertex0 = null;
 	public Vertex vertex1 = null;
+	public String label = null;
 	
 	public Edge()
 	{

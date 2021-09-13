@@ -23,6 +23,8 @@ public class OperatorGraphGenerator
 		Graph graph = new Graph();
 		
 		//1 - DatabasesourceOperator
+		Vertex.getNextGroup();
+		
 		DatabasesourceOperator databasesourceOperator = null;
 		
 		String currentSensor = null;
@@ -41,6 +43,8 @@ public class OperatorGraphGenerator
 		
 		if(sensors.size() > 1)
 		{
+			Vertex.getNextGroup();
+			
 			mergeOperator = OperatorGenerator.generateMergeOperator(sensors);
 			
 			graph.addVertex(mergeOperator);
@@ -69,6 +73,8 @@ public class OperatorGraphGenerator
 		}
 		
 		//2 - MapOperator
+		Vertex.getNextGroup();
+		
 		MapOperator mapOperator = OperatorGenerator.generateMapOperator(model.getPreprocessing());
 		
 		graph.addVertex(mapOperator);
@@ -108,6 +114,8 @@ public class OperatorGraphGenerator
 		}
 		
 		//3 - TimewindowOperator
+		Vertex.getNextGroup();
+		
 		TimewindowOperator timewindowOperator = OperatorGenerator.generateTimewindowOperator(model.getWindow_size(), model.getWindow_slide());
 		
 		graph.addVertex(timewindowOperator);
@@ -122,6 +130,8 @@ public class OperatorGraphGenerator
 		timewindowOperator.outputRate = timewindowOperator.inputRate;
 		
 		//5 - AggregateOperator
+		Vertex.getNextGroup();
+		
 		AggregateOperator aggregateOperator = OperatorGenerator.generateAggregateOperator(model.getFeatures());
 		
 		graph.addVertex(aggregateOperator);
@@ -136,6 +146,8 @@ public class OperatorGraphGenerator
 		aggregateOperator.outputRate = aggregateOperator.inputRate/(((double)model.getWindow_size())/model.getWaiteach().intValue());
 		
 		//6 - ClassificationOperator
+		Vertex.getNextGroup();
+		
 		ClassificationOperator classificationOperator = OperatorGenerator.generateClassificationOperator(model.getModel_title());
 		
 		graph.addVertex(classificationOperator);
@@ -149,6 +161,8 @@ public class OperatorGraphGenerator
 		classificationOperator.outputRate = classificationOperator.inputRate;
 		
 		//7 - OutlierRemovingOperator
+		Vertex.getNextGroup();
+		
 		OutlierRemovingOperator outlierRemovingOperator = OperatorGenerator.generateOutlierRemovingOperator(model.getModel_title());
 		
 		graph.addVertex(outlierRemovingOperator);
@@ -163,6 +177,8 @@ public class OperatorGraphGenerator
 		outlierRemovingOperator.outputRate = outlierRemovingOperator.inputRate;
 		
 		//8 - ChangedetectOperator
+		Vertex.getNextGroup();
+		
 		ChangedetectOperator changedetectOperator = OperatorGenerator.generateChangedetectOperator(model.getModel_title());
 		
 		graph.addVertex(changedetectOperator);
@@ -175,6 +191,15 @@ public class OperatorGraphGenerator
 		
 		changedetectOperator.outputSchema = changedetectOperator.inputSchema.copy();
 		changedetectOperator.outputRate = null;
+		
+		Edge currentEdge = null;
+		
+		for(int index = 0; index < graph.edges.size(); index++)
+		{
+			currentEdge = graph.edges.get(index);
+			
+			currentEdge.label = ((Operator)currentEdge.vertex0).outputSchema.toString();
+		}
 		
 		return graph;
 	}

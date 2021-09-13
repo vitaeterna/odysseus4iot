@@ -8,6 +8,13 @@ public class OutlierRemovingOperator extends Operator
 	
 	public String model_title = null;
 	
+	public OutlierRemovingOperator()
+	{
+		super();
+		
+		type = Type.BOX;
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
+import odysseus4iot.graph.operator.gen.OperatorGraphRedundancyElimination;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
 import odysseus4iot.util.Util;
@@ -47,6 +48,8 @@ public class Main
 	
 	public static void main(String[] args)
 	{
+		Util.charsetUTF8();
+		
 		//0 - Load property file
 		InputStream input = null;
 		
@@ -87,7 +90,7 @@ public class Main
 		
 		//List<String> nodes = new ArrayList<>();
 		
-		//1 - Retrieving Model Information from Model Management System
+		//2 - Retrieving Model Information from Model Management System
 		//PostgresImport.url = "jdbc:postgresql://141.13.162.179:5432/procdb";
 		//PostgresImport.user = "script";
 		//PostgresImport.password = "pAhXHnnFf6jgxO85";
@@ -98,8 +101,7 @@ public class Main
 
 		List<Model> models = PostgresImport.importFromDB();
 		
-		//2 - Generating Logical Operator Graphs
-		//Here the merging of streams is not considered at first!
+		//3 - Generating Logical Operator Graphs
 		List<Graph> graphs = new ArrayList<>();
 		
 		Model currentModel = null;
@@ -110,7 +112,17 @@ public class Main
 			
 			System.out.println(currentModel+"\r\n");
 			
-			graphs.add(OperatorGraphGenerator.generateOperatorGraph(sensors, currentModel));
+			Graph graph = OperatorGraphGenerator.generateOperatorGraph(sensors, currentModel);
+			
+			Util.pqlExport(currentModel.getModel_title(), graph);
+			
+			Util.graphDotExport(currentModel.getModel_title(), graph);
+			
+			graphs.add(graph);
 		}
+		
+		Graph graph = OperatorGraphRedundancyElimination.mergeAndEliminateRedundancy(graphs);
+		
+		//Util.graphDotExport("merged", graph);
 	}
 }

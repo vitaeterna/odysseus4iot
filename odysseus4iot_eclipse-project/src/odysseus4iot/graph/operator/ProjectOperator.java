@@ -8,6 +8,13 @@ public class ProjectOperator extends Operator
 {
 	public List<String> attributes = null;
 	
+	public ProjectOperator()
+	{
+		super();
+		
+		type = Type.BOX;
+	}
+	
 	@Override
 	public String toString()
 	{

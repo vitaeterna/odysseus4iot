@@ -8,6 +8,13 @@ public class MergeOperator extends Operator
 {
 	public List<String> inputStreams = null;
 	
+	public MergeOperator()
+	{
+		super();
+		
+		type = Type.MERGE;
+	}
+	
 	@Override
 	public String toString()
 	{

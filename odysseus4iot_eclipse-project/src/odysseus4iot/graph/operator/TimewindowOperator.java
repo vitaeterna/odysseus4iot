@@ -7,6 +7,13 @@ public class TimewindowOperator extends Operator
 	public Integer size = null;
 	public Integer slide = null;
 	
+	public TimewindowOperator()
+	{
+		super();
+		
+		type = Type.BOX;
+	}
+	
 	@Override
 	public String toString()
 	{

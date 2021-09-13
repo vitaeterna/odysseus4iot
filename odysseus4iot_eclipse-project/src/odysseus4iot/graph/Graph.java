@@ -1,12 +1,21 @@
 package odysseus4iot.graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
+
+import odysseus4iot.graph.operator.meta.Operator;
 
 public class Graph
 {
 	public List<Vertex> vertices = null;
 	public List<Edge> edges = null;
+	
+	public Graph()
+	{
+		Vertex.resetIDs();
+	}
 	
 	public void addVertex(Vertex vertex)
 	{
@@ -123,6 +132,68 @@ public class Graph
 		return requestedVertices;
 	}
 	
+	public List<Vertex> getStartingVertices()
+	{
+		List<Vertex> startingVertices = new ArrayList<>();
+		
+		Vertex currentVertex = null;
+		Edge currentEdge = null;
+		
+		boolean isStartingVertex = true;
+		
+		for(int index = 0; index < this.vertices.size(); index++)
+		{
+			currentVertex = this.vertices.get(index);
+			
+			isStartingVertex = true;
+			
+			for(int index2 = 0; index2 < this.edges.size(); index2++)
+			{
+				currentEdge = this.edges.get(index2);
+				
+				if(currentVertex == currentEdge.vertex1)
+				{
+					isStartingVertex = false;
+				}
+			}
+			
+			if(isStartingVertex)
+			{
+				startingVertices.add(currentVertex);
+			}
+		}
+		
+		return startingVertices;
+	}
+	
+	public List<Vertex> getVerticesBreadthFirst()
+	{
+		List<Vertex> vertices = this.getStartingVertices();
+		List<Vertex> successors = null;
+		
+		Vertex currentVertex = null;
+		Vertex currentSuccessor = null;
+		
+		for(int index = 0; index < vertices.size(); index++)
+		{
+			currentVertex = vertices.get(index);
+			
+			successors = this.getVertexSuccessors(currentVertex);
+			
+			for(int index2 = 0; index2 < successors.size(); index2++)
+			{
+				currentSuccessor = successors.get(index2);
+				
+				if(!vertices.contains(currentSuccessor))
+				{
+					vertices.add(currentSuccessor);
+				}
+			}
+		}
+		
+		return vertices;
+	}
+
 	private boolean containsEdge(Edge edge)
 	{
 		if(this.edges == null)

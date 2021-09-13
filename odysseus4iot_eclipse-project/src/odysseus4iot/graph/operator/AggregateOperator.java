@@ -9,6 +9,13 @@ public class AggregateOperator extends Operator
 	public String group_by = null;
 	public List<String> aggregations = null;
 	
+	public AggregateOperator()
+	{
+		super();
+		
+		type = Type.BOX;
+	}
+	
 	@Override
 	public String toString()
 	{

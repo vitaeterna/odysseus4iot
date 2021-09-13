@@ -7,6 +7,13 @@ public class ChangedetectOperator extends Operator
 	public String attr = null;
 	public String group_by = null;
 	
+	public ChangedetectOperator()
+	{
+		super();
+		
+		type = Type.BOX;
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -60,7 +60,7 @@ public class OperatorGenerator
 		mergeOperator.outputRate = null;
 		mergeOperator.outputName = "sensor_data";
 		
-		return null;
+		return mergeOperator;
 	}
 	
 	public static MapOperator generateMapOperator(List<String> preprocessing)

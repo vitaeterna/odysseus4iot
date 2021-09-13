@@ -14,6 +14,13 @@ public class ClassificationOperator extends Operator
 	public String selectmodelbycolumn = null;
 	public String selectmodelbyvalue = null;
 	
+	public ClassificationOperator()
+	{
+		super();
+		
+		type = Type.BOX;
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -13,6 +13,13 @@ public class DatabasesourceOperator extends Operator
 	public Schema attributes = null;
 	public Integer waiteach = null;
 	
+	public DatabasesourceOperator()
+	{
+		super();
+		
+		type = Type.SOURCE;
+	}
+	
 	@Override
 	public String toString()
 	{

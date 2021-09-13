@@ -8,6 +8,13 @@ public class MapOperator extends Operator
 {
 	public List<String> expressions = null;
 	
+	public MapOperator()
+	{
+		super();
+		
+		type = Type.BOX;
+	}
+	
 	@Override
 	public String toString()
 	{

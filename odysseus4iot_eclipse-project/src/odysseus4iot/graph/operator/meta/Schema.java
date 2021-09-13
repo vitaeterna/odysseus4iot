@@ -79,8 +79,16 @@ public class Schema
 			{
 				columns.add(this.columns.get(index).copy());
 			}
+			
+			schema.columns = columns;
 		}
 		
 		return schema;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return columns.toString();
 	}
 }
