@@ -123,7 +123,7 @@ public class Main
 			graphs.add(graph);
 		}*/
 		
-		Graph graph = OperatorGraphGenerator.generateOperatorGraph(sensors, models);
+		Graph graph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, true);
 		
 		Util.exportPQL("merged", graph);
 		

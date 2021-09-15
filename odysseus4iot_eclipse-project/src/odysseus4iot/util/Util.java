@@ -96,6 +96,9 @@ public class Util
 		requiredProperties.add("modeldb.column");
 		requiredProperties.add("modeldb.user");
 		requiredProperties.add("modeldb.password");
+		requiredProperties.add("predictiondb.url");
+		requiredProperties.add("predictiondb.user");
+		requiredProperties.add("predictiondb.password");
 		
 		String currentRequiredProperty = null;
 		

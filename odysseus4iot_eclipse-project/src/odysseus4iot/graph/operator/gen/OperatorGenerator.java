@@ -6,6 +6,7 @@ import java.util.List;
 import odysseus4iot.graph.operator.AggregateOperator;
 import odysseus4iot.graph.operator.ChangedetectOperator;
 import odysseus4iot.graph.operator.ClassificationOperator;
+import odysseus4iot.graph.operator.DatabasesinkOperator;
 import odysseus4iot.graph.operator.DatabasesourceOperator;
 import odysseus4iot.graph.operator.MapOperator;
 import odysseus4iot.graph.operator.MergeOperator;
@@ -226,7 +227,7 @@ public class OperatorGenerator
 		
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
-		outputSchema.addColumn(new Column(model_title, String.class));
+		outputSchema.addColumn(new Column("prediction", String.class));
 		
 		classificationOperator.outputSchema = outputSchema;
 		classificationOperator.outputRate = null;
@@ -262,5 +263,21 @@ public class OperatorGenerator
 		changedetectOperator.outputName = "classification_" + model_title + "_final";
 		
 		return changedetectOperator;
+	}
+	
+	public static DatabasesinkOperator generateDatabasesinkOperator(String table)
+	{
+		DatabasesinkOperator databasesinkOperator = new DatabasesinkOperator();
+		
+		databasesinkOperator.table = table;
+		databasesinkOperator.jdbc = Main.properties.getProperty("predictiondb.url");
+		databasesinkOperator.user = Main.properties.getProperty("predictiondb.user");
+		databasesinkOperator.password = Main.properties.getProperty("predictiondb.password");
+		
+		databasesinkOperator.outputSchema = null;
+		databasesinkOperator.outputRate = null;
+		databasesinkOperator.outputName = "prediction_sink";
+		
+		return databasesinkOperator;
 	}
 }
