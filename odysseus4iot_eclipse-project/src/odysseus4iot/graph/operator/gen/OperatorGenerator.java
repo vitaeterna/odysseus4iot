@@ -19,7 +19,7 @@ import odysseus4iot.main.Main;
 //TODO: Warum kann integer timestamp nicht als starttimestamp verwendet werden? Muss timestamp in String vorliegen?
 public class OperatorGenerator
 {
-	public static DatabasesourceOperator generateDatabasesourceOperator(String sensor, List<String> schema, Double waiteach)
+	public static DatabasesourceOperator generateDatabasesourceOperator(String sensor, List<String> schema, Integer waiteach)
 	{
 		DatabasesourceOperator databasesourceOperator = new DatabasesourceOperator();
 		
@@ -27,7 +27,7 @@ public class OperatorGenerator
 		databasesourceOperator.jdbc = Main.properties.getProperty("sensordb.url");
 		databasesourceOperator.user = Main.properties.getProperty("sensordb.user");
 		databasesourceOperator.password = Main.properties.getProperty("sensordb.password");
-		databasesourceOperator.waiteach = waiteach.intValue();
+		databasesourceOperator.waiteach = waiteach;
 		
 		Schema attributes = new Schema();
 		attributes.addColumn(new Column("cattle_id", Integer.class));
@@ -161,35 +161,51 @@ public class OperatorGenerator
 		return aggregateOperator;
 	}
 	
-	public static ProjectOperator generateProjectOperator(String model_title, List<String> features)
+	public static ProjectOperator generateProjectOperator(List<String> attributes, String attributePrefix)
 	{
 		ProjectOperator projectOperator = new ProjectOperator();
 		
-		List<String> attributes = new ArrayList<>();
-		attributes.add("'cattle_id'");
+		projectOperator.payloadAttributes = attributes;
 		
-		String currentFeature = null;
+		projectOperator.attributes = new ArrayList<>();
+		projectOperator.attributes.add("'cattle_id'");
 		
-		for(int index = 0; index < features.size(); index++)
+		String currentAttribute = null;
+		
+		for(int index = 0; index < attributes.size(); index++)
 		{
-			currentFeature = features.get(index);
+			currentAttribute = attributes.get(index);
 			
-			attributes.add("car_" + currentFeature);
+			if(attributePrefix != null)
+			{
+				projectOperator.attributes.add(attributePrefix + currentAttribute);
+			}
+			else
+			{
+				projectOperator.attributes.add(currentAttribute);
+			}
 		}
 		
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
 		
-		for(int index = 0; index < features.size(); index++)
+		for(int index = 0; index < attributes.size(); index++)
 		{
-			currentFeature = features.get(index);
+			currentAttribute = attributes.get(index);
 			
-			outputSchema.addColumn(new Column("car_" + currentFeature, Double.class));
+			if(attributePrefix != null)
+			{
+				outputSchema.addColumn(new Column(attributePrefix + currentAttribute, Double.class));
+			}
+			else
+			{
+				outputSchema.addColumn(new Column(currentAttribute, Double.class));
+			}
 		}
 		
 		projectOperator.outputSchema = outputSchema;
 		projectOperator.outputRate = null;
-		projectOperator.outputName = "features_" + model_title;
+		projectOperator.outputName = "project_" + ProjectOperator.getNextProjectCount();
 		
 		return projectOperator;
 	}
@@ -207,7 +223,6 @@ public class OperatorGenerator
 		classificationOperator.password = Main.properties.getProperty("modeldb.password");
 		classificationOperator.selectmodelbycolumn = Main.properties.getProperty("modeldb.column");
 		classificationOperator.selectmodelbyvalue = model_title;
-		classificationOperator.columnName = model_title;
 		
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
@@ -239,7 +254,7 @@ public class OperatorGenerator
 	{
 		ChangedetectOperator changedetectOperator = new ChangedetectOperator();
 		
-		changedetectOperator.attr = model_title;
+		changedetectOperator.attr = "prediction";
 		changedetectOperator.group_by = "cattle_id";
 		
 		changedetectOperator.outputSchema = null;

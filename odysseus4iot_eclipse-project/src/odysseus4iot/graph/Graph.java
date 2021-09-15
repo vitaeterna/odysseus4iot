@@ -3,6 +3,8 @@ package odysseus4iot.graph;
 import java.util.ArrayList;
 import java.util.List;
 
+import odysseus4iot.graph.operator.ProjectOperator;
+
 public class Graph
 {
 	public List<Vertex> vertices = null;
@@ -11,6 +13,7 @@ public class Graph
 	public Graph()
 	{
 		Vertex.resetIDs();
+		ProjectOperator.resetProjectCount();
 	}
 	
 	public void addVertex(Vertex vertex)

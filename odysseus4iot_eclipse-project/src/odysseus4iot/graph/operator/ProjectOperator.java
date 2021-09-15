@@ -6,6 +6,25 @@ import odysseus4iot.graph.operator.meta.Operator;
 
 public class ProjectOperator extends Operator
 {
+	private static Integer projectCount = 0;
+	
+	public static Integer getCurrentProjectCount()
+	{
+		return projectCount;
+	}
+	
+	public static Integer getNextProjectCount()
+	{
+		return ++projectCount;
+	}
+	
+	public static void resetProjectCount()
+	{
+		projectCount = 0;
+	}
+	
+	public List<String> payloadAttributes = null;
+	
 	public List<String> attributes = null;
 	
 	public ProjectOperator()

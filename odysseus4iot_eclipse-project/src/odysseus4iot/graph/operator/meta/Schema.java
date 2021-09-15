@@ -86,6 +86,18 @@ public class Schema
 		return schema;
 	}
 	
+	public List<String> toStringList()
+	{
+		List<String> stringList = new ArrayList<>();
+		
+		for(int index = 0; index < this.columns.size(); index++)
+		{
+			stringList.add(this.columns.get(index).name);
+		}
+		
+		return stringList;
+	}
+	
 	@Override
 	public String toString()
 	{

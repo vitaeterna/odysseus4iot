@@ -6,16 +6,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
-import odysseus4iot.graph.operator.gen.OperatorGraphRedundancyElimination;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
 import odysseus4iot.util.Util;
 
+//Timestamp from db problem
+//Window problem with window slide
+//activitypredict id problem with several sensors
+//databasesink exception
 /*
  * Operator Placement Query Optimization
  * 
@@ -102,7 +104,7 @@ public class Main
 		List<Model> models = PostgresImport.importFromDB();
 		
 		//3 - Generating Logical Operator Graphs
-		List<Graph> graphs = new ArrayList<>();
+		/*List<Graph> graphs = new ArrayList<>();
 		
 		Model currentModel = null;
 		
@@ -119,9 +121,9 @@ public class Main
 			Util.exportDOTPNG(currentModel.getModel_title(), graph);
 			
 			graphs.add(graph);
-		}
+		}*/
 		
-		Graph graph = OperatorGraphRedundancyElimination.mergeAndEliminateRedundancy(graphs);
+		Graph graph = OperatorGraphGenerator.generateOperatorGraph(sensors, models);
 		
 		Util.exportPQL("merged", graph);
 		

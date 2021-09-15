@@ -1,5 +1,6 @@
 package odysseus4iot.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Model
@@ -145,5 +146,98 @@ public class Model
 		stringBuilder.append("features:                 " + features);
 		
 		return stringBuilder.toString();
+	}
+	
+	public static List<String> getUnionOfSchemata(List<Model> models)
+	{
+		List<String> unionOfSchemata = new ArrayList<>();
+		
+		List<String> currentSchema = null;
+		
+		String currentName = null;
+		
+		for(int index = 0; index < models.size(); index++)
+		{
+			currentSchema = models.get(index).schema;
+			
+			for(int index2 = 0; index2 < currentSchema.size(); index2++)
+			{
+				currentName = currentSchema.get(index2);
+				
+				if(!unionOfSchemata.contains(currentName))
+				{
+					unionOfSchemata.add(currentName);
+				}
+			}
+		}
+		
+		return unionOfSchemata;
+	}
+	
+	public static Double getMinWaiteach(List<Model> models)
+	{
+		Double minWaiteach = Double.MAX_VALUE;
+		
+		for(int index = 0; index < models.size(); index++)
+		{
+			if(minWaiteach > models.get(index).waiteach)
+			{
+				minWaiteach = models.get(index).waiteach;
+			}
+		}
+		
+		return minWaiteach;
+	}
+	
+	public static List<String> getUnionOfPreprocessing(List<Model> models)
+	{
+		List<String> unionOfPreprocessing = new ArrayList<>();
+		
+		List<String> currentPreprocessing = null;
+		
+		String currentName = null;
+		
+		for(int index = 0; index < models.size(); index++)
+		{
+			currentPreprocessing = models.get(index).preprocessing;
+			
+			for(int index2 = 0; index2 < currentPreprocessing.size(); index2++)
+			{
+				currentName = currentPreprocessing.get(index2);
+				
+				if(!unionOfPreprocessing.contains(currentName))
+				{
+					unionOfPreprocessing.add(currentName);
+				}
+			}
+		}
+		
+		return unionOfPreprocessing;
+	}
+	
+	public static List<String> getUnionOfFeatures(List<Model> models)
+	{
+		List<String> unionOfFeatures = new ArrayList<>();
+		
+		List<String> currentFeatures = null;
+		
+		String currentName = null;
+		
+		for(int index = 0; index < models.size(); index++)
+		{
+			currentFeatures = models.get(index).features;
+			
+			for(int index2 = 0; index2 < currentFeatures.size(); index2++)
+			{
+				currentName = currentFeatures.get(index2);
+				
+				if(!unionOfFeatures.contains(currentName))
+				{
+					unionOfFeatures.add(currentName);
+				}
+			}
+		}
+		
+		return unionOfFeatures;
 	}
 }
