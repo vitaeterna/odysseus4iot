@@ -29,7 +29,7 @@ public class Graph
 		}
 		else
 		{
-			System.err.println("Graph already contains this Vertex!");
+			System.err.println("Graph already contains vertex " + vertex.id + "!");
 		}
 	}
 	
@@ -50,17 +50,17 @@ public class Graph
 				}
 				else
 				{
-					System.err.println("Graph already contains an edge between those vertices!");
+					System.err.println("Graph already contains an edge between vertices " + edge.vertex0.id + " -> " + edge.vertex1.id + "!");
 				}
 			}
 			else
 			{
-				System.err.println("Graph already contains this edge!");
+				System.err.println("Graph already contains this edge " + edge.vertex0.id + " -> " + edge.vertex1.id + "!");
 			}
 		}
 		else
 		{
-			System.err.println("All vertices must be added to the Graph before adding this edge!");
+			System.err.println("All vertices must be added to the Graph before adding the edge " + edge.vertex0.id + " -> " + edge.vertex1.id + "!");
 		}
 	}
 	

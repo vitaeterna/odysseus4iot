@@ -490,9 +490,6 @@ public class OperatorGraphGenerator
 			
 			unionOfFeatures = Model.getUnionOfFeatures(aggregateOperator.models);
 			
-			//TODO
-			
-			
 			ProjectOperator projectOperator = null;
 			
 			boolean projectOperatorExists = false;
@@ -500,47 +497,6 @@ public class OperatorGraphGenerator
 			for(int index2 = 0; index2 < aggregateOperator.models.size(); index2++)
 			{
 				currentModel = models.get(index2);
-				
-				projectOperatorExists = false;
-				
-				for(int index3 = 0; index3 < projectOperators.size(); index3++)
-				{
-					projectOperator = projectOperators.get(index3);
-					
-					if(projectOperator.payloadAttributes.containsAll(currentModel.getFeatures()) && projectOperator.payloadAttributes.size() == currentModel.getFeatures().size())
-					{
-						projectOperatorExists = true;
-						
-						projectOperator.models.add(currentModel);
-						
-						break;
-					}
-				}
-				
-				if(!projectOperatorExists)
-				{
-					projectOperator = OperatorGenerator.generateProjectOperator(currentModel.getFeatures(), "car_");
-				
-					projectOperator.models.add(currentModel);
-					
-					projectOperators.add(projectOperator);
-					
-					graph.addVertex(projectOperator);
-				}
-			}
-			
-			for(int index2 = 0; index2 < projectOperators.size(); index2++)
-			{
-				projectOperator = projectOperators.get(index2);
-				
-				
-			}
-			
-			
-			
-			for(int index2 = 0; index2 < aggregateOperator.models.size(); index2++)
-			{
-				currentModel = aggregateOperator.models.get(index2);
 				
 				classificationOperator = OperatorGenerator.generateClassificationOperator(currentModel.getModel_title());
 				
@@ -550,21 +506,43 @@ public class OperatorGraphGenerator
 				
 				graph.addVertex(classificationOperator);
 				
-				if(currentModel.getFeatures().size() < unionOfFeatures.size())
+				//IsProjectNeeded
+				if(currentModel.getFeatures().size() != unionOfFeatures.size())
 				{
-					projectOperator = OperatorGenerator.generateProjectOperator(currentModel.getFeatures(), "car_");
+					projectOperatorExists = false;
 					
-					projectOperators.add(projectOperator);
+					for(int index3 = 0; index3 < projectOperators.size(); index3++)
+					{
+						projectOperator = projectOperators.get(index3);
+						
+						if(projectOperator.payloadAttributes.containsAll(currentModel.getFeatures()) && projectOperator.payloadAttributes.size() == currentModel.getFeatures().size())
+						{
+							projectOperatorExists = true;
+							
+							projectOperator.models.add(currentModel);
+							
+							break;
+						}
+					}
 					
-					graph.addVertex(projectOperator);
+					if(!projectOperatorExists)
+					{
+						projectOperator = OperatorGenerator.generateProjectOperator(currentModel.getFeatures(), "car_");
 					
-					graph.addEdge(new Edge(aggregateOperator, projectOperator));
-					
-					projectOperator.inputSchema = aggregateOperator.outputSchema.copy();
-					projectOperator.inputRate = aggregateOperator.outputRate;
-					projectOperator.inputName = aggregateOperator.outputName;
-					
-					projectOperator.outputRate = projectOperator.inputRate;
+						projectOperator.models.add(currentModel);
+						
+						projectOperators.add(projectOperator);
+						
+						graph.addVertex(projectOperator);
+						
+						graph.addEdge(new Edge(aggregateOperator, projectOperator));
+						
+						projectOperator.inputSchema = aggregateOperator.outputSchema.copy();
+						projectOperator.inputRate = aggregateOperator.outputRate;
+						projectOperator.inputName = aggregateOperator.outputName;
+						
+						projectOperator.outputRate = projectOperator.inputRate;
+					}
 					
 					graph.addEdge(new Edge(projectOperator, classificationOperator));
 					
@@ -576,6 +554,7 @@ public class OperatorGraphGenerator
 				}
 				else
 				{
+					//ProjectNotNeeded
 					graph.addEdge(new Edge(aggregateOperator, classificationOperator));
 					
 					classificationOperator.inputSchema = aggregateOperator.outputSchema.copy();
@@ -660,7 +639,14 @@ public class OperatorGraphGenerator
 		{
 			currentEdge = graph.edges.get(index);
 			
-			currentEdge.label = ((Operator)currentEdge.vertex0).outputSchema.toString();
+			if(((Operator)currentEdge.vertex0).outputSchema.columns.size() > 10)
+			{
+				currentEdge.label = Integer.toString(((Operator)currentEdge.vertex0).outputSchema.columns.size());
+			}
+			else
+			{
+				currentEdge.label = ((Operator)currentEdge.vertex0).outputSchema.toString();
+			}
 		}
 		
 		System.out.println("...Generation of merged Operator Graph finished");
