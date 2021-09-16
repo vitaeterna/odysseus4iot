@@ -16,7 +16,8 @@ import com.google.gson.GsonBuilder;
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.Vertex;
-import odysseus4iot.graph.Vertex.Type;
+import odysseus4iot.graph.operator.meta.Operator;
+import odysseus4iot.graph.operator.meta.Operator.Type;
 import odysseus4iot.main.Main;
 
 public class Util
@@ -81,10 +82,32 @@ public class Util
         return dir.mkdirs();
     }
 	
+    public static String formatNumber(Double number)
+    {
+    	int unitSize = 1000;
+    	
+    	if(number < unitSize)
+    	{
+    		return String.format("%.3f Bit/s", number);
+    	}
+    	
+        int unitIndex = (int) (Math.log10(number) / Math.log10(unitSize));
+        Character unit = "KMGT".charAt(unitIndex - 1);
+        
+        return String.format("%.3f %sBit/s", number / Math.pow(unitSize, unitIndex), unit);
+    }
+    
 	public static void validateProperties()
 	{
 		List<String> requiredProperties = new ArrayList<>();
 		requiredProperties.add("input.sensors");
+		requiredProperties.add("input.nodes");
+		requiredProperties.add("input.nodesockets");
+		requiredProperties.add("input.nodetypes");
+		requiredProperties.add("input.nodecpucaps");
+		requiredProperties.add("input.nodememcaps");
+		requiredProperties.add("input.edges");
+		requiredProperties.add("input.edgeratecaps");
 		requiredProperties.add("input.labels");
 		requiredProperties.add("sensordb.url");
 		requiredProperties.add("sensordb.user");
@@ -100,18 +123,44 @@ public class Util
 		requiredProperties.add("predictiondb.user");
 		requiredProperties.add("predictiondb.password");
 		
-		String currentRequiredProperty = null;
+		String currentProperty = null;
+		String currentValue = null;
 		
 		for(int index = 0; index < requiredProperties.size(); index++)
 		{
-			currentRequiredProperty = requiredProperties.get(index);
+			currentProperty = requiredProperties.get(index);
 			
-			if(Main.properties.getProperty(currentRequiredProperty) == null)
+			currentValue = Main.properties.getProperty(currentProperty);
+			
+			if(currentValue == null)
 			{
-				System.err.println("The required property '" + currentRequiredProperty + "' could not be found.");
+				System.err.println("The required property '" + currentProperty + "' could not be found.");
 				
 				System.exit(0);
 			}
+		}
+		
+		int nodeCount = Main.properties.getProperty("input.nodes").split(",").length;
+		int nodeSocketCount = Main.properties.getProperty("input.nodesockets").split(",").length;
+		int nodeTypeCount = Main.properties.getProperty("input.nodetypes").split(",").length;
+		int nodeCPUCapCount = Main.properties.getProperty("input.nodecpucaps").split(",").length;
+		int nodeMemCapCount = Main.properties.getProperty("input.nodememcaps").split(",").length;
+		
+		if(nodeCount != nodeSocketCount || nodeCount != nodeTypeCount || nodeCount != nodeCPUCapCount || nodeCount != nodeMemCapCount)
+		{
+			System.err.println("The length of the arrays 'input.nodes', 'input.nodeSockets', 'input.nodetypes', 'input.nodecpucaps' and 'input.nodememcaps' needs to be equal.");
+			
+			System.exit(0);
+		}
+		
+		int edgeCount = Main.properties.getProperty("input.edges").split(",").length;
+		int edgeRateCount = Main.properties.getProperty("input.edgeratecaps").split(",").length;
+		
+		if(edgeCount != edgeRateCount)
+		{
+			System.err.println("The length of the arrays 'input.edges' and 'input.edgeratecaps' needs to be equal.");
+			
+			System.exit(0);
 		}
 	}
 	
@@ -169,7 +218,7 @@ public class Util
 		System.out.print("Written to " + outputFilename + ".qry\n");
 	}
     
-    public static void exportDOTPNG(String outputFilename, Graph graph)
+    public static void exportOperatorGraphToDOTPNG(String outputFilename, Graph graph)
     {
         StringBuilder dot = new StringBuilder();
 
@@ -178,31 +227,115 @@ public class Util
         dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n");
         dot.append("\n    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
 
-        Vertex currentVertex = null;
+        Operator currentOperator = null;
         
         for(int index = 0; index < graph.vertices.size(); index++)
         {
-        	currentVertex = graph.vertices.get(index);
+        	currentOperator = (Operator)graph.vertices.get(index);
         	
-        	if(currentVertex.type.equals(Type.SOURCE))
+        	if(currentOperator.type.equals(Type.SOURCE))
         	{
-        		dot.append("    " + currentVertex.id + " [group=g" + currentVertex.group + ", label=\"" + currentVertex.id + "_" + currentVertex.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
         	}
-        	else if(currentVertex.type.equals(Type.SINK))
+        	else if(currentOperator.type.equals(Type.SINK))
         	{
-        		dot.append("    " + currentVertex.id + " [group=g" + currentVertex.group + ", label=\"" + currentVertex.id + "_" + currentVertex.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
         	}
-        	else if(currentVertex.type.equals(Type.MERGE))
+        	else if(currentOperator.type.equals(Type.MERGE))
         	{
-        		dot.append("    " + currentVertex.id + " [group=g" + currentVertex.group + ", label=\"" + currentVertex.id + "_" + currentVertex.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
         	}
-        	else if(currentVertex.type.equals(Type.BOX))
+        	else if(currentOperator.type.equals(Type.BOX))
         	{
-        		dot.append("    " + currentVertex.id + " [group=g" + currentVertex.group + ", label=\"" + currentVertex.id + "_" + currentVertex.getClass().getSimpleName() + "\", shape=box, width=2];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=box, width=2];\n");
         	}
         	else
         	{
-        		System.err.println("No routine for Vertex.Type." + currentVertex.type + " implemented.");
+        		System.err.println("No routine for Vertex.Type." + currentOperator.type + " implemented.");
+        		
+        		System.exit(0);
+        	}
+        }
+
+        dot.append("\n    edge [arrowhead=vee, arrowtail=none, color=black, fontname=\"Courier New Bold\", weight=1];\n");
+
+        Edge currentEdge = null;
+        
+        for(int index = 0; index < graph.edges.size(); index++)
+        {
+        	currentEdge = graph.edges.get(index);
+        	
+        	dot.append("    " + currentEdge.vertex0.id + ":s -> " + currentEdge.vertex1.id + ":n [label=\"" + currentEdge.label + "\"];\n");
+        }
+
+        dot.append("}");
+
+        Util.writeFile(outputFilename + ".dot", dot.toString(), Charset.defaultCharset());
+        
+        System.out.print("Written to " + outputFilename + ".dot\n");
+        
+        //dot -Tpng outputFilename.dot -o outputFilename.png
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", outputFilename + ".dot", "-o", outputFilename + ".png");
+        builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
+        builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+        try
+        {
+            builder.start().waitFor();
+
+            System.out.print("Written to " + outputFilename + ".png\n");
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+
+            System.exit(0);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+
+            System.out.print("\nPlease check whether you have installed a dot renderer like GraphViz (http://www.graphviz.org/) and if the binaries are available via your PATH variable.\n");
+            System.out.print("The generated dot file was not rendered to png.\n");
+        }
+    }
+    
+    public static void exportPhysicalGraphToDOTPNG(String outputFilename, Graph graph)
+    {
+    	//TODO
+        StringBuilder dot = new StringBuilder();
+
+        dot.append("digraph OG\n");
+        dot.append("{\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n");
+        dot.append("\n    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
+
+        Operator currentOperator = null;
+        
+        for(int index = 0; index < graph.vertices.size(); index++)
+        {
+        	currentOperator = (Operator)graph.vertices.get(index);
+        	
+        	if(currentOperator.type.equals(Type.SOURCE))
+        	{
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
+        	}
+        	else if(currentOperator.type.equals(Type.SINK))
+        	{
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
+        	}
+        	else if(currentOperator.type.equals(Type.MERGE))
+        	{
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
+        	}
+        	else if(currentOperator.type.equals(Type.BOX))
+        	{
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=box, width=2];\n");
+        	}
+        	else
+        	{
+        		System.err.println("No routine for Vertex.Type." + currentOperator.type + " implemented.");
         		
         		System.exit(0);
         	}

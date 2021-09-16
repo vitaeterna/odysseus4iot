@@ -18,6 +18,7 @@ import odysseus4iot.graph.operator.ProjectOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.model.Model;
+import odysseus4iot.util.Util;
 
 //TODO: project operator generation order (id mixup)
 //TODO: generate invisible filler nodes for visualization - project operator
@@ -25,7 +26,7 @@ import odysseus4iot.model.Model;
 //TODO: write metadata on databasesink
 public class OperatorGraphGenerator
 {	
-	public static Graph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing)
+	public static Graph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
 	{
 		if(sensors == null || sensors.isEmpty() || models == null || models.isEmpty())
 		{
@@ -35,6 +36,12 @@ public class OperatorGraphGenerator
 		System.out.println("Generation of merged Operator Graph started...");
 		
 		Graph graph = new Graph();
+		
+		Operator previousOperator = null;
+		
+		List<Operator> previousOperators = new ArrayList<>();
+		
+		Double outputRateSum = 0.0d;
 		
 		//1 - DatabasesourceOperator
 		Vertex.getNextGroup();
@@ -58,39 +65,50 @@ public class OperatorGraphGenerator
 			graph.addVertex(databasesourceOperator);
 		}
 		
+		previousOperators.clear();
+		previousOperators.addAll(databasesourceOperators);
+		previousOperator = databasesourceOperators.get(0);
+		
 		System.out.println("Generated " + databasesourceOperators.size() + " DatabasesourceOperators");
 		
 		//1.5 - MergeOperator
 		MergeOperator mergeOperator = null;
 		
-		if(databasesourceOperators.size() > 1)
+		if(merge)
 		{
-			Vertex.getNextGroup();
-			
-			mergeOperator = OperatorGenerator.generateMergeOperator(sensors);
-			
-			graph.addVertex(mergeOperator);
-			
-			Double outputRateSum = 0.0d;
-			
-			for(int index = 0; index < databasesourceOperators.size(); index++)
+			if(previousOperators.size() > 1)
 			{
-				databasesourceOperator = databasesourceOperators.get(index);
+				Vertex.getNextGroup();
 				
-				graph.addEdge(new Edge(databasesourceOperator, mergeOperator));
+				mergeOperator = OperatorGenerator.generateMergeOperator(sensors);
 				
-				outputRateSum += databasesourceOperator.outputRate;
+				graph.addVertex(mergeOperator);
+				
+				outputRateSum = 0.0d;
+				
+				for(int index = 0; index < previousOperators.size(); index++)
+				{
+					previousOperator = previousOperators.get(index);
+					
+					graph.addEdge(new Edge(previousOperator, mergeOperator));
+					
+					outputRateSum += previousOperator.outputRate;
+				}
+				
+				mergeOperator.inputSchema = previousOperator.outputSchema.copy();
+				mergeOperator.inputRate = outputRateSum;
+				mergeOperator.inputName = null;
+	
+				mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
+				mergeOperator.outputRate = mergeOperator.inputRate;
+				
+				previousOperators.clear();
+				previousOperators.add(mergeOperator);
+				previousOperator = mergeOperator;
 			}
 			
-			mergeOperator.inputSchema = databasesourceOperator.outputSchema.copy();
-			mergeOperator.inputRate = outputRateSum;
-			mergeOperator.inputName = null;
-
-			mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
-			mergeOperator.outputRate = mergeOperator.inputRate;
+			System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
 		}
-		
-		System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
 		
 		//2 - MapOperator
 		MapOperator mapOperator = null;
@@ -109,7 +127,7 @@ public class OperatorGraphGenerator
 			}
 		}
 		
-		if(mapOperatorNeeded)
+		if(mapOperatorNeeded || mergeOperator == null)
 		{
 			Vertex.getNextGroup();
 			
@@ -117,24 +135,26 @@ public class OperatorGraphGenerator
 			
 			graph.addVertex(mapOperator);
 			
-			if(mergeOperator == null)
+			outputRateSum = 0.0d;
+			
+			for(int index = 0; index < previousOperators.size(); index++)
 			{
-				graph.addEdge(new Edge(databasesourceOperator, mapOperator));
+				previousOperator = previousOperators.get(index);
 				
-				mapOperator.inputSchema = databasesourceOperator.outputSchema.copy();
-				mapOperator.inputRate = databasesourceOperator.outputRate;
-				mapOperator.inputName = databasesourceOperator.outputName;
-			}
-			else
-			{
-				graph.addEdge(new Edge(mergeOperator, mapOperator));
+				graph.addEdge(new Edge(previousOperator, mapOperator));
 				
-				mapOperator.inputSchema = mergeOperator.outputSchema.copy();
-				mapOperator.inputRate = mergeOperator.outputRate;
-				mapOperator.inputName = mergeOperator.outputName;
+				outputRateSum += previousOperator.outputRate;
 			}
 			
+			mapOperator.inputSchema = previousOperator.outputSchema.copy();
+			mapOperator.inputRate = outputRateSum;
+			mapOperator.inputName = previousOperators.size()==1?previousOperator.outputName:"undefined";
+			
 			mapOperator.outputRate = mapOperator.inputRate;
+			
+			previousOperators.clear();
+			previousOperators.add(mapOperator);
+			previousOperator = mapOperator;
 		}
 		
 		System.out.println("Generated " + (mapOperator==null?"0":"1") + " MapOperators");
@@ -189,25 +209,12 @@ public class OperatorGraphGenerator
 		
 		List<String> currentSchema = null;
 		
-		Operator previousOperator = null;
-		
-		if(mapOperator != null)
+		if(previousOperator == mapOperator)
 		{
-			previousOperator = mapOperator;
-			
 			currentSchema = unionOfPreprocessing;
 		}
 		else
 		{
-			if(mergeOperator != null)
-			{
-				previousOperator = mergeOperator;
-			}
-			else
-			{
-				previousOperator = (DatabasesourceOperator)graph.getVerticesByType(DatabasesourceOperator.class).get(0);
-			}
-			
 			currentSchema = unionOfSchemata;
 		}
 		
@@ -262,6 +269,10 @@ public class OperatorGraphGenerator
 			projectOperator.group -= 1;
 		}
 		
+		previousOperators.clear();
+		previousOperators.addAll(timewindowOperators);
+		previousOperator = timewindowOperators.get(0);
+		
 		System.out.println("Generated " + projectOperators.size() + " ProjectOperators");
 		
 		System.out.println("Generated " + timewindowOperators.size() + " TimewindowOperators");
@@ -273,27 +284,31 @@ public class OperatorGraphGenerator
 		
 		AggregateOperator aggregateOperator = null;
 		
-		for(int index = 0; index < timewindowOperators.size(); index++)
+		for(int index = 0; index < previousOperators.size(); index++)
 		{
-			timewindowOperator = timewindowOperators.get(index);
+			previousOperator = previousOperators.get(index);
 			
-			aggregateOperator = OperatorGenerator.generateAggregateOperator(Model.getUnionOfFeatures(timewindowOperator.models));
+			aggregateOperator = OperatorGenerator.generateAggregateOperator(Model.getUnionOfFeatures(previousOperator.models));
 			
-			aggregateOperator.models = timewindowOperator.models;
+			aggregateOperator.models = previousOperator.models;
 			
 			aggregateOperators.add(aggregateOperator);
 			
 			graph.addVertex(aggregateOperator);
 			
-			graph.addEdge(new Edge(timewindowOperator, aggregateOperator));
+			graph.addEdge(new Edge(previousOperator, aggregateOperator));
 			
-			aggregateOperator.inputSchema = timewindowOperator.outputSchema.copy();
-			aggregateOperator.inputRate = timewindowOperator.outputRate;
-			aggregateOperator.inputName = timewindowOperator.outputName;
+			aggregateOperator.inputSchema = previousOperator.outputSchema.copy();
+			aggregateOperator.inputRate = previousOperator.outputRate;
+			aggregateOperator.inputName = previousOperator.outputName;
 			
 			//TODO: consider window_slide
-			aggregateOperator.outputRate = aggregateOperator.inputRate/(((double)timewindowOperator.size)/databasesourceOperator.waiteach);
+			aggregateOperator.outputRate = aggregateOperator.inputRate/(((double)((TimewindowOperator)previousOperator).size)/databasesourceOperator.waiteach);
 		}
+		
+		previousOperators.clear();
+		previousOperators.addAll(aggregateOperators);
+		previousOperator = aggregateOperators.get(0);
 		
 		System.out.println("Generated " + aggregateOperators.size() + " AggregateOperators");
 		
@@ -311,15 +326,15 @@ public class OperatorGraphGenerator
 		
 		projectOperators.clear();
 		
-		for(int index = 0; index < aggregateOperators.size(); index++)
+		for(int index = 0; index < previousOperators.size(); index++)
 		{
-			aggregateOperator = aggregateOperators.get(index);
+			previousOperator = previousOperators.get(index);
 			
-			unionOfFeatures = Model.getUnionOfFeatures(aggregateOperator.models);
+			unionOfFeatures = Model.getUnionOfFeatures(previousOperator.models);
 			
 			boolean projectOperatorExists = false;
 			
-			for(int index2 = 0; index2 < aggregateOperator.models.size(); index2++)
+			for(int index2 = 0; index2 < previousOperator.models.size(); index2++)
 			{
 				currentModel = models.get(index2);
 				
@@ -362,11 +377,11 @@ public class OperatorGraphGenerator
 						
 						graph.addVertex(projectOperator);
 						
-						graph.addEdge(new Edge(aggregateOperator, projectOperator));
+						graph.addEdge(new Edge(previousOperator, projectOperator));
 						
-						projectOperator.inputSchema = aggregateOperator.outputSchema.copy();
-						projectOperator.inputRate = aggregateOperator.outputRate;
-						projectOperator.inputName = aggregateOperator.outputName;
+						projectOperator.inputSchema = previousOperator.outputSchema.copy();
+						projectOperator.inputRate = previousOperator.outputRate;
+						projectOperator.inputName = previousOperator.outputName;
 						
 						projectOperator.outputRate = projectOperator.inputRate;
 					}
@@ -382,11 +397,11 @@ public class OperatorGraphGenerator
 				else
 				{
 					//ProjectNotNeeded
-					graph.addEdge(new Edge(aggregateOperator, classificationOperator));
+					graph.addEdge(new Edge(previousOperator, classificationOperator));
 					
-					classificationOperator.inputSchema = aggregateOperator.outputSchema.copy();
-					classificationOperator.inputRate = aggregateOperator.outputRate;
-					classificationOperator.inputName = aggregateOperator.outputName;
+					classificationOperator.inputSchema = previousOperator.outputSchema.copy();
+					classificationOperator.inputRate = previousOperator.outputRate;
+					classificationOperator.inputName = previousOperator.outputName;
 					
 					classificationOperator.outputRate = classificationOperator.inputRate;
 				}
@@ -399,6 +414,10 @@ public class OperatorGraphGenerator
 			
 			projectOperator.group -= 1;
 		}
+		
+		previousOperators.clear();
+		previousOperators.addAll(classificationOperators);
+		previousOperator = classificationOperators.get(0);
 		
 		System.out.println("Generated " + projectOperators.size() + " ProjectOperators");
 		
@@ -420,40 +439,44 @@ public class OperatorGraphGenerator
 			//7 - OutlierRemovingOperator
 			Vertex.getNextGroup();
 			
-			for(int index = 0; index < classificationOperators.size(); index++)
+			for(int index = 0; index < previousOperators.size(); index++)
 			{
-				classificationOperator = classificationOperators.get(index);
+				previousOperator = previousOperators.get(index);
 				
-				outlierRemovingOperator = OperatorGenerator.generateOutlierRemovingOperator(classificationOperator.models.get(0).getModel_title());
+				outlierRemovingOperator = OperatorGenerator.generateOutlierRemovingOperator(previousOperator.models.get(0).getModel_title());
 				
-				outlierRemovingOperator.models.add(classificationOperator.models.get(0));
+				outlierRemovingOperator.models.add(previousOperator.models.get(0));
 				
 				outlierRemovingOperators.add(outlierRemovingOperator);
 				
 				graph.addVertex(outlierRemovingOperator);
 				
-				graph.addEdge(new Edge(classificationOperator, outlierRemovingOperator));
+				graph.addEdge(new Edge(previousOperator, outlierRemovingOperator));
 				
-				outlierRemovingOperator.inputSchema = classificationOperator.outputSchema.copy();
-				outlierRemovingOperator.inputRate = classificationOperator.outputRate;
-				outlierRemovingOperator.inputName = classificationOperator.outputName;
+				outlierRemovingOperator.inputSchema = previousOperator.outputSchema.copy();
+				outlierRemovingOperator.inputRate = previousOperator.outputRate;
+				outlierRemovingOperator.inputName = previousOperator.outputName;
 				
 				outlierRemovingOperator.outputSchema = outlierRemovingOperator.inputSchema.copy();
 				outlierRemovingOperator.outputRate = outlierRemovingOperator.inputRate;
 			}
+			
+			previousOperators.clear();
+			previousOperators.addAll(outlierRemovingOperators);
+			previousOperator = outlierRemovingOperators.get(0);
 			
 			System.out.println("Generated " + outlierRemovingOperators.size() + " OutlierRemovingOperators");
 			
 			//8 - ChangedetectOperator
 			Vertex.getNextGroup();
 			
-			for(int index = 0; index < outlierRemovingOperators.size(); index++)
+			for(int index = 0; index < previousOperators.size(); index++)
 			{
-				outlierRemovingOperator = outlierRemovingOperators.get(index);
+				previousOperator = previousOperators.get(index);
 				
-				changedetectOperator = OperatorGenerator.generateChangedetectOperator(outlierRemovingOperator.models.get(0).getModel_title());
+				changedetectOperator = OperatorGenerator.generateChangedetectOperator(previousOperator.models.get(0).getModel_title());
 				
-				changedetectOperator.models.add(outlierRemovingOperator.models.get(0));
+				changedetectOperator.models.add(previousOperator.models.get(0));
 				
 				changedetectOperators.add(changedetectOperator);
 				
@@ -461,15 +484,19 @@ public class OperatorGraphGenerator
 				
 				outputStreams.add(changedetectOperator.outputName);
 				
-				graph.addEdge(new Edge(outlierRemovingOperator, changedetectOperator));
+				graph.addEdge(new Edge(previousOperator, changedetectOperator));
 				
-				changedetectOperator.inputSchema = outlierRemovingOperator.outputSchema.copy();
-				changedetectOperator.inputRate = outlierRemovingOperator.outputRate;
-				changedetectOperator.inputName = outlierRemovingOperator.outputName;
+				changedetectOperator.inputSchema = previousOperator.outputSchema.copy();
+				changedetectOperator.inputRate = previousOperator.outputRate;
+				changedetectOperator.inputName = previousOperator.outputName;
 				
 				changedetectOperator.outputSchema = changedetectOperator.inputSchema.copy();
 				changedetectOperator.outputRate = changedetectOperator.inputRate;
 			}
+			
+			previousOperators.clear();
+			previousOperators.addAll(changedetectOperators);
+			previousOperator = changedetectOperators.get(0);
 			
 			System.out.println("Generated " + changedetectOperators.size() + " ChangedetectOperators");
 		}
@@ -477,90 +504,63 @@ public class OperatorGraphGenerator
 		//8.5 - MergeOperator
 		mergeOperator = null;
 		
-		if(!postprocessing && classificationOperators.size() > 1)
+		if(merge)
 		{
-			Vertex.getNextGroup();
-			
-			mergeOperator = OperatorGenerator.generateMergeOperator(outputStreams);
-			
-			graph.addVertex(mergeOperator);
-			
-			Double outputRateSum = 0.0d;
-			
-			for(int index = 0; index < classificationOperators.size(); index++)
+			if(previousOperators.size() > 1)
 			{
-				classificationOperator = classificationOperators.get(index);
+				Vertex.getNextGroup();
 				
-				graph.addEdge(new Edge(classificationOperator, mergeOperator));
+				mergeOperator = OperatorGenerator.generateMergeOperator(outputStreams);
 				
-				outputRateSum += classificationOperator.outputRate;
+				graph.addVertex(mergeOperator);
+				
+				outputRateSum = 0.0d;
+				
+				for(int index = 0; index < previousOperators.size(); index++)
+				{
+					previousOperator = previousOperators.get(index);
+					
+					graph.addEdge(new Edge(previousOperator, mergeOperator));
+					
+					outputRateSum += previousOperator.outputRate;
+				}
+				
+				mergeOperator.inputSchema = previousOperator.outputSchema.copy();
+				mergeOperator.inputRate = outputRateSum;
+				mergeOperator.inputName = null;
+	
+				mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
+				mergeOperator.outputRate = mergeOperator.inputRate;
+				
+				previousOperators.clear();
+				previousOperators.add(mergeOperator);
+				previousOperator = mergeOperator;
 			}
 			
-			mergeOperator.inputSchema = classificationOperator.outputSchema.copy();
-			mergeOperator.inputRate = outputRateSum;
-			mergeOperator.inputName = null;
-
-			mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
-			mergeOperator.outputRate = mergeOperator.inputRate;
+			System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
 		}
-		
-		if(postprocessing && changedetectOperators.size() > 1)
-		{
-			Vertex.getNextGroup();
-			
-			mergeOperator = OperatorGenerator.generateMergeOperator(outputStreams);
-			
-			graph.addVertex(mergeOperator);
-			
-			Double outputRateSum = 0.0d;
-			
-			for(int index = 0; index < changedetectOperators.size(); index++)
-			{
-				changedetectOperator = changedetectOperators.get(index);
-				
-				graph.addEdge(new Edge(changedetectOperator, mergeOperator));
-				
-				outputRateSum += changedetectOperator.outputRate;
-			}
-			
-			mergeOperator.inputSchema = changedetectOperator.outputSchema.copy();
-			mergeOperator.inputRate = outputRateSum;
-			mergeOperator.inputName = null;
-
-			mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
-			mergeOperator.outputRate = mergeOperator.inputRate;
-		}
-		
-		System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
 		
 		//9 - DatabasesinkOperator
-		if(mergeOperator != null)
-		{
-			previousOperator = mergeOperator;
-		}
-		else
-		{
-			if(postprocessing)
-			{
-				previousOperator = changedetectOperator;
-			}
-			else
-			{
-				previousOperator = classificationOperator;
-			}
-		}
-		
 		Vertex.getNextGroup();
 		
 		DatabasesinkOperator databasesinkOperator = OperatorGenerator.generateDatabasesinkOperator("prediction");
 		
 		graph.addVertex(databasesinkOperator);
 		
-		graph.addEdge(new Edge(previousOperator, databasesinkOperator));
+		outputRateSum = 0.0d;
+		
+		for(int index = 0; index < previousOperators.size(); index++)
+		{
+			previousOperator = previousOperators.get(index);
+			
+			graph.addEdge(new Edge(previousOperator, databasesinkOperator));
+			
+			outputRateSum += previousOperator.outputRate;
+		}
 		
 		databasesinkOperator.inputSchema = previousOperator.outputSchema.copy();
-		databasesinkOperator.inputRate = previousOperator.outputRate;
-		databasesinkOperator.inputName = previousOperator.outputName;
+		databasesinkOperator.inputRate = outputRateSum;
+		databasesinkOperator.inputName = previousOperators.size()==1?previousOperator.outputName:"undefined";
 		
 		databasesinkOperator.outputSchema = databasesinkOperator.inputSchema.copy();
 		databasesinkOperator.outputRate = databasesinkOperator.inputRate;
@@ -583,7 +583,7 @@ public class OperatorGraphGenerator
 				currentEdge.label = ((Operator)currentEdge.vertex0).outputSchema.toString();
 			}
 			
-			currentEdge.label += " | " + ((Operator)currentEdge.vertex0).outputRate + "Hz";
+			currentEdge.label += " | " + Util.formatNumber(((Operator)currentEdge.vertex0).outputRate * ((Operator)currentEdge.vertex0).outputSchema.getSize());
 		}
 		
 		System.out.println("...Generation of merged Operator Graph finished");

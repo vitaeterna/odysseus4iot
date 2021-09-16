@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
+import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
 import odysseus4iot.util.Util;
@@ -83,19 +84,33 @@ public class Main
 		List<String> sensors = Arrays.asList(properties.getProperty("input.sensors").split(","));
 		
 		System.out.println("Input - Sensors");
-		System.out.println(sensors + "\r\n");
+		System.out.println("sensors = " + sensors + "\r\n");
+		
+		List<String> nodes = Arrays.asList(properties.getProperty("input.nodes").split(","));
+		List<String> nodeSockets = Arrays.asList(properties.getProperty("input.nodeSockets").split(","));
+		List<String> nodeTypes = Arrays.asList(properties.getProperty("input.nodetypes").split(","));
+		List<String> nodeCPUCaps = Arrays.asList(properties.getProperty("input.nodecpucaps").split(","));
+		List<String> nodeMemCaps = Arrays.asList(properties.getProperty("input.nodememcaps").split(","));
+		List<String> edges = Arrays.asList(properties.getProperty("input.edges").split(","));
+		List<String> edgeRateCaps = Arrays.asList(properties.getProperty("input.edgeratecaps").split(","));
+		
+		System.out.println("Input - Nodes");
+		System.out.println("nodes        = " + nodes);
+		System.out.println("nodesockets  = " + nodeSockets);
+		System.out.println("nodetypes    = " + nodeTypes);
+		System.out.println("nodecpucaps  = " + nodeCPUCaps);
+		System.out.println("nodememcaps  = " + nodeMemCaps);
+		System.out.println("edges        = " + edges);
+		System.out.println("edgeratecaps = " + edgeRateCaps + "\r\n");
 		
 		List<String> labels = Arrays.asList(properties.getProperty("input.labels").split(","));
 		
-		System.out.println("Input - Labels");
-		System.out.println(labels + "\r\n");
+		System.out.println("Input - Labels - (Not implemented)");
+		System.out.println("labels = " + labels + "\r\n");
 		
 		//List<String> nodes = new ArrayList<>();
 		
 		//2 - Retrieving Model Information from Model Management System
-		//PostgresImport.url = "jdbc:postgresql://141.13.162.179:5432/procdb";
-		//PostgresImport.user = "script";
-		//PostgresImport.password = "pAhXHnnFf6jgxO85";
 		PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
 		PostgresImport.table = properties.getProperty("modeldb.table");
 		PostgresImport.user = properties.getProperty("modeldb.user");
@@ -123,10 +138,19 @@ public class Main
 			graphs.add(graph);
 		}*/
 		
-		Graph graph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, true);
+		boolean postprocessing = true;
+		boolean merge = true;
 		
-		Util.exportPQL("merged", graph);
+		Graph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 		
-		Util.exportDOTPNG("merged", graph);
+		Util.exportPQL("merged", operatorGraph);
+		
+		Util.exportOperatorGraphToDOTPNG("merged", operatorGraph);
+		
+		//4 - Generating Physical Graph
+		
+		Graph physicalGraph = PhysicalGraphGenerator.generatePhysicalraph(nodes, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
+		
+		Util.exportPhysicalGraphToDOTPNG("physical", physicalGraph);
 	}
 }

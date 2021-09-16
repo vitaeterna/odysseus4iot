@@ -31,11 +31,6 @@ public class Vertex
 		currentGroup = 0;
 	}
 	
-	public enum Type
-	{
-		SOURCE, SINK, MERGE, BOX
-	}
-	
 	public Vertex()
 	{
 		this.id = getNextID();
@@ -44,5 +39,4 @@ public class Vertex
 	
 	public Integer id = null;
 	public Integer group = null;
-	public Type type = null;
 }

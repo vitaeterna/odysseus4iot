@@ -17,14 +17,14 @@ public class Schema
 		this.columns.add(column);
 	}
 	
-	public int getSize()
+	public Integer getSize()
 	{
 		if(this.columns == null)
 		{
-			return -1;
+			return null;
 		}
 		
-		int size = 0;
+		Integer size = 0;
 		
 		Column currentColumn = null;
 		
@@ -32,7 +32,7 @@ public class Schema
 		{
 			currentColumn = this.columns.get(index);
 			
-			int columnSize = -1;
+			Integer columnSize = null;
 			
 			//Not addressed: byte, char, short
 			if(currentColumn.type == Boolean.class)
@@ -57,8 +57,8 @@ public class Schema
 			}
 			else if(currentColumn.type == String.class)
 			{
-				//TODO: Average String length?
-				columnSize = Character.SIZE * 20;
+				//TODO: Worst-Case Scenario: Max String length
+				columnSize = Character.SIZE * 15;
 			}
 			
 			size += columnSize;

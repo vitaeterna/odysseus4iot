@@ -8,6 +8,13 @@ import odysseus4iot.model.Model;
 
 public class Operator extends Vertex
 {
+	public enum Type
+	{
+		SOURCE, SINK, MERGE, BOX
+	}
+	
+	public Type type = null;
+	
 	public List<Model> models = null;
 	
 	public Schema inputSchema = null;
