@@ -39,4 +39,5 @@ public class Vertex
 	
 	public Integer id = null;
 	public Integer group = null;
+	public String label = null;
 }

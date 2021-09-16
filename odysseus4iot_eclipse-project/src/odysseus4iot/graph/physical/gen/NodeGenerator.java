@@ -1,13 +1,14 @@
 package odysseus4iot.graph.physical.gen;
 
 import odysseus4iot.graph.physical.meta.Node;
+import odysseus4iot.graph.physical.meta.Node.Type;
 
 public class NodeGenerator
 {
-	public static Node generateNode()
+	public static Node generateNode(String name, String socket, Type type, Integer cpuCapacity, Integer memCapacity)
 	{
-		//TODO
+		Node node = new Node(name, socket, type, cpuCapacity, memCapacity);
 		
-		return null;
+		return node;
 	}
 }

@@ -131,6 +131,23 @@ public class Graph
 		return requestedVertices;
 	}
 	
+	public Vertex getVertexByID(int id)
+	{
+		Vertex currentVertex = null;
+		
+		for(int index = 0; index < this.vertices.size(); index++)
+		{
+			currentVertex = this.vertices.get(index);
+			
+			if(currentVertex.id.intValue() == id)
+			{
+				return currentVertex;
+			}
+		}
+		
+		return null;
+	}
+	
 	public List<Vertex> getStartingVertices()
 	{
 		List<Vertex> startingVertices = new ArrayList<>();

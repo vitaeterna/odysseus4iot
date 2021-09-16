@@ -9,13 +9,16 @@ public class Node extends Vertex
 		EDGE, FOG, CLOUD
 	}
 	
+	public String name = null;
+	public String socket = null;
 	public Type type = null;
-	
 	public Integer cpuCapacity = null;
 	public Integer memCapacity = null;
 	
-	public Node(Type type, Integer cpuCapacity, Integer memCapacity)
+	public Node(String name, String socket, Type type, Integer cpuCapacity, Integer memCapacity)
 	{
+		this.name = name;
+		this.socket = socket;
 		this.type = type;
 		this.cpuCapacity = cpuCapacity;
 		this.memCapacity = memCapacity;

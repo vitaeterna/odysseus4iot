@@ -86,8 +86,8 @@ public class Main
 		System.out.println("Input - Sensors");
 		System.out.println("sensors = " + sensors + "\r\n");
 		
-		List<String> nodes = Arrays.asList(properties.getProperty("input.nodes").split(","));
-		List<String> nodeSockets = Arrays.asList(properties.getProperty("input.nodeSockets").split(","));
+		List<String> nodeNames = Arrays.asList(properties.getProperty("input.nodenames").split(","));
+		List<String> nodeSockets = Arrays.asList(properties.getProperty("input.nodesockets").split(","));
 		List<String> nodeTypes = Arrays.asList(properties.getProperty("input.nodetypes").split(","));
 		List<String> nodeCPUCaps = Arrays.asList(properties.getProperty("input.nodecpucaps").split(","));
 		List<String> nodeMemCaps = Arrays.asList(properties.getProperty("input.nodememcaps").split(","));
@@ -95,7 +95,7 @@ public class Main
 		List<String> edgeRateCaps = Arrays.asList(properties.getProperty("input.edgeratecaps").split(","));
 		
 		System.out.println("Input - Nodes");
-		System.out.println("nodes        = " + nodes);
+		System.out.println("nodenames    = " + nodeNames);
 		System.out.println("nodesockets  = " + nodeSockets);
 		System.out.println("nodetypes    = " + nodeTypes);
 		System.out.println("nodecpucaps  = " + nodeCPUCaps);
@@ -149,7 +149,7 @@ public class Main
 		
 		//4 - Generating Physical Graph
 		
-		Graph physicalGraph = PhysicalGraphGenerator.generatePhysicalraph(nodes, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
+		Graph physicalGraph = PhysicalGraphGenerator.generatePhysicalraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
 		
 		Util.exportPhysicalGraphToDOTPNG("physical", physicalGraph);
 	}

@@ -17,7 +17,8 @@ import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.meta.Operator;
-import odysseus4iot.graph.operator.meta.Operator.Type;
+import odysseus4iot.graph.physical.meta.Connection;
+import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.main.Main;
 
 public class Util
@@ -101,7 +102,7 @@ public class Util
 	{
 		List<String> requiredProperties = new ArrayList<>();
 		requiredProperties.add("input.sensors");
-		requiredProperties.add("input.nodes");
+		requiredProperties.add("input.nodenames");
 		requiredProperties.add("input.nodesockets");
 		requiredProperties.add("input.nodetypes");
 		requiredProperties.add("input.nodecpucaps");
@@ -140,15 +141,15 @@ public class Util
 			}
 		}
 		
-		int nodeCount = Main.properties.getProperty("input.nodes").split(",").length;
+		int nodeNameCount = Main.properties.getProperty("input.nodenames").split(",").length;
 		int nodeSocketCount = Main.properties.getProperty("input.nodesockets").split(",").length;
 		int nodeTypeCount = Main.properties.getProperty("input.nodetypes").split(",").length;
 		int nodeCPUCapCount = Main.properties.getProperty("input.nodecpucaps").split(",").length;
 		int nodeMemCapCount = Main.properties.getProperty("input.nodememcaps").split(",").length;
 		
-		if(nodeCount != nodeSocketCount || nodeCount != nodeTypeCount || nodeCount != nodeCPUCapCount || nodeCount != nodeMemCapCount)
+		if(nodeNameCount != nodeSocketCount || nodeNameCount != nodeTypeCount || nodeNameCount != nodeCPUCapCount || nodeNameCount != nodeMemCapCount)
 		{
-			System.err.println("The length of the arrays 'input.nodes', 'input.nodeSockets', 'input.nodetypes', 'input.nodecpucaps' and 'input.nodememcaps' needs to be equal.");
+			System.err.println("The length of the arrays 'input.nodenames', 'input.nodeSockets', 'input.nodetypes', 'input.nodecpucaps' and 'input.nodememcaps' needs to be equal.");
 			
 			System.exit(0);
 		}
@@ -233,25 +234,25 @@ public class Util
         {
         	currentOperator = (Operator)graph.vertices.get(index);
         	
-        	if(currentOperator.type.equals(Type.SOURCE))
+        	if(currentOperator.type.equals(Operator.Type.SOURCE))
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
         	}
-        	else if(currentOperator.type.equals(Type.SINK))
+        	else if(currentOperator.type.equals(Operator.Type.SINK))
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
         	}
-        	else if(currentOperator.type.equals(Type.MERGE))
+        	else if(currentOperator.type.equals(Operator.Type.MERGE))
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
         	}
-        	else if(currentOperator.type.equals(Type.BOX))
+        	else if(currentOperator.type.equals(Operator.Type.BOX))
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=box, width=2];\n");
         	}
         	else
         	{
-        		System.err.println("No routine for Vertex.Type." + currentOperator.type + " implemented.");
+        		System.err.println("No routine for Operator.Type." + currentOperator.type + " implemented.");
         		
         		System.exit(0);
         	}
@@ -303,39 +304,34 @@ public class Util
     
     public static void exportPhysicalGraphToDOTPNG(String outputFilename, Graph graph)
     {
-    	//TODO
         StringBuilder dot = new StringBuilder();
 
-        dot.append("digraph OG\n");
+        dot.append("digraph PG\n");
         dot.append("{\n");
         dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n");
         dot.append("\n    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
 
-        Operator currentOperator = null;
+        Node currentNode = null;
         
         for(int index = 0; index < graph.vertices.size(); index++)
         {
-        	currentOperator = (Operator)graph.vertices.get(index);
+        	currentNode = (Node)graph.vertices.get(index);
         	
-        	if(currentOperator.type.equals(Type.SOURCE))
+        	if(currentNode.type.equals(Node.Type.EDGE))
         	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
+        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.id + "_" + currentNode.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
         	}
-        	else if(currentOperator.type.equals(Type.SINK))
+        	else if(currentNode.type.equals(Node.Type.FOG))
         	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
+        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.id + "_" + currentNode.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
         	}
-        	else if(currentOperator.type.equals(Type.MERGE))
+        	else if(currentNode.type.equals(Node.Type.CLOUD))
         	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
-        	}
-        	else if(currentOperator.type.equals(Type.BOX))
-        	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=box, width=2];\n");
+        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.id + "_" + currentNode.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
         	}
         	else
         	{
-        		System.err.println("No routine for Vertex.Type." + currentOperator.type + " implemented.");
+        		System.err.println("No routine for Node.Type." + currentNode.type + " implemented.");
         		
         		System.exit(0);
         	}
@@ -343,13 +339,13 @@ public class Util
 
         dot.append("\n    edge [arrowhead=vee, arrowtail=none, color=black, fontname=\"Courier New Bold\", weight=1];\n");
 
-        Edge currentEdge = null;
+        Connection currentConnection = null;
         
         for(int index = 0; index < graph.edges.size(); index++)
         {
-        	currentEdge = graph.edges.get(index);
+        	currentConnection = (Connection)graph.edges.get(index);
         	
-        	dot.append("    " + currentEdge.vertex0.id + ":s -> " + currentEdge.vertex1.id + ":n [label=\"" + currentEdge.label + "\"];\n");
+        	dot.append("    " + currentConnection.vertex0.id + ":s -> " + currentConnection.vertex1.id + ":n [label=\"" + currentConnection.label + "\"];\n");
         }
 
         dot.append("}");
