@@ -236,19 +236,19 @@ public class Util
         	
         	if(currentOperator.type.equals(Operator.Type.SOURCE))
         	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=circle, width=1];\n");
         	}
         	else if(currentOperator.type.equals(Operator.Type.SINK))
         	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=doublecircle, width=1];\n");
         	}
         	else if(currentOperator.type.equals(Operator.Type.MERGE))
         	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=invtriangle, width=3];\n");
         	}
         	else if(currentOperator.type.equals(Operator.Type.BOX))
         	{
-        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + "\", shape=box, width=2];\n");
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=box, width=2];\n");
         	}
         	else
         	{
@@ -319,15 +319,15 @@ public class Util
         	
         	if(currentNode.type.equals(Node.Type.EDGE))
         	{
-        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.id + "_" + currentNode.getClass().getSimpleName() + "\", shape=circle, width=1];\n");
+        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.label + "\", shape=octagon, width=1];\n");
         	}
         	else if(currentNode.type.equals(Node.Type.FOG))
         	{
-        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.id + "_" + currentNode.getClass().getSimpleName() + "\", shape=doublecircle, width=1];\n");
+        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.label + "\", shape=doubleoctagon, width=1];\n");
         	}
         	else if(currentNode.type.equals(Node.Type.CLOUD))
         	{
-        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.id + "_" + currentNode.getClass().getSimpleName() + "\", shape=invtriangle, width=3];\n");
+        		dot.append("    " + currentNode.id + " [group=g" + currentNode.group + ", label=\"" + currentNode.label + "\", shape=tripleoctagon, width=1];\n");
         	}
         	else
         	{

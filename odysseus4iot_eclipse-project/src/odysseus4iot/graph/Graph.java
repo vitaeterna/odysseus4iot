@@ -3,6 +3,7 @@ package odysseus4iot.graph;
 import java.util.ArrayList;
 import java.util.List;
 
+import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
 
 public class Graph
@@ -13,6 +14,7 @@ public class Graph
 	public Graph()
 	{
 		Vertex.resetIDs();
+		MergeOperator.resetMergeCount();
 		ProjectOperator.resetProjectCount();
 	}
 	

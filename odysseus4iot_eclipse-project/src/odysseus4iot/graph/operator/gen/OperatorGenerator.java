@@ -59,7 +59,7 @@ public class OperatorGenerator
 		
 		mergeOperator.outputSchema = null;
 		mergeOperator.outputRate = null;
-		mergeOperator.outputName = "sensor_data";
+		mergeOperator.outputName = "merge_" + MergeOperator.getNextMergeCount();
 		
 		return mergeOperator;
 	}

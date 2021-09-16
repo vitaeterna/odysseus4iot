@@ -6,6 +6,23 @@ import odysseus4iot.graph.operator.meta.Operator;
 
 public class MergeOperator extends Operator
 {
+	private static Integer mergeCount = 0;
+	
+	public static Integer getCurrentMergeCount()
+	{
+		return mergeCount;
+	}
+	
+	public static Integer getNextMergeCount()
+	{
+		return ++mergeCount;
+	}
+	
+	public static void resetMergeCount()
+	{
+		mergeCount = 0;
+	}
+	
 	public List<String> inputStreams = null;
 	
 	public MergeOperator()

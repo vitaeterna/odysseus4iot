@@ -35,6 +35,8 @@ public class PhysicalGraphGenerator
 			
 			node = NodeGenerator.generateNode(currentNodeName, currentNodeSocket, currentNodeType, currentNodeCPUCap, currentNodeMemCap);
 			
+			node.label = node.id + "_" + node.name + "\n" + node.type + "\n" + node.cpuCapacity + "/" + node.memCapacity;
+			
 			nodes.add(node);
 			
 			graph.addVertex(node);

@@ -567,6 +567,24 @@ public class OperatorGraphGenerator
 		
 		System.out.println("Generated 1 DatabasesinkOperator");
 		
+		//Adding labels to vertices
+		//TODO
+		Operator currentOperator = null;
+		
+		for(int index = 0; index < graph.vertices.size(); index++)
+		{
+			currentOperator = (Operator)graph.vertices.get(index);
+			
+			if(currentOperator instanceof MergeOperator)
+			{
+				currentOperator.label = ((MergeOperator) currentOperator).inputStreams.toString() + "\n" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + (currentOperator.outputName!=null?"\n"+currentOperator.outputName:"");
+			}
+			else
+			{
+				currentOperator.label = (currentOperator.inputName!=null?currentOperator.inputName+"\n":"") + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + (currentOperator.outputName!=null?"\n"+currentOperator.outputName:"");
+			}
+		}
+		
 		//Adding labels to edges
 		Edge currentEdge = null;
 		
