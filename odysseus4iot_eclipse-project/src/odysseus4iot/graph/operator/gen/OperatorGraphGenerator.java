@@ -3,8 +3,6 @@ package odysseus4iot.graph.operator.gen;
 import java.util.ArrayList;
 import java.util.List;
 
-import odysseus4iot.graph.Edge;
-import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.AggregateOperator;
 import odysseus4iot.graph.operator.ChangedetectOperator;
@@ -16,7 +14,9 @@ import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.OutlierRemovingOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
+import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
+import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.model.Model;
 import odysseus4iot.util.Util;
 
@@ -26,7 +26,7 @@ import odysseus4iot.util.Util;
 //TODO: write metadata on databasesink
 public class OperatorGraphGenerator
 {	
-	public static Graph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
+	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
 	{
 		if(sensors == null || sensors.isEmpty() || models == null || models.isEmpty())
 		{
@@ -38,7 +38,7 @@ public class OperatorGraphGenerator
 		
 		System.out.println("Generation of merged Operator Graph started...");
 		
-		Graph graph = new Graph();
+		OperatorGraph graph = new OperatorGraph();
 		
 		Operator previousOperator = null;
 		
@@ -93,7 +93,7 @@ public class OperatorGraphGenerator
 				{
 					previousOperator = previousOperators.get(index);
 					
-					graph.addEdge(new Edge(previousOperator, mergeOperator));
+					graph.addEdge(new DataFlow(previousOperator, mergeOperator));
 					
 					outputRateSum += previousOperator.outputRate;
 				}
@@ -144,7 +144,7 @@ public class OperatorGraphGenerator
 			{
 				previousOperator = previousOperators.get(index);
 				
-				graph.addEdge(new Edge(previousOperator, mapOperator));
+				graph.addEdge(new DataFlow(previousOperator, mapOperator));
 				
 				outputRateSum += previousOperator.outputRate;
 			}
@@ -235,7 +235,7 @@ public class OperatorGraphGenerator
 				
 				graph.addVertex(projectOperator);
 				
-				graph.addEdge(new Edge(previousOperator, projectOperator));
+				graph.addEdge(new DataFlow(previousOperator, projectOperator));
 				
 				projectOperator.inputSchema = previousOperator.outputSchema.copy();
 				projectOperator.inputRate = previousOperator.outputRate;
@@ -243,7 +243,7 @@ public class OperatorGraphGenerator
 				
 				projectOperator.outputRate = projectOperator.inputRate;
 				
-				graph.addEdge(new Edge(projectOperator, timewindowOperator));
+				graph.addEdge(new DataFlow(projectOperator, timewindowOperator));
 				
 				timewindowOperator.inputSchema = projectOperator.outputSchema.copy();
 				timewindowOperator.inputRate = projectOperator.outputRate;
@@ -254,7 +254,7 @@ public class OperatorGraphGenerator
 			}
 			else
 			{
-				graph.addEdge(new Edge(previousOperator, timewindowOperator));
+				graph.addEdge(new DataFlow(previousOperator, timewindowOperator));
 				
 				timewindowOperator.inputSchema = previousOperator.outputSchema.copy();
 				timewindowOperator.inputRate = previousOperator.outputRate;
@@ -299,7 +299,7 @@ public class OperatorGraphGenerator
 			
 			graph.addVertex(aggregateOperator);
 			
-			graph.addEdge(new Edge(previousOperator, aggregateOperator));
+			graph.addEdge(new DataFlow(previousOperator, aggregateOperator));
 			
 			aggregateOperator.inputSchema = previousOperator.outputSchema.copy();
 			aggregateOperator.inputRate = previousOperator.outputRate;
@@ -380,7 +380,7 @@ public class OperatorGraphGenerator
 						
 						graph.addVertex(projectOperator);
 						
-						graph.addEdge(new Edge(previousOperator, projectOperator));
+						graph.addEdge(new DataFlow(previousOperator, projectOperator));
 						
 						projectOperator.inputSchema = previousOperator.outputSchema.copy();
 						projectOperator.inputRate = previousOperator.outputRate;
@@ -389,7 +389,7 @@ public class OperatorGraphGenerator
 						projectOperator.outputRate = projectOperator.inputRate;
 					}
 					
-					graph.addEdge(new Edge(projectOperator, classificationOperator));
+					graph.addEdge(new DataFlow(projectOperator, classificationOperator));
 					
 					classificationOperator.inputSchema = projectOperator.outputSchema.copy();
 					classificationOperator.inputRate = projectOperator.outputRate;
@@ -400,7 +400,7 @@ public class OperatorGraphGenerator
 				else
 				{
 					//ProjectNotNeeded
-					graph.addEdge(new Edge(previousOperator, classificationOperator));
+					graph.addEdge(new DataFlow(previousOperator, classificationOperator));
 					
 					classificationOperator.inputSchema = previousOperator.outputSchema.copy();
 					classificationOperator.inputRate = previousOperator.outputRate;
@@ -454,7 +454,7 @@ public class OperatorGraphGenerator
 				
 				graph.addVertex(outlierRemovingOperator);
 				
-				graph.addEdge(new Edge(previousOperator, outlierRemovingOperator));
+				graph.addEdge(new DataFlow(previousOperator, outlierRemovingOperator));
 				
 				outlierRemovingOperator.inputSchema = previousOperator.outputSchema.copy();
 				outlierRemovingOperator.inputRate = previousOperator.outputRate;
@@ -487,7 +487,7 @@ public class OperatorGraphGenerator
 				
 				outputStreams.add(changedetectOperator.outputName);
 				
-				graph.addEdge(new Edge(previousOperator, changedetectOperator));
+				graph.addEdge(new DataFlow(previousOperator, changedetectOperator));
 				
 				changedetectOperator.inputSchema = previousOperator.outputSchema.copy();
 				changedetectOperator.inputRate = previousOperator.outputRate;
@@ -523,7 +523,7 @@ public class OperatorGraphGenerator
 				{
 					previousOperator = previousOperators.get(index);
 					
-					graph.addEdge(new Edge(previousOperator, mergeOperator));
+					graph.addEdge(new DataFlow(previousOperator, mergeOperator));
 					
 					outputRateSum += previousOperator.outputRate;
 				}
@@ -556,7 +556,7 @@ public class OperatorGraphGenerator
 		{
 			previousOperator = previousOperators.get(index);
 			
-			graph.addEdge(new Edge(previousOperator, databasesinkOperator));
+			graph.addEdge(new DataFlow(previousOperator, databasesinkOperator));
 			
 			outputRateSum += previousOperator.outputRate;
 		}
@@ -571,7 +571,6 @@ public class OperatorGraphGenerator
 		System.out.println("Generated 1 DatabasesinkOperator");
 		
 		//Adding labels to vertices
-		//TODO
 		Operator currentOperator = null;
 		
 		for(int index = 0; index < graph.vertices.size(); index++)
@@ -580,7 +579,7 @@ public class OperatorGraphGenerator
 			
 			if(currentOperator instanceof MergeOperator)
 			{
-				currentOperator.label = ((MergeOperator) currentOperator).inputStreams.toString() + "\n" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + (currentOperator.outputName!=null?"\n"+currentOperator.outputName:"");
+				currentOperator.label = ((MergeOperator) currentOperator).inputStreams.size() + "\n" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + (currentOperator.outputName!=null?"\n"+currentOperator.outputName:"");
 			}
 			else
 			{
@@ -588,23 +587,27 @@ public class OperatorGraphGenerator
 			}
 		}
 		
-		//Adding labels to edges
-		Edge currentEdge = null;
+		//Adding labels to edges and set datarates
+		DataFlow currentDataFlow = null;
 		
 		for(int index = 0; index < graph.edges.size(); index++)
 		{
-			currentEdge = graph.edges.get(index);
+			currentDataFlow = (DataFlow)graph.edges.get(index);
 			
-			if(((Operator)currentEdge.vertex0).outputSchema.columns.size() > 10)
+			if(((Operator)currentDataFlow.vertex0).outputSchema.columns.size() > 10)
 			{
-				currentEdge.label = Integer.toString(((Operator)currentEdge.vertex0).outputSchema.columns.size());
+				currentDataFlow.label = Integer.toString(((Operator)currentDataFlow.vertex0).outputSchema.columns.size());
 			}
 			else
 			{
-				currentEdge.label = ((Operator)currentEdge.vertex0).outputSchema.toString();
+				currentDataFlow.label = ((Operator)currentDataFlow.vertex0).outputSchema.toString();
 			}
 			
-			currentEdge.label += " | " + Util.formatDatarate(((Operator)currentEdge.vertex0).outputRate * ((Operator)currentEdge.vertex0).outputSchema.getSize());
+			outputRateSum = ((Operator)currentDataFlow.vertex0).outputRate * ((Operator)currentDataFlow.vertex0).outputSchema.getSize();
+			
+			currentDataFlow.datarateConsumption = outputRateSum;
+			
+			currentDataFlow.label += "\n" + Util.formatDatarate(outputRateSum);
 		}
 		
 		endTimestamp = System.currentTimeMillis();

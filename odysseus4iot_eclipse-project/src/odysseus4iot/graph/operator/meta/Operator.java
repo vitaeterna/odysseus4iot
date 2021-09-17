@@ -10,7 +10,7 @@ public class Operator extends Vertex
 {
 	public enum Type
 	{
-		SOURCE, SINK, MERGE, BOX
+		SOURCE, SINK, MERGE, PROCESSING
 	}
 	
 	public Type type = null;
@@ -27,10 +27,17 @@ public class Operator extends Vertex
 	
 	public Integer assignedID = null;
 	
+	public Integer cpuConsumption = null;
+	public Integer memConsumption = null;
+	
 	public Operator()
 	{
 		super();
 		
 		models = new ArrayList<>();
+		
+		//TODO: set consumptions
+		cpuConsumption = 0;
+		memConsumption = 0;
 	}
 }

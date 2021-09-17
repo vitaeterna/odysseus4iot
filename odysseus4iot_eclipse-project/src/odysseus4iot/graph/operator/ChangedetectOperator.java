@@ -11,7 +11,7 @@ public class ChangedetectOperator extends Operator
 	{
 		super();
 		
-		type = Type.BOX;
+		type = Type.PROCESSING;
 	}
 	
 	@Override

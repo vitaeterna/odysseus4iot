@@ -1,6 +1,6 @@
 package odysseus4iot.graph;
 
-public class Vertex
+public abstract class Vertex
 {
 	private static Integer currentID = 0;
 	private static Integer currentGroup = 0;

@@ -12,7 +12,7 @@ public class MapOperator extends Operator
 	{
 		super();
 		
-		type = Type.BOX;
+		type = Type.PROCESSING;
 	}
 	
 	@Override

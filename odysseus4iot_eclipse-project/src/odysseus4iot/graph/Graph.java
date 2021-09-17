@@ -3,10 +3,7 @@ package odysseus4iot.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import odysseus4iot.graph.operator.MergeOperator;
-import odysseus4iot.graph.operator.ProjectOperator;
-
-public class Graph
+public abstract class Graph
 {
 	public List<Vertex> vertices = null;
 	public List<Edge> edges = null;
@@ -14,8 +11,6 @@ public class Graph
 	public Graph()
 	{
 		Vertex.resetIDs();
-		MergeOperator.resetMergeCount();
-		ProjectOperator.resetProjectCount();
 	}
 	
 	public void addVertex(Vertex vertex)
@@ -249,7 +244,24 @@ public class Graph
 		
 		return vertices;
 	}
-
+	
+	public boolean containsEdge(int id0, int id1)
+	{
+		Edge currentEdge = null;
+		
+		for(int index = 0; index < this.edges.size(); index++)
+		{
+			currentEdge = this.edges.get(index);
+			
+			if(currentEdge.vertex0.id == id0 && currentEdge.vertex1.id == id1)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private boolean containsEdge(Edge edge)
 	{
 		if(this.edges == null)

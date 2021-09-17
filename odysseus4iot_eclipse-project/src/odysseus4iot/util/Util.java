@@ -15,11 +15,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import odysseus4iot.graph.Edge;
-import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.meta.Operator;
+import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.meta.Connection;
 import odysseus4iot.graph.physical.meta.Node;
+import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.main.Main;
 
 public class Util
@@ -235,7 +236,7 @@ public class Util
         }
     }
 	
-	public static void exportPQL(String outputFilename, Graph graph)
+	public static void exportPQL(String outputFilename, OperatorGraph graph)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		
@@ -264,7 +265,7 @@ public class Util
 		System.out.print("Written to " + outputFilename + ".qry\n");
 	}
     
-    public static void exportOperatorGraphToDOTPNG(String outputFilename, Graph graph)
+    public static void exportOperatorGraphToDOTPNG(String outputFilename, OperatorGraph graph)
     {
         StringBuilder dot = new StringBuilder();
 
@@ -291,7 +292,7 @@ public class Util
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=invtriangle, width=3];\n");
         	}
-        	else if(currentOperator.type.equals(Operator.Type.BOX))
+        	else if(currentOperator.type.equals(Operator.Type.PROCESSING))
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=box, width=2];\n");
         	}
@@ -347,7 +348,7 @@ public class Util
         }
     }
     
-    public static void exportPhysicalGraphToDOTPNG(String outputFilename, Graph graph)
+    public static void exportPhysicalGraphToDOTPNG(String outputFilename, PhysicalGraph graph)
     {
         StringBuilder dot = new StringBuilder();
 

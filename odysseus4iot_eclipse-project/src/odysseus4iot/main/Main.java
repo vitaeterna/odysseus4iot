@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
+import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
+import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
-import odysseus4iot.placement.OperatorPlacement;
+import odysseus4iot.placement.OperatorPlacementOptimization;
+import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
 //Timestamp from db problem
@@ -139,10 +141,10 @@ public class Main
 			graphs.add(graph);
 		}*/
 		
-		boolean postprocessing = false;
+		boolean postprocessing = true;
 		boolean merge = false;
 		
-		Graph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
+		OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 		
 		Util.exportPQL("merged", operatorGraph);
 		
@@ -150,10 +152,15 @@ public class Main
 		
 		//4 - Generating Physical Graph
 		
-		Graph physicalGraph = PhysicalGraphGenerator.generatePhysicalraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
+		PhysicalGraph physicalGraph = PhysicalGraphGenerator.generatePhysicalraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
 		
 		Util.exportPhysicalGraphToDOTPNG("physical", physicalGraph);
 		
-		OperatorPlacement.optimize(operatorGraph, physicalGraph);
+		List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
+		
+		for(int index = 0; index < operatorPlacements.size(); index++)
+		{
+			System.out.println(operatorPlacements.get(index));
+		}
 	}
 }

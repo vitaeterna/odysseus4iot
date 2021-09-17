@@ -3,22 +3,22 @@ package odysseus4iot.graph.physical.gen;
 import java.util.ArrayList;
 import java.util.List;
 
-import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.physical.meta.Connection;
 import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.graph.physical.meta.Node.Type;
+import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.util.Util;
 
 public class PhysicalGraphGenerator
 {
-	public static Graph generatePhysicalraph(List<String> nodeNames, List<String> nodeSockets, List<String> nodeTypes, List<String> nodeCPUCaps, List<String> nodeMemCaps, List<String> edges, List<String> edgeRateCaps)
+	public static PhysicalGraph generatePhysicalraph(List<String> nodeNames, List<String> nodeSockets, List<String> nodeTypes, List<String> nodeCPUCaps, List<String> nodeMemCaps, List<String> edges, List<String> edgeRateCaps)
 	{
 		Long startTimestamp = System.currentTimeMillis();
 		Long endTimestamp = null;
 		
 		System.out.println("Generation of Physical Graph started...");
 		
-		Graph graph = new Graph();
+		PhysicalGraph graph = new PhysicalGraph();
 		
 		List<Node> nodes = new ArrayList<>();
 		
