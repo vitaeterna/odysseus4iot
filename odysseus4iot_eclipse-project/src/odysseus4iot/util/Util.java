@@ -16,6 +16,7 @@ import com.google.gson.GsonBuilder;
 
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Vertex;
+import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.meta.Connection;
@@ -238,6 +239,8 @@ public class Util
 	
 	public static void exportPQL(String outputFilename, OperatorGraph graph)
 	{
+		//TODO
+		
 		StringBuilder stringBuilder = new StringBuilder();
 		
 		stringBuilder.append("#PARSER PQL\r\n\r\n");
@@ -265,7 +268,7 @@ public class Util
 		System.out.print("Written to " + outputFilename + ".qry\n");
 	}
     
-    public static void exportOperatorGraphToDOTPNG(String outputFilename, OperatorGraph graph)
+    public static void exportOperatorGraphToDOTPNG(String outputFilename, OperatorGraph operatorGraph)
     {
         StringBuilder dot = new StringBuilder();
 
@@ -276,9 +279,9 @@ public class Util
 
         Operator currentOperator = null;
         
-        for(int index = 0; index < graph.vertices.size(); index++)
+        for(int index = 0; index < operatorGraph.vertices.size(); index++)
         {
-        	currentOperator = (Operator)graph.vertices.get(index);
+        	currentOperator = (Operator)operatorGraph.vertices.get(index);
         	
         	if(currentOperator.type.equals(Operator.Type.SOURCE))
         	{
@@ -308,9 +311,9 @@ public class Util
 
         Edge currentEdge = null;
         
-        for(int index = 0; index < graph.edges.size(); index++)
+        for(int index = 0; index < operatorGraph.edges.size(); index++)
         {
-        	currentEdge = graph.edges.get(index);
+        	currentEdge = operatorGraph.edges.get(index);
         	
         	dot.append("    " + currentEdge.vertex0.id + ":s -> " + currentEdge.vertex1.id + ":n [label=\"" + currentEdge.label + "\"];\n");
         }
@@ -348,7 +351,7 @@ public class Util
         }
     }
     
-    public static void exportPhysicalGraphToDOTPNG(String outputFilename, PhysicalGraph graph)
+    public static void exportPhysicalGraphToDOTPNG(String outputFilename, PhysicalGraph physicalGraph)
     {
         StringBuilder dot = new StringBuilder();
 
@@ -359,9 +362,9 @@ public class Util
 
         Node currentNode = null;
         
-        for(int index = 0; index < graph.vertices.size(); index++)
+        for(int index = 0; index < physicalGraph.vertices.size(); index++)
         {
-        	currentNode = (Node)graph.vertices.get(index);
+        	currentNode = (Node)physicalGraph.vertices.get(index);
         	
         	if(currentNode.type.equals(Node.Type.EDGE))
         	{
@@ -387,9 +390,9 @@ public class Util
 
         Connection currentConnection = null;
         
-        for(int index = 0; index < graph.edges.size(); index++)
+        for(int index = 0; index < physicalGraph.edges.size(); index++)
         {
-        	currentConnection = (Connection)graph.edges.get(index);
+        	currentConnection = (Connection)physicalGraph.edges.get(index);
         	
         	dot.append("    " + currentConnection.vertex0.id + ":s -> " + currentConnection.vertex1.id + ":n [label=\"" + currentConnection.label + "\"];\n");
         }
@@ -427,6 +430,106 @@ public class Util
         }
     }
 	
+    public static void exportOperatorPlacementToDOTPNG(String outputFilename, OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
+    {
+    	//TODO: https://graphviz.org/Gallery/directed/cluster.html
+    	
+        StringBuilder dot = new StringBuilder();
+
+        dot.append("digraph PG\n");
+        dot.append("{\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n");
+        dot.append("\n    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n\n");
+
+        Node currentNode = null;
+        
+        Operator currentOperator = null;
+        
+        List<Operator> operators = null;
+        
+        for(int index = 0; index < physicalGraph.vertices.size(); index++)
+        {
+        	currentNode = (Node)physicalGraph.vertices.get(index);
+        	
+        	operators = operatorGraph.getOperatorsByAssignedID(currentNode.id);
+        	
+        	dot.append("    subgraph cluster_" + currentNode.id + "\n    {\n");
+        	
+        	for(int index2 = 0; index2 < operators.size(); index2++)
+        	{
+        		currentOperator = operators.get(index2);
+        		
+            	if(currentOperator.type.equals(Operator.Type.SOURCE))
+            	{
+            		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=circle, width=1];\n");
+            	}
+            	else if(currentOperator.type.equals(Operator.Type.SINK))
+            	{
+            		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=doublecircle, width=1];\n");
+            	}
+            	else if(currentOperator.type.equals(Operator.Type.MERGE))
+            	{
+            		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=invtriangle, width=3];\n");
+            	}
+            	else if(currentOperator.type.equals(Operator.Type.PROCESSING))
+            	{
+            		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=box, width=2];\n");
+            	}
+            	else
+            	{
+            		System.err.println("No routine for Operator.Type." + currentOperator.type + " implemented.");
+            		
+            		System.exit(0);
+            	}
+        	}
+        	
+        	dot.append("    }\n\n");
+        }
+
+        dot.append("    edge [arrowhead=vee, arrowtail=none, color=black, fontname=\"Courier New Bold\", weight=1];\n");
+
+        DataFlow currentDataFlow = null;
+        
+        for(int index = 0; index < operatorGraph.edges.size(); index++)
+        {
+        	currentDataFlow = (DataFlow)operatorGraph.edges.get(index);
+        	
+        	dot.append("    " + currentDataFlow.vertex0.id + ":s -> " + currentDataFlow.vertex1.id + ":n [label=\"" + currentDataFlow.label + "\"];\n");
+        }
+
+        dot.append("}");
+
+        Util.writeFile(outputFilename + ".dot", dot.toString(), Charset.defaultCharset());
+        
+        System.out.print("Written to " + outputFilename + ".dot\n");
+        
+        //dot -Tpng outputFilename.dot -o outputFilename.png
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", outputFilename + ".dot", "-o", outputFilename + ".png");
+        builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
+        builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+        try
+        {
+            builder.start().waitFor();
+
+            System.out.print("Written to " + outputFilename + ".png\n");
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+
+            System.exit(0);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+
+            System.out.print("\nPlease check whether you have installed a dot renderer like GraphViz (http://www.graphviz.org/) and if the binaries are available via your PATH variable.\n");
+            System.out.print("The generated dot file was not rendered to png.\n");
+        }
+    }
+    
     /*
      * Source: http://www.java2s.com/example/java/reflection/find-the-closest-common-superclass-of-multiple-classes.html
      * 

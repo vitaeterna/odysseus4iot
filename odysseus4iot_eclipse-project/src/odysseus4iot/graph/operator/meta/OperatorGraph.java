@@ -55,7 +55,7 @@ public class OperatorGraph extends Graph
 
 	public void loadOperatorPlacement(OperatorPlacement operatorPlacement)
 	{
-		String[] placementSplit = operatorPlacement.placement.split("|");
+		String[] placementSplit = operatorPlacement.placement.split("\\|");
 		
 		if(placementSplit.length != vertices.size())
 		{

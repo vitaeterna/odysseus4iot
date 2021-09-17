@@ -162,5 +162,9 @@ public class Main
 		{
 			System.out.println(operatorPlacements.get(index));
 		}
+		
+		operatorGraph.loadOperatorPlacement(operatorPlacements.get(0));
+		
+		Util.exportOperatorPlacementToDOTPNG("operatorPlacement0", operatorGraph, physicalGraph);
 	}
 }
