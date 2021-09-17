@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -83,19 +84,63 @@ public class Util
         return dir.mkdirs();
     }
 	
-    public static String formatNumber(Double number)
+    /**
+     * 
+     * @param datarate in Bit/s
+     * @return
+     */
+    public static String formatDatarate(Double datarate)
     {
     	int unitSize = 1000;
     	
-    	if(number < unitSize)
+    	if(datarate < unitSize)
     	{
-    		return String.format("%.3f Bit/s", number);
+    		return String.format("%.3f Bit/s", datarate);
     	}
     	
-        int unitIndex = (int) (Math.log10(number) / Math.log10(unitSize));
+        int unitIndex = (int) (Math.log10(datarate) / Math.log10(unitSize));
         Character unit = "KMGT".charAt(unitIndex - 1);
         
-        return String.format("%.3f %sBit/s", number / Math.pow(unitSize, unitIndex), unit);
+        return String.format("%.3f %sBit/s", datarate / Math.pow(unitSize, unitIndex), unit);
+    }
+    
+    /**
+     * From https://stackoverflow.com/questions/6710094/how-to-format-an-elapsed-time-interval-in-hhmmss-sss-format-in-java
+     * 
+     * @param timestamp in ms (milliseconds)
+     * @return
+     */
+    public static String formatTimestamp(Long timestamp)
+    {
+    	final long d = TimeUnit.MILLISECONDS.toDays(timestamp);
+        final long h = TimeUnit.MILLISECONDS.toHours(timestamp - TimeUnit.DAYS.toMillis(d));
+        final long min = TimeUnit.MILLISECONDS.toMinutes(timestamp - TimeUnit.DAYS.toMillis(d) - TimeUnit.HOURS.toMillis(h));
+        final long s = TimeUnit.MILLISECONDS.toSeconds(timestamp - TimeUnit.DAYS.toMillis(d) - TimeUnit.HOURS.toMillis(h) - TimeUnit.MINUTES.toMillis(min));
+        final long ms = TimeUnit.MILLISECONDS.toMillis(timestamp - TimeUnit.DAYS.toMillis(d) - TimeUnit.HOURS.toMillis(h) - TimeUnit.MINUTES.toMillis(min) - TimeUnit.SECONDS.toMillis(s));
+        
+        if(d == 0 && h == 0 && min == 0 && s == 0)
+        {
+        	return String.format("%d milliseconds", ms);
+        }
+        
+        if(d == 0 && h == 0 && min == 0)
+        {
+        	return String.format("%d seconds %d milliseconds", s, ms);
+        }
+        
+        if(d == 0 && h == 0)
+        {
+        	return String.format("%d minutes %d seconds %d milliseconds", min, s, ms);
+        }
+        
+        if(d == 0)
+        {
+        	return String.format("%d hours %d minutes %d seconds %d milliseconds", h, min, s, ms);
+        }
+        
+        return String.format("%d days %d hours %d minutes %d seconds %d milliseconds", d, h, min, s, ms);
+        
+        //return String.format("%02d:%02d:%02d.%03d", hr, min, sec, ms);
     }
     
 	public static void validateProperties()

@@ -13,6 +13,7 @@ import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
 import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
+import odysseus4iot.placement.OperatorPlacement;
 import odysseus4iot.util.Util;
 
 //Timestamp from db problem
@@ -138,8 +139,8 @@ public class Main
 			graphs.add(graph);
 		}*/
 		
-		boolean postprocessing = true;
-		boolean merge = true;
+		boolean postprocessing = false;
+		boolean merge = false;
 		
 		Graph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 		
@@ -152,5 +153,7 @@ public class Main
 		Graph physicalGraph = PhysicalGraphGenerator.generatePhysicalraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
 		
 		Util.exportPhysicalGraphToDOTPNG("physical", physicalGraph);
+		
+		OperatorPlacement.optimize(operatorGraph, physicalGraph);
 	}
 }

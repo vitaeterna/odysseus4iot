@@ -33,6 +33,9 @@ public class OperatorGraphGenerator
 			return null;
 		}
 		
+		Long startTimestamp = System.currentTimeMillis();
+		Long endTimestamp = null;
+		
 		System.out.println("Generation of merged Operator Graph started...");
 		
 		Graph graph = new Graph();
@@ -601,10 +604,12 @@ public class OperatorGraphGenerator
 				currentEdge.label = ((Operator)currentEdge.vertex0).outputSchema.toString();
 			}
 			
-			currentEdge.label += " | " + Util.formatNumber(((Operator)currentEdge.vertex0).outputRate * ((Operator)currentEdge.vertex0).outputSchema.getSize());
+			currentEdge.label += " | " + Util.formatDatarate(((Operator)currentEdge.vertex0).outputRate * ((Operator)currentEdge.vertex0).outputSchema.getSize());
 		}
 		
-		System.out.println("...Generation of merged Operator Graph finished");
+		endTimestamp = System.currentTimeMillis();
+		
+		System.out.println("...Generation of merged Operator Graph finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
 		
 		return graph;
 	}

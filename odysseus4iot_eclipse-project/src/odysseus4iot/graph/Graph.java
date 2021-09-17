@@ -150,6 +150,44 @@ public class Graph
 		return null;
 	}
 	
+	public int getMinVertexID()
+	{
+		Vertex currentVertex = null;
+		
+		int minVertexID = Integer.MAX_VALUE;
+		
+		for(int index = 0; index < this.vertices.size(); index++)
+		{
+			currentVertex = this.vertices.get(index);
+			
+			if(currentVertex.id.intValue() < minVertexID)
+			{
+				minVertexID = currentVertex.id.intValue();
+			}
+		}
+		
+		return minVertexID;
+	}
+	
+	public int getMaxVertexID()
+	{
+		Vertex currentVertex = null;
+		
+		int maxVertexID = Integer.MIN_VALUE;
+		
+		for(int index = 0; index < this.vertices.size(); index++)
+		{
+			currentVertex = this.vertices.get(index);
+			
+			if(currentVertex.id.intValue() > maxVertexID)
+			{
+				maxVertexID = currentVertex.id.intValue();
+			}
+		}
+		
+		return maxVertexID;
+	}
+	
 	public List<Vertex> getStartingVertices()
 	{
 		List<Vertex> startingVertices = new ArrayList<>();

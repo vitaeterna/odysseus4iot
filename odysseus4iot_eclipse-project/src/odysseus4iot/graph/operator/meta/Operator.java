@@ -25,6 +25,8 @@ public class Operator extends Vertex
 	public Double outputRate = null;
 	public String outputName = null;
 	
+	public Integer assignedID = null;
+	
 	public Operator()
 	{
 		super();
