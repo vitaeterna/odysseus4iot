@@ -61,7 +61,7 @@ public abstract class Graph
 		}
 	}
 	
-	public List<Vertex> getVertexSuccessors(Vertex vertex)
+	public List<Vertex> getSuccessors(Vertex vertex)
 	{
 		List<Vertex> successors = new ArrayList<>();
 		
@@ -229,7 +229,7 @@ public abstract class Graph
 		{
 			currentVertex = vertices.get(index);
 			
-			successors = this.getVertexSuccessors(currentVertex);
+			successors = this.getSuccessors(currentVertex);
 			
 			for(int index2 = 0; index2 < successors.size(); index2++)
 			{

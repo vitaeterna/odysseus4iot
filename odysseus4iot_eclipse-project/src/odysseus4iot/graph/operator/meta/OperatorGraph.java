@@ -7,6 +7,8 @@ import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
+import odysseus4iot.graph.physical.meta.Node;
+import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.placement.model.OperatorPlacement;
 
 public class OperatorGraph extends Graph
@@ -19,7 +21,7 @@ public class OperatorGraph extends Graph
 		ProjectOperator.resetProjectCount();
 	}
 	
-	public Double getTotalDatarate()
+	public Double getTotalDatarate(PhysicalGraph physicalGraph)
 	{
 		DataFlow currentDataFlow = null;
 		
@@ -37,7 +39,14 @@ public class OperatorGraph extends Graph
 			
 			if(operator0.assignedID != operator1.assignedID)
 			{
-				datarateTotal += currentDataFlow.datarateConsumption;
+				if(physicalGraph.getNodeTypeByID(operator0.assignedID).equals(Node.Type.EDGE))
+				{
+					datarateTotal += currentDataFlow.datarateConsumption * this.getStartingVertices().size();
+				}
+				else
+				{
+					datarateTotal += currentDataFlow.datarateConsumption;
+				}
 			}
 		}
 		
@@ -82,7 +91,7 @@ public class OperatorGraph extends Graph
 		return true;
 	}
 	
-	public boolean allEdgesValid(Graph physicalGraph)
+	public boolean allDataFlowsValid(Graph physicalGraph)
 	{
 		Edge currentEdge = null;
 		
@@ -108,7 +117,7 @@ public class OperatorGraph extends Graph
 		return true;
 	}
 	
-	public List<DataFlow> getEdgesByAssignedIDs(int assignedID0, int assignedID1)
+	public List<DataFlow> getDataFlowsByAssignedIDs(int assignedID0, int assignedID1)
 	{
 		DataFlow currentDataFlow = null;
 
@@ -134,7 +143,7 @@ public class OperatorGraph extends Graph
 		return dataFlows;
 	}
 	
-	public List<Operator> getVerticesByAssignedID(int assignedID)
+	public List<Operator> getOperatorsByAssignedID(int assignedID)
 	{
 		Operator currentOperator = null;
 

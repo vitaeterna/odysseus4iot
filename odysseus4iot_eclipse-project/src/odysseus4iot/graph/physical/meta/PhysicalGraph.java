@@ -6,12 +6,30 @@ import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
+import odysseus4iot.graph.physical.meta.Node.Type;
 
 public class PhysicalGraph extends Graph
 {
 	public PhysicalGraph()
 	{
 		super();
+	}
+	
+	public Type getNodeTypeByID(int id)
+	{
+		Node currentNode = null;
+		
+		for(int index = 0; index < vertices.size(); index++)
+		{
+			currentNode = (Node)vertices.get(index);
+			
+			if(currentNode.id.intValue() == id)
+			{
+				return currentNode.type;
+			}
+		}
+		
+		return null;
 	}
 	
 	public boolean allNodeCapacitiesFine(OperatorGraph operatorGraph)
@@ -29,7 +47,7 @@ public class PhysicalGraph extends Graph
 		{
 			currentNode = (Node)vertices.get(index);
 			
-			operators = operatorGraph.getVerticesByAssignedID(currentNode.id);
+			operators = operatorGraph.getOperatorsByAssignedID(currentNode.id);
 		
 			cpuConsumption = 0;
 			memConsumption = 0;
@@ -65,7 +83,7 @@ public class PhysicalGraph extends Graph
 		{
 			currentConnection = (Connection)edges.get(index);
 			
-			dataFlows = operatorGraph.getEdgesByAssignedIDs(currentConnection.vertex0.id, currentConnection.vertex1.id);
+			dataFlows = operatorGraph.getDataFlowsByAssignedIDs(currentConnection.vertex0.id, currentConnection.vertex1.id);
 		
 			datarateConsumption = 0.0d;
 			

@@ -65,7 +65,7 @@ public class OperatorPlacementOptimization
 		while(nextPlacement())
 		{
 			boolean allOperatorsPlaced = operatorGraph.allOperatorsPlaced();
-			boolean allEdgesValid = operatorGraph.allEdgesValid(physicalGraph);
+			boolean allEdgesValid = operatorGraph.allDataFlowsValid(physicalGraph);
 			boolean allNodeCapacitiesFine = physicalGraph.allNodeCapacitiesFine(operatorGraph);
 			boolean allConnectionCapacitiesFine = physicalGraph.allConnectionCapacitiesFine(operatorGraph);
 			
@@ -73,7 +73,7 @@ public class OperatorPlacementOptimization
 			{
 				OperatorPlacement operatorPlacement = new OperatorPlacement();
 				operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
-				operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate();
+				operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
 				
 				operatorPlacements.add(operatorPlacement);
 				
