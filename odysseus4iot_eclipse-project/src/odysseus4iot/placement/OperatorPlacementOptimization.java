@@ -62,26 +62,34 @@ public class OperatorPlacementOptimization
 		System.out.println("    - Static:       " + (operatorGraph.vertices.size() - operators.size()) + " (fixed physical node assignment for sources and sinks)");
 		System.out.println("Search Space Size:  " + placementSearchSpaceSize + " (" + maxID + "^" + operators.size() + ")");
 		
+		Util.printProgressBar(placementCounter, placementSearchSpaceSize);
+		
 		while(nextPlacement())
 		{
-			boolean allOperatorsPlaced = operatorGraph.allOperatorsPlaced();
-			boolean allEdgesValid = operatorGraph.allDataFlowsValid(physicalGraph);
-			boolean allNodeCapacitiesFine = physicalGraph.allNodeCapacitiesFine(operatorGraph);
-			boolean allConnectionCapacitiesFine = physicalGraph.allConnectionCapacitiesFine(operatorGraph);
-			
-			if(allOperatorsPlaced && allEdgesValid && allNodeCapacitiesFine && allConnectionCapacitiesFine)
+			if(operatorGraph.allOperatorsPlaced())
 			{
-				OperatorPlacement operatorPlacement = new OperatorPlacement();
-				operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
-				operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
-				
-				operatorPlacements.add(operatorPlacement);
-				
-				System.out.println(placementCounter + "/" + placementSearchSpaceSize + ": " + printPlacementOnOperatorList(operators) + " - " + Util.formatDatarate(operatorPlacement.datarateTotal));
+				if(operatorGraph.allDataFlowsValid(physicalGraph))
+				{
+					if(physicalGraph.allNodeCapacitiesFine(operatorGraph))
+					{
+						if(physicalGraph.allConnectionCapacitiesFine(operatorGraph))
+						{
+							OperatorPlacement operatorPlacement = new OperatorPlacement();
+							operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
+							
+							//TODO: ___ add more metrics in addition to total datarate
+							operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
+							
+							operatorPlacements.add(operatorPlacement);
+							
+							//Util.printProgressBar(placementCounter, placementSearchSpaceSize);
+						}
+					}
+				}
 			}
 		}
 		
-		System.out.println("Valid Operator Placements found: " + operatorPlacements.size());
+		System.out.println("\nValid Operator Placements found: " + operatorPlacements.size());
 		
 		Collections.sort(operatorPlacements);
 		
@@ -131,22 +139,6 @@ public class OperatorPlacementOptimization
 			
 			return false;
 		}
-	}
-	
-	private static String printPlacementOnOperatorList(List<Operator> operators)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		Operator currentOperator = null;
-		
-		for(int index = 0; index < operators.size(); index++)
-		{
-			currentOperator = operators.get(index);
-			
-			stringBuilder.append(currentOperator.assignedID + ((index==operators.size()-1)?"":"|"));
-		}
-		
-		return stringBuilder.toString();
 	}
 	
 	private static String printPlacementOnVertexList(List<Vertex> vertices)

@@ -239,7 +239,7 @@ public class Util
 	
 	public static void exportPQL(String outputFilename, OperatorGraph graph)
 	{
-		//TODO
+		//TODO: ___
 		
 		StringBuilder stringBuilder = new StringBuilder();
 		
@@ -432,8 +432,6 @@ public class Util
 	
     public static void exportOperatorPlacementToDOTPNG(String outputFilename, OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
     {
-    	//TODO: https://graphviz.org/Gallery/directed/cluster.html
-    	
         StringBuilder dot = new StringBuilder();
 
         dot.append("digraph PG\n");
@@ -530,6 +528,48 @@ public class Util
             System.out.print("The generated dot file was not rendered to png.\n");
         }
     }
+    
+    /*
+     * Source: https://stackoverflow.com/questions/1001290/console-based-progress-in-java
+     * 
+     * Eclipse Console Bug:
+     * https://bugs.eclipse.org/bugs/show_bug.cgi?id=76936
+     */
+	public static void printProgressBar(int progress, int goal)
+	{
+		double progressPercentage = ((double)progress)/((double)goal);
+		
+	    final int width = 50; // progress bar width in chars
+
+	    System.out.print("\r[");
+	    
+	    int i = 0;
+	    
+	    for(; i < (int)(progressPercentage*width); i++)
+	    {
+	    	System.out.print("=");
+	    }
+	    
+	    for(; i < width; i++)
+	    {
+	    	System.out.print(" ");
+	    }
+	    
+	    System.out.print("] ");
+	    
+	    String percentage = String.format("%.1f", progressPercentage * 100);
+	    
+	    if(percentage.length() == 3)
+	    {
+	    	percentage = "  " + percentage;
+	    }
+	    else if(percentage.length() == 4)
+	    {
+	    	percentage = " " + percentage;
+	    }
+	    
+	    System.out.print(percentage + "% (" + progress + "/" + goal + ")");
+	}
     
     /*
      * Source: http://www.java2s.com/example/java/reflection/find-the-closest-common-superclass-of-multiple-classes.html

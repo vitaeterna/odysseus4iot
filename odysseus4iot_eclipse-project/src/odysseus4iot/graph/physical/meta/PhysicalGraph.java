@@ -63,8 +63,6 @@ public class PhysicalGraph extends Graph
 			currentNode.cpuConsumed = cpuConsumption;
 			currentNode.memConsumed = memConsumption;
 			
-			currentNode.setLabel();
-			
 			if(currentNode.cpuCapacity < currentNode.cpuConsumed || currentNode.memCapacity < currentNode.memConsumed)
 			{
 				return false;
@@ -100,8 +98,6 @@ public class PhysicalGraph extends Graph
 			}
 			
 			currentConnection.datarateConsumed = datarateConsumption;
-			
-			currentConnection.setLabel();
 			
 			if(currentConnection.datarateCapacity < currentConnection.datarateConsumed)
 			{

@@ -53,7 +53,7 @@ public class OperatorGraph extends Graph
 		return datarateTotal;
 	}
 
-	public void loadOperatorPlacement(OperatorPlacement operatorPlacement)
+	public boolean loadOperatorPlacement(OperatorPlacement operatorPlacement, PhysicalGraph physicalGraph)
 	{
 		String[] placementSplit = operatorPlacement.placement.split("\\|");
 		
@@ -72,6 +72,22 @@ public class OperatorGraph extends Graph
 			
 			currentOperator.assignedID = Integer.parseInt(placementSplit[index]);
 		}
+		
+		boolean allOperatorsPlaced = this.allOperatorsPlaced();
+		boolean allDataFlowsValid = this.allDataFlowsValid(physicalGraph);
+		boolean allNodeCapacitiesFine = physicalGraph.allNodeCapacitiesFine(this);
+		boolean allConnectionCapacitiesFine = physicalGraph.allConnectionCapacitiesFine(this);
+		
+		if(allOperatorsPlaced && allDataFlowsValid && allNodeCapacitiesFine && allConnectionCapacitiesFine)
+		{
+			this.setLabels();
+			
+			physicalGraph.setLabels();
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public boolean allOperatorsPlaced()

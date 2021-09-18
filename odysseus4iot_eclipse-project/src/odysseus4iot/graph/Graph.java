@@ -245,6 +245,19 @@ public abstract class Graph
 		return vertices;
 	}
 	
+	public void setLabels()
+	{
+		for(int index = 0; index < this.vertices.size(); index++)
+		{
+			this.vertices.get(index).setLabel();
+		}
+		
+		for(int index = 0; index < this.edges.size(); index++)
+		{
+			this.edges.get(index).setLabel();
+		}
+	}
+	
 	public boolean containsEdge(int id0, int id1)
 	{
 		Edge currentEdge = null;

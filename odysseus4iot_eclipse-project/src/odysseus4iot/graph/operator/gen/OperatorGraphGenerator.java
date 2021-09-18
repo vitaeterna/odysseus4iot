@@ -22,7 +22,7 @@ import odysseus4iot.util.Util;
 
 //TODO: project operator generation order (id mixup)
 //TODO: generate invisible filler nodes for visualization - project operator
-//TODO: handle metadata corretly!
+//TODO: handle metadata correctly!
 //TODO: write metadata on databasesink
 public class OperatorGraphGenerator
 {	
