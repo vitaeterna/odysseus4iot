@@ -239,7 +239,7 @@ public class Util
 	
 	public static void exportPQL(String outputFilename, OperatorGraph graph)
 	{
-		//TODO: ___
+		//TODO: ___ Build subgraphs which are networkable and call this method for each subgraph
 		
 		StringBuilder stringBuilder = new StringBuilder();
 		

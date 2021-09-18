@@ -57,7 +57,7 @@ public class Schema
 			}
 			else if(currentColumn.type == String.class)
 			{
-				//TODO: Worst-Case Scenario: Max String length
+				//TODO: ___ Worst-Case Scenario: Max String length
 				columnSize = Character.SIZE * 15;
 			}
 			

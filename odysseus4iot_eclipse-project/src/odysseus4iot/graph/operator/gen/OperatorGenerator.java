@@ -17,7 +17,6 @@ import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Schema;
 import odysseus4iot.main.Main;
 
-//TODO: Warum kann integer timestamp nicht als starttimestamp verwendet werden? Muss timestamp in String vorliegen?
 public class OperatorGenerator
 {
 	public static DatabasesourceOperator generateDatabasesourceOperator(String sensor, List<String> schema, Integer waiteach)
@@ -218,7 +217,7 @@ public class OperatorGenerator
 		classificationOperator.database = Main.properties.getProperty("modeldb.database");
 		classificationOperator.host = Main.properties.getProperty("modeldb.host");
 		classificationOperator.port = Integer.parseInt(Main.properties.getProperty("modeldb.port"));
-		classificationOperator.rpcServer = Main.properties.getProperty("pythonrpc.socket"); //TODO: several rpc servers? Odysseus Java prediction
+		classificationOperator.rpcServer = Main.properties.getProperty("pythonrpc.socket"); //TODO: ___ several rpc servers? Odysseus Java prediction
 		classificationOperator.table = Main.properties.getProperty("modeldb.table");
 		classificationOperator.username = Main.properties.getProperty("modeldb.user");
 		classificationOperator.password = Main.properties.getProperty("modeldb.password");

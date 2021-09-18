@@ -20,10 +20,10 @@ import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.model.Model;
 import odysseus4iot.util.Util;
 
-//TODO: project operator generation order (id mixup)
-//TODO: generate invisible filler nodes for visualization - project operator
-//TODO: handle metadata correctly!
-//TODO: write metadata on databasesink
+//TODO: ___ project operator generation order (id mixup)
+//TODO: ___ generate invisible filler nodes for visualization - project operator
+//TODO: ___ handle metadata correctly!
+//TODO: ___ write metadata on databasesink
 public class OperatorGraphGenerator
 {	
 	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
@@ -305,7 +305,7 @@ public class OperatorGraphGenerator
 			aggregateOperator.inputRate = previousOperator.outputRate;
 			aggregateOperator.inputName = previousOperator.outputName;
 			
-			//TODO: consider window_slide
+			//TODO: ___ consider window_slide
 			aggregateOperator.outputRate = aggregateOperator.inputRate/(((double)((TimewindowOperator)previousOperator).size)/databasesourceOperator.waiteach);
 		}
 		

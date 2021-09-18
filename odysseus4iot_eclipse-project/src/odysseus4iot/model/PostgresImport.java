@@ -129,7 +129,7 @@ public class PostgresImport
 					}
 					
 					//Features
-					//TODO: proper sorting of features
+					//TODO: ___ proper sorting of features
 					String currentSubValue = null;
 					
 					for(int index = 0; index < currentValue.size(); index++)
