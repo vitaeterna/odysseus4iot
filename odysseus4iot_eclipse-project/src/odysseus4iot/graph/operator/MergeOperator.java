@@ -33,6 +33,12 @@ public class MergeOperator extends Operator
 	}
 	
 	@Override
+	public void setLabel()
+	{
+		this.label = String.format("%s%d_%s%s", this.inputStreams!=null?this.inputStreams.size()+"\n":"", this.id, this.getClass().getSimpleName(), this.outputName!=null?"\n"+this.outputName:"");
+	}
+	
+	@Override
 	public String toString()
 	{
 		String inputStreamsString = "";

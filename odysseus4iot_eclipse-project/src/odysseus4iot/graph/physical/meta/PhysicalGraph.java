@@ -40,8 +40,8 @@ public class PhysicalGraph extends Graph
 		
 		List<Operator> operators = null;
 		
-		Integer cpuConsumption = null;
-		Integer memConsumption = null;
+		Double cpuConsumption = null;
+		Double memConsumption = null;
 		
 		for(int index = 0; index < vertices.size(); index++)
 		{
@@ -49,8 +49,8 @@ public class PhysicalGraph extends Graph
 			
 			operators = operatorGraph.getOperatorsByAssignedID(currentNode.id);
 		
-			cpuConsumption = 0;
-			memConsumption = 0;
+			cpuConsumption = 0.0d;
+			memConsumption = 0.0d;
 			
 			for(int index2 = 0; index2 < operators.size(); index2++)
 			{
@@ -60,7 +60,12 @@ public class PhysicalGraph extends Graph
 				memConsumption += currentOperator.memConsumption;
 			}
 			
-			if(currentNode.cpuCapacity < cpuConsumption || currentNode.memCapacity < memConsumption)
+			currentNode.cpuConsumed = cpuConsumption;
+			currentNode.memConsumed = memConsumption;
+			
+			currentNode.setLabel();
+			
+			if(currentNode.cpuCapacity < currentNode.cpuConsumed || currentNode.memCapacity < currentNode.memConsumed)
 			{
 				return false;
 			}
@@ -94,7 +99,11 @@ public class PhysicalGraph extends Graph
 				datarateConsumption += currentDataFlow.datarateConsumption;
 			}
 			
-			if(currentConnection.datarateCapacity < datarateConsumption)
+			currentConnection.datarateConsumed = datarateConsumption;
+			
+			currentConnection.setLabel();
+			
+			if(currentConnection.datarateCapacity < currentConnection.datarateConsumed)
 			{
 				return false;
 			}

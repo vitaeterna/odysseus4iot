@@ -40,4 +40,10 @@ public class Operator extends Vertex
 		cpuConsumption = 0;
 		memConsumption = 0;
 	}
+	
+	@Override
+	public void setLabel()
+	{
+		this.label = String.format("%s%d_%s%s", this.inputName!=null?this.inputName+"\n":"", this.id , this.getClass().getSimpleName(), this.outputName!=null?"\n"+this.outputName:"");
+	}
 }

@@ -40,7 +40,7 @@ public class PhysicalGraphGenerator
 			
 			node = NodeGenerator.generateNode(currentNodeName, currentNodeSocket, currentNodeType, currentNodeCPUCap, currentNodeMemCap);
 			
-			node.label = node.id + "_" + node.name + "\n" + node.type + "\n" + node.cpuCapacity + "/" + node.memCapacity;
+			node.setLabel();
 			
 			nodes.add(node);
 			
@@ -72,8 +72,8 @@ public class PhysicalGraphGenerator
 			
 			connection = new Connection(graph.getVertexByID(Integer.parseInt(currentEdgeSplit[0])), graph.getVertexByID(Integer.parseInt(currentEdgeSplit[1])), currentEdgeRateCap);
 			
-			connection.label = Util.formatDatarate((double)currentEdgeRateCap);
-			
+			connection.setLabel();
+
 			connections.add(connection);
 			
 			graph.addEdge(connection);

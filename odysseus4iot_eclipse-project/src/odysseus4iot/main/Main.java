@@ -142,7 +142,7 @@ public class Main
 		}*/
 		
 		boolean postprocessing = true;
-		boolean merge = false;
+		boolean merge = true;
 		
 		OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 		
@@ -158,10 +158,10 @@ public class Main
 		
 		List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
 		
-		for(int index = 0; index < operatorPlacements.size(); index++)
+		/*for(int index = 0; index < operatorPlacements.size(); index++)
 		{
 			System.out.println(operatorPlacements.get(index));
-		}
+		}*/
 		
 		operatorGraph.loadOperatorPlacement(operatorPlacements.get(0));
 		

@@ -274,8 +274,8 @@ public class Util
 
         dot.append("digraph OG\n");
         dot.append("{\n");
-        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n");
-        dot.append("\n    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n\n");
+        dot.append("    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
 
         Operator currentOperator = null;
         
@@ -357,8 +357,8 @@ public class Util
 
         dot.append("digraph PG\n");
         dot.append("{\n");
-        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n");
-        dot.append("\n    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n\n");
+        dot.append("    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
 
         Node currentNode = null;
         
@@ -438,8 +438,8 @@ public class Util
 
         dot.append("digraph PG\n");
         dot.append("{\n");
-        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n");
-        dot.append("\n    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n\n");
+        dot.append("    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n\n");
 
         Node currentNode = null;
         
@@ -454,6 +454,7 @@ public class Util
         	operators = operatorGraph.getOperatorsByAssignedID(currentNode.id);
         	
         	dot.append("    subgraph cluster_" + currentNode.id + "\n    {\n");
+        	dot.append("        label=\"" + currentNode.label + "\";\n");
         	
         	for(int index2 = 0; index2 < operators.size(); index2++)
         	{

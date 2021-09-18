@@ -577,14 +577,7 @@ public class OperatorGraphGenerator
 		{
 			currentOperator = (Operator)graph.vertices.get(index);
 			
-			if(currentOperator instanceof MergeOperator)
-			{
-				currentOperator.label = ((MergeOperator) currentOperator).inputStreams.size() + "\n" + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + (currentOperator.outputName!=null?"\n"+currentOperator.outputName:"");
-			}
-			else
-			{
-				currentOperator.label = (currentOperator.inputName!=null?currentOperator.inputName+"\n":"") + currentOperator.id + "_" + currentOperator.getClass().getSimpleName() + (currentOperator.outputName!=null?"\n"+currentOperator.outputName:"");
-			}
+			currentOperator.setLabel();
 		}
 		
 		//Adding labels to edges and set datarates
@@ -594,20 +587,9 @@ public class OperatorGraphGenerator
 		{
 			currentDataFlow = (DataFlow)graph.edges.get(index);
 			
-			if(((Operator)currentDataFlow.vertex0).outputSchema.columns.size() > 10)
-			{
-				currentDataFlow.label = Integer.toString(((Operator)currentDataFlow.vertex0).outputSchema.columns.size());
-			}
-			else
-			{
-				currentDataFlow.label = ((Operator)currentDataFlow.vertex0).outputSchema.toString();
-			}
+			currentDataFlow.datarateConsumption = ((Operator)currentDataFlow.vertex0).outputRate * ((Operator)currentDataFlow.vertex0).outputSchema.getSize();
 			
-			outputRateSum = ((Operator)currentDataFlow.vertex0).outputRate * ((Operator)currentDataFlow.vertex0).outputSchema.getSize();
-			
-			currentDataFlow.datarateConsumption = outputRateSum;
-			
-			currentDataFlow.label += "\n" + Util.formatDatarate(outputRateSum);
+			currentDataFlow.setLabel();
 		}
 		
 		endTimestamp = System.currentTimeMillis();

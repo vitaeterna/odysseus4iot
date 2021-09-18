@@ -14,6 +14,8 @@ public class Node extends Vertex
 	public Type type = null;
 	public Integer cpuCapacity = null;
 	public Integer memCapacity = null;
+	public Double cpuConsumed = null;
+	public Double memConsumed = null;
 	
 	public Node(String name, String socket, Type type, Integer cpuCapacity, Integer memCapacity)
 	{
@@ -22,5 +24,13 @@ public class Node extends Vertex
 		this.type = type;
 		this.cpuCapacity = cpuCapacity;
 		this.memCapacity = memCapacity;
+		this.cpuConsumed = 0.0d;
+		this.memConsumed = 0.0d;
+	}
+	
+	@Override
+	public void setLabel()
+	{
+		this.label = String.format("%d_%s\n%s\nCPU=%.1f/%d | MEM=%.1f/%d", this.id ,this.name ,this.type ,this.cpuConsumed ,this.cpuCapacity ,this.memConsumed ,this.memCapacity);
 	}
 }
