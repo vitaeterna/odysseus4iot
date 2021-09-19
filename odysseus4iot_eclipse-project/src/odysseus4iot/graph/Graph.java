@@ -61,6 +61,14 @@ public abstract class Graph
 		}
 	}
 	
+	public void addAllEdges(List<Edge> edges)
+	{
+		for(int index = 0; index < edges.size(); index++)
+		{
+			this.addEdge(edges.get(index));
+		}
+	}
+	
 	public List<Vertex> getSuccessors(Vertex vertex)
 	{
 		List<Vertex> successors = new ArrayList<>();

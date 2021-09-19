@@ -3,6 +3,7 @@ package odysseus4iot.graph.operator.gen;
 import java.util.ArrayList;
 import java.util.List;
 
+import odysseus4iot.graph.operator.AccessOperator;
 import odysseus4iot.graph.operator.AggregateOperator;
 import odysseus4iot.graph.operator.ChangedetectOperator;
 import odysseus4iot.graph.operator.ClassificationOperator;
@@ -12,6 +13,7 @@ import odysseus4iot.graph.operator.MapOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.OutlierRemovingOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
+import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Schema;
@@ -278,5 +280,33 @@ public class OperatorGenerator
 		databasesinkOperator.outputName = "prediction_sink";
 		
 		return databasesinkOperator;
+	}
+	
+	public static SenderOperator generateSenderOperator(String host, Integer port)
+	{
+		SenderOperator senderOperator = new SenderOperator();
+		senderOperator.host = host;
+		senderOperator.port = port;
+		
+		senderOperator.outputSchema = null;
+		senderOperator.outputRate = null;
+		senderOperator.outputName = null;
+		
+		return null;
+	}
+	
+	public static AccessOperator generateAccessOperator(String host, Integer port)
+	{
+		//TODO
+		
+		AccessOperator accessOperator = new AccessOperator();
+		accessOperator.host = host;
+		accessOperator.port = port;
+		
+		accessOperator.outputSchema = null;
+		accessOperator.outputRate = null;
+		accessOperator.outputName = null;
+		
+		return null;
 	}
 }

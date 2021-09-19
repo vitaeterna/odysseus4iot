@@ -15,6 +15,7 @@ import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
 import odysseus4iot.placement.OperatorPlacementOptimization;
+import odysseus4iot.placement.OperatorPlacementPartitioner;
 import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
@@ -166,5 +167,11 @@ public class Main
 		operatorGraph.loadOperatorPlacement(operatorPlacements.get(0), physicalGraph);
 		
 		Util.exportOperatorPlacementToDOTPNG("operatorPlacement0", operatorGraph, physicalGraph);
+		
+		OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
+		
+		List<OperatorGraph> subGraphs = OperatorPlacementPartitioner.buildSubgraphs(operatorGraph, physicalGraph);
+		
+		System.out.println(subGraphs.size() + " subgraphs generated!");
 	}
 }

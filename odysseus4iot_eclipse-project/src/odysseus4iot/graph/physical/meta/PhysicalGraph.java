@@ -6,7 +6,6 @@ import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
-import odysseus4iot.graph.physical.meta.Node.Type;
 
 public class PhysicalGraph extends Graph
 {
@@ -15,7 +14,7 @@ public class PhysicalGraph extends Graph
 		super();
 	}
 	
-	public Type getNodeTypeByID(int id)
+	public Node getNodeByID(int id)
 	{
 		Node currentNode = null;
 		
@@ -25,7 +24,7 @@ public class PhysicalGraph extends Graph
 			
 			if(currentNode.id.intValue() == id)
 			{
-				return currentNode.type;
+				return currentNode;
 			}
 		}
 		
