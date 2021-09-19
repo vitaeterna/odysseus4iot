@@ -7,6 +7,7 @@ import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
+import odysseus4iot.graph.operator.meta.Operator.Type;
 import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.placement.model.OperatorPlacement;
@@ -51,6 +52,50 @@ public class OperatorGraph extends Graph
 		}
 		
 		return datarateTotal;
+	}
+	
+	public Integer getNumberOfConnections()
+	{
+		Integer numberOfConnections = 0;
+		
+		DataFlow currentDataFlow = null;
+		
+		Operator operator0 = null;
+		Operator operator1 = null;
+		
+		for(int index = 0; index < edges.size(); index++)
+		{
+			currentDataFlow = (DataFlow)edges.get(index);
+			
+			operator0 = (Operator)currentDataFlow.vertex0;
+			operator1 = (Operator)currentDataFlow.vertex1;
+			
+			if(operator0.assignedID != operator1.assignedID)
+			{
+				numberOfConnections++;
+			}
+		}
+		
+		return numberOfConnections;
+	}
+	
+	public Integer getNumberOfEdgeOperators(PhysicalGraph physicalGraph)
+	{
+		Integer numberOfEdgeOperators = 0;
+		
+		Operator currentOperator = null;
+		
+		for(int index = 0; index < vertices.size(); index++)
+		{
+			currentOperator = (Operator)vertices.get(index);
+			
+			if(currentOperator.type.equals(Type.PROCESSING) && physicalGraph.getNodeByID(currentOperator.assignedID).type.equals(Node.Type.EDGE))
+			{
+				numberOfEdgeOperators++;
+			}
+		}
+		
+		return numberOfEdgeOperators;
 	}
 
 	public boolean loadOperatorPlacement(OperatorPlacement operatorPlacement, PhysicalGraph physicalGraph)

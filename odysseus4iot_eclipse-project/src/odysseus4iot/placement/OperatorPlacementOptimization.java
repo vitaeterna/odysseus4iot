@@ -78,8 +78,9 @@ public class OperatorPlacementOptimization
 							operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
 							operatorPlacement.id = placementCounter;
 							
-							//TODO: ___ add more metrics in addition to total datarate
 							operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
+							operatorPlacement.numberOfConnections = operatorGraph.getNumberOfConnections();
+							operatorPlacement.numberOfEdgeOperators = operatorGraph.getNumberOfEdgeOperators(physicalGraph);
 							
 							operatorPlacements.add(operatorPlacement);
 							

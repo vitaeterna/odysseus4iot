@@ -239,8 +239,6 @@ public class Util
 	
 	public static void exportPQL(OperatorGraph operatorGraph)
 	{
-		//TODO: ___ Build subgraphs which are networkable and call this method for each subgraph
-		
 		StringBuilder stringBuilder = new StringBuilder();
 		
 		stringBuilder.append("#PARSER PQL\r\n\r\n");

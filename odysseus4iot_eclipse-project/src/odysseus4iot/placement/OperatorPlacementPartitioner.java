@@ -56,7 +56,7 @@ public class OperatorPlacementPartitioner
 			
 			if(operator0.assignedID.intValue() != operator1.assignedID.intValue())
 			{
-				//TODO: add more metrics for optimization and sorting -> number of connections/number of operators on the edge
+				//TODO: ___ add more metrics for optimization and sorting -> number of connections/number of operators on the edge
 				//TODO: ___ set group
 				edgesToRemove.add(currentDataFlow);
 				

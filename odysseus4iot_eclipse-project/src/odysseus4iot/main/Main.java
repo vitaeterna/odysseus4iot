@@ -169,11 +169,10 @@ public class Main
 		//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
 		List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
 		
-		//TODO: ___ print results!
-		/*for(int index = 0; index < operatorPlacements.size(); index++)
+		for(int index = 0; index < operatorPlacements.size(); index++)
 		{
 			System.out.println(operatorPlacements.get(index));
-		}*/
+		}
 		
 		boolean successfulLoading = operatorGraph.loadOperatorPlacement(operatorPlacements.get(0), physicalGraph);
 		
@@ -188,7 +187,7 @@ public class Main
 			System.exit(0);
 		}
 		
-		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);  //TODO: is this sinnvoll? better do distri first?
+		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
 		
 		System.out.print("\r\n");
 		

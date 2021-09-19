@@ -31,6 +31,9 @@ public abstract class Graph
 	{
 		this.label = label;
 		
+		this.vertices = new ArrayList<>();
+		this.edges = new ArrayList<>();
+		
 		currentVertexID = 0;
 		currentVertexGroup = 0;
 	}
@@ -40,11 +43,6 @@ public abstract class Graph
 		if(vertex == null)
 		{
 			return;
-		}
-		
-		if(this.vertices == null)
-		{
-			this.vertices = new ArrayList<>();
 		}
 		
 		if(!this.vertices.contains(vertex))
@@ -70,9 +68,9 @@ public abstract class Graph
 	
 	public void addEdge(Edge edge)
 	{
-		if(this.edges == null)
+		if(edge == null)
 		{
-			this.edges = new ArrayList<>();
+			return;
 		}
 		
 		if(this.vertices.contains(edge.vertex0) && this.vertices.contains(edge.vertex1))
@@ -231,6 +229,11 @@ public abstract class Graph
 	
 	public List<Vertex> getStartingVertices()
 	{
+		if(this.vertices == null)
+		{
+			
+		}
+		
 		List<Vertex> startingVertices = new ArrayList<>();
 		
 		Vertex currentVertex = null;

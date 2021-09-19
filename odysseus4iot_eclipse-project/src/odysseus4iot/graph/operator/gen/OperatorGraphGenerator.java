@@ -504,7 +504,7 @@ public class OperatorGraphGenerator
 				changedetectOperator.inputName = previousOperator.outputName;
 				
 				changedetectOperator.outputSchema = changedetectOperator.inputSchema.copy();
-				changedetectOperator.outputRate = changedetectOperator.inputRate;
+				changedetectOperator.outputRate = changedetectOperator.inputRate * 0.5;
 			}
 			
 			previousOperators.clear();
