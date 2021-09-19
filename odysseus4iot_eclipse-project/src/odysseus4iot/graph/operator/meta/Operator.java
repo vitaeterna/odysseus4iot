@@ -26,14 +26,14 @@ public class Operator extends Vertex
 	public String outputName = null;
 	
 	public Integer assignedID = null;
+	public Operator assignedOperator0 = null;
+	public Operator assignedOperator1 = null;
 	
 	public Integer cpuConsumption = null;
 	public Integer memConsumption = null;
 	
 	public Operator()
 	{
-		super();
-		
 		models = new ArrayList<>();
 		
 		//TODO: ___ set consumptions

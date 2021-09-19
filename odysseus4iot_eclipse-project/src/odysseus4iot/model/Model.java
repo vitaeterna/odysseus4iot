@@ -125,8 +125,7 @@ public class Model
 		this.features = features;
 	}
 	
-	@Override
-	public String toString()
+	public String printDetails()
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		
@@ -146,6 +145,12 @@ public class Model
 		stringBuilder.append("features:                 " + features);
 		
 		return stringBuilder.toString();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return model_title;
 	}
 	
 	public static List<String> getUnionOfSchemata(List<Model> models)

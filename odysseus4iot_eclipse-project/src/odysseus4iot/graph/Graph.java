@@ -5,16 +5,43 @@ import java.util.List;
 
 public abstract class Graph
 {
+	private Integer currentVertexID = null;
+	private Integer currentVertexGroup = null;
+	
+	public Integer getNextVertexID()
+	{
+		return ++currentVertexID;
+	}
+	
+	public Integer getCurrentGroup()
+	{
+		return currentVertexGroup;
+	}
+	
+	public Integer getNextGroup()
+	{
+		return ++currentVertexGroup;
+	}
+	
+	public String label = null;
 	public List<Vertex> vertices = null;
 	public List<Edge> edges = null;
 	
-	public Graph()
+	public Graph(String label)
 	{
-		Vertex.resetIDs();
+		this.label = label;
+		
+		currentVertexID = 0;
+		currentVertexGroup = 0;
 	}
 	
 	public void addVertex(Vertex vertex)
 	{
+		if(vertex == null)
+		{
+			return;
+		}
+		
 		if(this.vertices == null)
 		{
 			this.vertices = new ArrayList<>();
@@ -22,11 +49,22 @@ public abstract class Graph
 		
 		if(!this.vertices.contains(vertex))
 		{
+			vertex.id = this.getNextVertexID();
+			vertex.group = this.getCurrentGroup();
+			
 			this.vertices.add(vertex);
 		}
 		else
 		{
 			System.err.println("Graph already contains vertex " + vertex.id + "!");
+		}
+	}
+	
+	public void addAllVertices(List<Vertex> vertices)
+	{
+		for(int index = 0; index < vertices.size(); index++)
+		{
+			this.addVertex(vertices.get(index));
 		}
 	}
 	
@@ -225,13 +263,23 @@ public abstract class Graph
 		return startingVertices;
 	}
 	
-	public List<Vertex> getVerticesBreadthFirst()
+	public List<Vertex> getVerticesBreadthFirst(Vertex startingVertex)
 	{
-		List<Vertex> vertices = this.getStartingVertices();
+		List<Vertex> vertices = null;
 		List<Vertex> successors = null;
 		
 		Vertex currentVertex = null;
 		Vertex currentSuccessor = null;
+		
+		if(startingVertex == null)
+		{
+			vertices = this.getStartingVertices();
+		}
+		else
+		{
+			vertices = new ArrayList<>();
+			vertices.add(startingVertex);
+		}
 		
 		for(int index = 0; index < vertices.size(); index++)
 		{

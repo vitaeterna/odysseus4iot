@@ -9,9 +9,9 @@ import odysseus4iot.graph.operator.meta.OperatorGraph;
 
 public class PhysicalGraph extends Graph
 {
-	public PhysicalGraph()
+	public PhysicalGraph(String label)
 	{
-		super();
+		super(label);
 	}
 	
 	public Node getNodeByID(int id)

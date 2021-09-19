@@ -11,7 +11,7 @@ public class SenderOperator extends Operator
 	{
 		super();
 		
-		type = Type.SINK;
+		type = Type.PROCESSING;
 	}
 	
 	@Override

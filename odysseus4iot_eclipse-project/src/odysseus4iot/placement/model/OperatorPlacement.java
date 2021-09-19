@@ -4,6 +4,7 @@ import odysseus4iot.util.Util;
 
 public class OperatorPlacement implements Comparable<OperatorPlacement>
 {
+	public Integer id = null;
 	public String placement = null;
 	public Double datarateTotal = null;
 	

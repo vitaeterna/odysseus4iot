@@ -14,7 +14,7 @@ public class AccessOperator extends Operator
 	{
 		super();
 		
-		type = Type.SOURCE;
+		type = Type.PROCESSING;
 	}
 	
 	@Override

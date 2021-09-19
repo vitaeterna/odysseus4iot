@@ -13,9 +13,9 @@ import odysseus4iot.placement.model.OperatorPlacement;
 
 public class OperatorGraph extends Graph
 {
-	public OperatorGraph()
+	public OperatorGraph(String label)
 	{
-		super();
+		super(label);
 		
 		MergeOperator.resetMergeCount();
 		ProjectOperator.resetProjectCount();
@@ -83,6 +83,8 @@ public class OperatorGraph extends Graph
 			this.setLabels();
 			
 			physicalGraph.setLabels();
+			
+			this.label = "placement_" + operatorPlacement.id;
 			
 			return true;
 		}
@@ -176,5 +178,17 @@ public class OperatorGraph extends Graph
 		}
 		
 		return operators;
+	}
+	
+	public void setControlFlowDatarates()
+	{
+		DataFlow currentDataFlow = null;
+		
+		for(int index = 0; index < this.edges.size(); index++)
+		{
+			currentDataFlow = (DataFlow)this.edges.get(index);
+			
+			currentDataFlow.datarateConsumption = ((Operator)currentDataFlow.vertex0).outputRate * ((Operator)currentDataFlow.vertex0).outputSchema.getSize();
+		}
 	}
 }

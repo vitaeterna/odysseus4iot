@@ -292,13 +292,11 @@ public class OperatorGenerator
 		senderOperator.outputRate = null;
 		senderOperator.outputName = null;
 		
-		return null;
+		return senderOperator;
 	}
 	
 	public static AccessOperator generateAccessOperator(String host, Integer port)
 	{
-		//TODO
-		
 		AccessOperator accessOperator = new AccessOperator();
 		accessOperator.host = host;
 		accessOperator.port = port;
@@ -307,6 +305,6 @@ public class OperatorGenerator
 		accessOperator.outputRate = null;
 		accessOperator.outputName = null;
 		
-		return null;
+		return accessOperator;
 	}
 }

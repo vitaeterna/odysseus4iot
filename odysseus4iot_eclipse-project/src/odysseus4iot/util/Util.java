@@ -237,7 +237,7 @@ public class Util
         }
     }
 	
-	public static void exportPQL(String outputFilename, OperatorGraph graph)
+	public static void exportPQL(OperatorGraph operatorGraph)
 	{
 		//TODO: ___ Build subgraphs which are networkable and call this method for each subgraph
 		
@@ -247,7 +247,7 @@ public class Util
 		stringBuilder.append("#REQUIRED de.uniol.inf.is.odysseus.database.feature.feature.group false\r\n\r\n");
 		stringBuilder.append("#ADDQUERY\r\n\r\n");
 		
-		List<Vertex> vertices = graph.getVerticesBreadthFirst();
+		List<Vertex> vertices = operatorGraph.getVerticesBreadthFirst(null);
 		
 		Vertex currentVertex = null;
 		
@@ -263,12 +263,12 @@ public class Util
 			}
 		}
 		
-		Util.writeFile(outputFilename + ".qry", stringBuilder.toString(), Charset.defaultCharset());
+		Util.writeFile(operatorGraph.label + ".qry", stringBuilder.toString(), Charset.defaultCharset());
 		
-		System.out.print("Written to " + outputFilename + ".qry\n");
+		System.out.print("Written to " + operatorGraph.label + ".qry\n");
 	}
     
-    public static void exportOperatorGraphToDOTPNG(String outputFilename, OperatorGraph operatorGraph)
+    public static void exportOperatorGraphToDOTPNG(OperatorGraph operatorGraph)
     {
         StringBuilder dot = new StringBuilder();
 
@@ -320,12 +320,12 @@ public class Util
 
         dot.append("}");
 
-        Util.writeFile(outputFilename + ".dot", dot.toString(), Charset.defaultCharset());
+        Util.writeFile(operatorGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
         
-        System.out.print("Written to " + outputFilename + ".dot\n");
+        System.out.print("Written to " + operatorGraph.label + ".dot\n");
         
         //dot -Tpng outputFilename.dot -o outputFilename.png
-        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", outputFilename + ".dot", "-o", outputFilename + ".png");
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", operatorGraph.label + ".dot", "-o", operatorGraph.label + ".png");
         builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -334,7 +334,7 @@ public class Util
         {
             builder.start().waitFor();
 
-            System.out.print("Written to " + outputFilename + ".png\n");
+            System.out.print("Written to " + operatorGraph.label + ".png\n");
         }
         catch(InterruptedException e)
         {
@@ -351,7 +351,7 @@ public class Util
         }
     }
     
-    public static void exportPhysicalGraphToDOTPNG(String outputFilename, PhysicalGraph physicalGraph)
+    public static void exportPhysicalGraphToDOTPNG(PhysicalGraph physicalGraph)
     {
         StringBuilder dot = new StringBuilder();
 
@@ -399,12 +399,12 @@ public class Util
 
         dot.append("}");
 
-        Util.writeFile(outputFilename + ".dot", dot.toString(), Charset.defaultCharset());
+        Util.writeFile(physicalGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
         
-        System.out.print("Written to " + outputFilename + ".dot\n");
+        System.out.print("Written to " + physicalGraph.label + ".dot\n");
         
         //dot -Tpng outputFilename.dot -o outputFilename.png
-        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", outputFilename + ".dot", "-o", outputFilename + ".png");
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", physicalGraph.label + ".dot", "-o", physicalGraph.label + ".png");
         builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -413,7 +413,7 @@ public class Util
         {
             builder.start().waitFor();
 
-            System.out.print("Written to " + outputFilename + ".png\n");
+            System.out.print("Written to " + physicalGraph.label + ".png\n");
         }
         catch(InterruptedException e)
         {
@@ -430,7 +430,7 @@ public class Util
         }
     }
 	
-    public static void exportOperatorPlacementToDOTPNG(String outputFilename, OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
+    public static void exportOperatorPlacementToDOTPNG(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
     {
         StringBuilder dot = new StringBuilder();
 
@@ -498,12 +498,12 @@ public class Util
 
         dot.append("}");
 
-        Util.writeFile(outputFilename + ".dot", dot.toString(), Charset.defaultCharset());
+        Util.writeFile(operatorGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
         
-        System.out.print("Written to " + outputFilename + ".dot\n");
+        System.out.print("Written to " + operatorGraph.label + ".dot\n");
         
         //dot -Tpng outputFilename.dot -o outputFilename.png
-        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", outputFilename + ".dot", "-o", outputFilename + ".png");
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", operatorGraph.label + ".dot", "-o", operatorGraph.label + ".png");
         builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -512,7 +512,7 @@ public class Util
         {
             builder.start().waitFor();
 
-            System.out.print("Written to " + outputFilename + ".png\n");
+            System.out.print("Written to " + operatorGraph.label + ".png\n");
         }
         catch(InterruptedException e)
         {

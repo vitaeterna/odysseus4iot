@@ -11,14 +11,14 @@ import odysseus4iot.util.Util;
 
 public class PhysicalGraphGenerator
 {
-	public static PhysicalGraph generatePhysicalraph(List<String> nodeNames, List<String> nodeSockets, List<String> nodeTypes, List<String> nodeCPUCaps, List<String> nodeMemCaps, List<String> edges, List<String> edgeRateCaps)
+	public static PhysicalGraph generatePhysicalGraph(List<String> nodeNames, List<String> nodeSockets, List<String> nodeTypes, List<String> nodeCPUCaps, List<String> nodeMemCaps, List<String> edges, List<String> edgeRateCaps)
 	{
 		Long startTimestamp = System.currentTimeMillis();
 		Long endTimestamp = null;
 		
 		System.out.println("Generation of Physical Graph started...");
 		
-		PhysicalGraph graph = new PhysicalGraph();
+		PhysicalGraph graph = new PhysicalGraph("physical");
 		
 		List<Node> nodes = new ArrayList<>();
 		

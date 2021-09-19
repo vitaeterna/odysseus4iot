@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
@@ -57,7 +58,7 @@ public class Main
 	{
 		Util.charsetUTF8();
 		
-		//0 - Load property file
+		//1 - Input to System (sensors/nodes/labels)
 		InputStream input = null;
 		
 		try
@@ -84,7 +85,6 @@ public class Main
 		
         Util.validateProperties();
         
-		//1 - Input to System (sensors/nodes/labels)
 		List<String> sensors = Arrays.asList(properties.getProperty("input.sensors").split(","));
 		
 		System.out.println("Input - Sensors");
@@ -112,8 +112,6 @@ public class Main
 		System.out.println("Input - Labels - (Not implemented)");
 		System.out.println("labels = " + labels + "\r\n");
 		
-		//List<String> nodes = new ArrayList<>();
-		
 		//2 - Retrieving Model Information from Model Management System
 		PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
 		PostgresImport.table = properties.getProperty("modeldb.table");
@@ -122,56 +120,92 @@ public class Main
 
 		List<Model> models = PostgresImport.importFromDB();
 		
-		//3 - Generating Logical Operator Graphs
-		/*List<Graph> graphs = new ArrayList<>();
+		//3 - Generating Logical Operator Graph for each model
+		List<OperatorGraph> graphs = new ArrayList<>();
+		
+		OperatorGraph operatorGraph = null;
 		
 		Model currentModel = null;
+		
+		boolean postprocessing = true;
+		boolean merge = true;
 		
 		for(int index = 0; index < models.size(); index++)
 		{
 			currentModel = models.get(index);
 			
-			System.out.println(currentModel+"\r\n");
+			System.out.println(currentModel.printDetails()+"\r\n");
 			
-			Graph graph = OperatorGraphGenerator.generateOperatorGraph(sensors, currentModel);
+			List<Model> singleModel = new ArrayList<>();
+			singleModel.add(currentModel);
 			
-			Util.exportPQL(currentModel.getModel_title(), graph);
+			operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, singleModel, postprocessing, merge);
 			
-			Util.exportDOTPNG(currentModel.getModel_title(), graph);
+			Util.exportPQL(operatorGraph);
 			
-			graphs.add(graph);
-		}*/
+			Util.exportOperatorGraphToDOTPNG(operatorGraph);
+			
+			System.out.print("\r\n");
+			
+			graphs.add(operatorGraph);
+		}
 		
-		boolean postprocessing = true;
-		boolean merge = true;
+		//4 - Generating Merged Logical Operator Graph for all models
+		operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 		
-		OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
+		Util.exportPQL(operatorGraph);
 		
-		Util.exportPQL("merged", operatorGraph);
+		Util.exportOperatorGraphToDOTPNG(operatorGraph);
 		
-		Util.exportOperatorGraphToDOTPNG("merged", operatorGraph);
+		System.out.print("\r\n");
 		
-		//4 - Generating Physical Graph
+		//5 - Generating Physical Graph
+		PhysicalGraph physicalGraph = PhysicalGraphGenerator.generatePhysicalGraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
 		
-		PhysicalGraph physicalGraph = PhysicalGraphGenerator.generatePhysicalraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
+		Util.exportPhysicalGraphToDOTPNG(physicalGraph);
 		
-		Util.exportPhysicalGraphToDOTPNG("physical", physicalGraph);
+		System.out.print("\r\n");
 		
+		//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
 		List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
 		
+		//TODO: ___ print results!
 		/*for(int index = 0; index < operatorPlacements.size(); index++)
 		{
 			System.out.println(operatorPlacements.get(index));
 		}*/
 		
-		operatorGraph.loadOperatorPlacement(operatorPlacements.get(0), physicalGraph);
+		boolean successfulLoading = operatorGraph.loadOperatorPlacement(operatorPlacements.get(0), physicalGraph);
 		
-		Util.exportOperatorPlacementToDOTPNG("operatorPlacement0", operatorGraph, physicalGraph);
+		if(successfulLoading)
+		{
+			System.out.println("Successfully loaded placement strategy " + operatorPlacements.get(0).id + "\n");
+		}
+		else
+		{
+			System.err.println("Error loading placement strategy " + operatorPlacements.get(0).id);
+			
+			System.exit(0);
+		}
 		
+		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);  //TODO: is this sinnvoll? better do distri first?
+		
+		System.out.print("\r\n");
+		
+		//7 - Transformation to distributed operator graph
 		OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
 		
+		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
+		
+		System.out.print("\r\n");
+		
+		//8 - Generation of subgraphs for distribution
 		List<OperatorGraph> subGraphs = OperatorPlacementPartitioner.buildSubgraphs(operatorGraph, physicalGraph);
 		
-		System.out.println(subGraphs.size() + " subgraphs generated!");
+		for(int index = 0; index < subGraphs.size(); index++)
+		{
+			Util.exportPQL(subGraphs.get(index));
+			Util.exportOperatorGraphToDOTPNG(subGraphs.get(index));
+		}
 	}
 }

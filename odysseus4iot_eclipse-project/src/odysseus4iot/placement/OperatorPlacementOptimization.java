@@ -76,18 +76,21 @@ public class OperatorPlacementOptimization
 						{
 							OperatorPlacement operatorPlacement = new OperatorPlacement();
 							operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
+							operatorPlacement.id = placementCounter;
 							
 							//TODO: ___ add more metrics in addition to total datarate
 							operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
 							
 							operatorPlacements.add(operatorPlacement);
 							
-							//Util.printProgressBar(placementCounter, placementSearchSpaceSize);
+							Util.printProgressBar(placementCounter, placementSearchSpaceSize);
 						}
 					}
 				}
 			}
 		}
+		
+		Util.printProgressBar(placementCounter, placementSearchSpaceSize);
 		
 		System.out.println("\nValid Operator Placements found: " + operatorPlacements.size());
 		
