@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Model
 {
+	//Columns in ExperimentResult Table
 	private String model_title = null;
 	private String features_json_content = null;
 	private String list_of_predicted_classes = null;
@@ -21,7 +22,9 @@ public class Model
 	private Double waiteach = null;
 	private List<String> schema = null;
 	private List<String> preprocessing = null;
-	private List<String> features = null;
+	private List<Feature> features = null;
+	
+	private Integer size = null;
 	
 	public String getModel_title() {
 		return model_title;
@@ -100,6 +103,9 @@ public class Model
 	public Integer getWindow_slide() {
 		return window_slide;
 	}
+	public void setWindow_slide(Integer window_slide) {
+		this.window_slide = window_slide;
+	}
 	public Double getWaiteach() {
 		return waiteach;
 	}
@@ -118,11 +124,17 @@ public class Model
 	public void setPreprocessing(List<String> preprocessing) {
 		this.preprocessing = preprocessing;
 	}
-	public List<String> getFeatures() {
+	public List<Feature> getFeatures() {
 		return features;
 	}
-	public void setFeatures(List<String> features) {
+	public void setFeatures(List<Feature> features) {
 		this.features = features;
+	}
+	public Integer getSize() {
+		return size;
+	}
+	public void setSize(Integer size) {
+		this.size = size;
 	}
 	
 	public String printDetails()
@@ -220,13 +232,13 @@ public class Model
 		return unionOfPreprocessing;
 	}
 	
-	public static List<String> getUnionOfFeatures(List<Model> models)
+	public static List<Feature> getUnionOfFeatures(List<Model> models)
 	{
-		List<String> unionOfFeatures = new ArrayList<>();
+		List<Feature> unionOfFeatures = new ArrayList<>();
 		
-		List<String> currentFeatures = null;
+		List<Feature> currentFeatures = null;
 		
-		String currentName = null;
+		Feature currentFeature = null;
 		
 		for(int index = 0; index < models.size(); index++)
 		{
@@ -234,11 +246,11 @@ public class Model
 			
 			for(int index2 = 0; index2 < currentFeatures.size(); index2++)
 			{
-				currentName = currentFeatures.get(index2);
+				currentFeature = currentFeatures.get(index2);
 				
-				if(!unionOfFeatures.contains(currentName))
+				if(!unionOfFeatures.contains(currentFeature))
 				{
-					unionOfFeatures.add(currentName);
+					unionOfFeatures.add(currentFeature);
 				}
 			}
 		}

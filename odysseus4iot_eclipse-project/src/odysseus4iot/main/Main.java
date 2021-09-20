@@ -14,6 +14,7 @@ import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.model.Model;
+import odysseus4iot.model.ModelManagementImport;
 import odysseus4iot.model.PostgresImport;
 import odysseus4iot.placement.OperatorPlacementOptimization;
 import odysseus4iot.placement.OperatorPlacementPartitioner;
@@ -56,6 +57,10 @@ public class Main
 	
 	public static void main(String[] args)
 	{
+		ModelManagementImport.importFromModelManagementSystem();
+		
+		System.exit(0);
+		
 		Util.charsetUTF8();
 		
 		//1 - Input to System (sensors/nodes/labels)
@@ -118,7 +123,7 @@ public class Main
 		PostgresImport.user = properties.getProperty("modeldb.user");
 		PostgresImport.password = properties.getProperty("modeldb.password");
 
-		List<Model> models = PostgresImport.importFromDB();
+		List<Model> models = PostgresImport.importFromExperimentResultSchema();
 		
 		//3 - Generating Logical Operator Graph for each model
 		List<OperatorGraph> graphs = new ArrayList<>();

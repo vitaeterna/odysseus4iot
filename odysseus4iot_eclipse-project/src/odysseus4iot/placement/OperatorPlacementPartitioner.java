@@ -31,7 +31,6 @@ public class OperatorPlacementPartitioner
 		List<Edge> edgesToAdd = new ArrayList<>();
 		List<Edge> edgesToRemove = new ArrayList<>();
 		
-		Node node0 = null;
 		Node node1 = null;
 		
 		Operator operator0 = null;
@@ -60,10 +59,8 @@ public class OperatorPlacementPartitioner
 				//TODO: ___ set group
 				edgesToRemove.add(currentDataFlow);
 				
-				node0 = physicalGraph.getNodeByID(operator0.assignedID.intValue());
 				node1 = physicalGraph.getNodeByID(operator1.assignedID.intValue());
 				
-				socketSplit = node0.socket.split(":"); //TODO: ___ adjust that sockets are properly aligned
 				socketSplit = node1.socket.split(":");
 				
 				if(operator0.assignedOperator1 == null)
@@ -222,12 +219,18 @@ public class OperatorPlacementPartitioner
 						}
 					}
 					
-					subGraphs.add(subGraph2);
+					if(!subGraph2.isEmpty())
+					{
+						subGraphs.add(subGraph2);
+					}
 				}
 			}
 			else
 			{
-				subGraphs.add(subGraph);
+				if(!subGraph.isEmpty())
+				{
+					subGraphs.add(subGraph);
+				}
 			}
 		}
 		

@@ -16,6 +16,7 @@ import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
+import odysseus4iot.model.Feature;
 import odysseus4iot.model.Model;
 import odysseus4iot.util.Util;
 
@@ -239,7 +240,7 @@ public class OperatorGraphGenerator
 			
 			if(unionOfPreprocessing.size() < currentSchema.size())
 			{
-				projectOperator = OperatorGenerator.generateProjectOperator(unionOfPreprocessing, null);
+				projectOperator = OperatorGenerator.generateProjectOperator(Feature.getFeaturesFromNames(unionOfPreprocessing), null);
 			
 				projectOperators.add(projectOperator);
 				
@@ -333,7 +334,7 @@ public class OperatorGraphGenerator
 		
 		ClassificationOperator classificationOperator = null;
 		
-		List<String> unionOfFeatures = null;
+		List<Feature> unionOfFeatures = null;
 		
 		List<String> outputStreams = new ArrayList<>();
 		

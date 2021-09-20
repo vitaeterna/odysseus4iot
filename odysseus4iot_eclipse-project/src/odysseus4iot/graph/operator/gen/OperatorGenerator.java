@@ -18,6 +18,7 @@ import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Schema;
 import odysseus4iot.main.Main;
+import odysseus4iot.model.Feature;
 
 public class OperatorGenerator
 {
@@ -125,7 +126,7 @@ public class OperatorGenerator
 		return timewindowOperator;
 	}
 	
-	public static AggregateOperator generateAggregateOperator(List<String> features)
+	public static AggregateOperator generateAggregateOperator(List<Feature> features)
 	{
 		AggregateOperator aggregateOperator = new AggregateOperator();
 		
@@ -163,7 +164,7 @@ public class OperatorGenerator
 		return aggregateOperator;
 	}
 	
-	public static ProjectOperator generateProjectOperator(List<String> attributes, String attributePrefix)
+	public static ProjectOperator generateProjectOperator(List<Feature> attributes, String attributePrefix)
 	{
 		ProjectOperator projectOperator = new ProjectOperator();
 		

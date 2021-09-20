@@ -27,7 +27,7 @@ public class SenderOperator extends Operator
 			+ "\t\tsink='%s',\r\n"
 			+ "\t\twrapper='GenericPush',\r\n"
 			+ "\t\ttransport='TCPClient',\r\n"
-			+ "\t\tprotocol='SizeByteBuffer',\r\n"
+			+ "\t\tprotocol='Odysseus',\r\n"
 			+ "\t\tdatahandler='Tuple',\r\n"
 			+ "\t\twritemetadata=true,\r\n"
 			+ "\t\toptions=\r\n"

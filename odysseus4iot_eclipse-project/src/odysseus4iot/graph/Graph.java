@@ -317,6 +317,11 @@ public abstract class Graph
 		}
 	}
 	
+	public boolean isEmpty()
+	{
+		return this.vertices.isEmpty() && this.edges.isEmpty();
+	}
+	
 	public boolean containsEdge(int id0, int id1)
 	{
 		Edge currentEdge = null;
