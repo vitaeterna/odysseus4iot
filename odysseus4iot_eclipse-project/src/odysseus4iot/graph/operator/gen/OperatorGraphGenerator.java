@@ -20,10 +20,11 @@ import odysseus4iot.model.Feature;
 import odysseus4iot.model.Model;
 import odysseus4iot.util.Util;
 
-//TODO: ___ project operator generation order (id mixup)
-//TODO: ___ generate invisible filler nodes for visualization - project operator
-//TODO: ___ handle metadata correctly!
+//TODO: _ project operator generation order (id mixup)
+//TODO: _ generate invisible filler nodes for visualization - project operator
+//TODO: __ handle metadata correctly!
 //TODO: ___ write metadata on databasesink
+//TODO: ___ integrate benchmark operators
 public class OperatorGraphGenerator
 {	
 	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
@@ -36,19 +37,15 @@ public class OperatorGraphGenerator
 		Long startTimestamp = System.currentTimeMillis();
 		Long endTimestamp = null;
 		
-		OperatorGraph operatorGraph = null;
+		OperatorGraph operatorGraph = new OperatorGraph(models.toString());
 		
 		if(models.size() == 1)
 		{
 			System.out.println("Generation of Operator Graph for model " + models.get(0).getModel_title() + " started...");
-			
-			operatorGraph = new OperatorGraph(models.get(0).getModel_title());
 		}
 		else
 		{
 			System.out.println("Generation of Merged Operator Graph for models=" + models + " started...");
-			
-			operatorGraph = new OperatorGraph("merged");
 		}
 		
 		Operator previousOperator = null;
@@ -316,7 +313,11 @@ public class OperatorGraphGenerator
 			aggregateOperator.inputRate = previousOperator.outputRate;
 			aggregateOperator.inputName = previousOperator.outputName;
 			
-			//TODO: ___ consider window_slide
+			//TODO: _ consider window_slide in memConsumption and outputRate (Overlaps)
+			
+			//Partition_Count * Elements_Per_Window * Tuple_Size
+			aggregateOperator.memConsumption = sensors.size() * (((TimewindowOperator)previousOperator).size/databasesourceOperator.waiteach) * aggregateOperator.inputSchema.getSize();
+			
 			aggregateOperator.outputRate = aggregateOperator.inputRate/(((double)((TimewindowOperator)previousOperator).size)/databasesourceOperator.waiteach);
 		}
 		
@@ -352,9 +353,11 @@ public class OperatorGraphGenerator
 			{
 				currentModel = models.get(index2);
 				
-				classificationOperator = OperatorGenerator.generateClassificationOperator(currentModel.getModel_title());
+				classificationOperator = OperatorGenerator.generateClassificationOperator(currentModel.getModel_title(), currentModel.getRpcServerSocket());
 				
 				classificationOperator.models.add(currentModel);
+				
+				classificationOperator.memConsumption = currentModel.getSize();
 				
 				classificationOperators.add(classificationOperator);
 				
@@ -473,6 +476,9 @@ public class OperatorGraphGenerator
 				
 				outlierRemovingOperator.outputSchema = outlierRemovingOperator.inputSchema.copy();
 				outlierRemovingOperator.outputRate = outlierRemovingOperator.inputRate;
+				
+				//Partition_Count * Elementwindow_Size * Tuple_Size
+				outlierRemovingOperator.memConsumption = sensors.size() * 2 * outlierRemovingOperator.inputSchema.getSize();
 			}
 			
 			previousOperators.clear();
@@ -506,6 +512,9 @@ public class OperatorGraphGenerator
 				
 				changedetectOperator.outputSchema = changedetectOperator.inputSchema.copy();
 				changedetectOperator.outputRate = changedetectOperator.inputRate * 0.5;
+				
+				//Partition_Count * Tuple_Size
+				changedetectOperator.memConsumption = sensors.size() * outlierRemovingOperator.inputSchema.getSize();
 			}
 			
 			previousOperators.clear();

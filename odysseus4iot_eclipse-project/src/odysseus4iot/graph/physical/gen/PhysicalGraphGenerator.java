@@ -27,16 +27,16 @@ public class PhysicalGraphGenerator
 		String currentNodeName = null;
 		String currentNodeSocket = null;
 		Type currentNodeType = null;
-		Integer currentNodeCPUCap = null;
-		Integer currentNodeMemCap = null;
+		Long currentNodeCPUCap = null;
+		Long currentNodeMemCap = null;
 		
 		for(int index = 0; index < nodeNames.size(); index++)
 		{
 			currentNodeName = nodeNames.get(index);
 			currentNodeSocket = nodeSockets.get(index);
 			currentNodeType = Type.valueOf(nodeTypes.get(index).toUpperCase());
-			currentNodeCPUCap = Integer.parseInt(nodeCPUCaps.get(index));
-			currentNodeMemCap = Integer.parseInt(nodeMemCaps.get(index));
+			currentNodeCPUCap = Long.parseLong(nodeCPUCaps.get(index));
+			currentNodeMemCap = Long.parseLong(nodeMemCaps.get(index));
 			
 			node = NodeGenerator.generateNode(currentNodeName, currentNodeSocket, currentNodeType, currentNodeCPUCap, currentNodeMemCap);
 			

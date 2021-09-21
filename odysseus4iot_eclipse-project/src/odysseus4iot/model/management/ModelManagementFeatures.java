@@ -21,23 +21,23 @@ public class ModelManagementFeatures
 	
 	public List<Feature> getFeatures()
 	{
-		List<Feature> features = new ArrayList<>();
+		List<Feature> addToList = new ArrayList<>();
 		
-		this.setInputAndAddTo(features);
+		this.setInputAndAddTo(addToList);
 		
-		return features;
+		return addToList;
 	}
 	
-	private void setInputAndAddTo(List<Feature> features)
+	private void setInputAndAddTo(List<Feature> addToList)
 	{
-		setInputAndAddToFeatureList(ax, "ax", features);
-		setInputAndAddToFeatureList(ay, "ay", features);
-		setInputAndAddToFeatureList(az, "az", features);
-		setInputAndAddToFeatureList(gx, "gx", features);
-		setInputAndAddToFeatureList(gy, "gy", features);
-		setInputAndAddToFeatureList(gz, "gz", features);
-		setInputAndAddToFeatureList(accMag, "accMag", features);
-		setInputAndAddToFeatureList(gyrMag, "gyrMag", features);
+		setInputAndAddToFeatureList(ax, "ax", addToList);
+		setInputAndAddToFeatureList(ay, "ay", addToList);
+		setInputAndAddToFeatureList(az, "az", addToList);
+		setInputAndAddToFeatureList(gx, "gx", addToList);
+		setInputAndAddToFeatureList(gy, "gy", addToList);
+		setInputAndAddToFeatureList(gz, "gz", addToList);
+		setInputAndAddToFeatureList(accMag, "accMag", addToList);
+		setInputAndAddToFeatureList(gyrMag, "gyrMag", addToList);
 	}
 	
 	private void setInputAndAddToFeatureList(List<ModelManagementFeature> features, String input, List<Feature> addToList)
@@ -135,7 +135,7 @@ public class ModelManagementFeatures
 		}
 		
 		//Features
-		features = this.getFeatures();
+		features.addAll(this.getFeatures());
 		
 		Collections.sort(schema);
 		Collections.sort(preprocessing);

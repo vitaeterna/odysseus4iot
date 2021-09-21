@@ -35,7 +35,7 @@ public class DatabasesinkOperator extends Operator
 			+ "\t\ttruncate=true,\r\n"
 			+ "\t\tbatchsize=100,\r\n"
 			+ "\t\tbatchtimeout=0,\r\n"
-			+ "\t\trecoveryenabled=false,\r\n"
+			+ "\t\trecoveryenabled=false\r\n"
 			+ "\t},\r\n"
 			+ "\t%s\r\n"
 			+ ")";

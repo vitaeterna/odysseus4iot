@@ -18,6 +18,7 @@ import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Schema;
+import odysseus4iot.graph.operator.meta.StartTimestamp;
 import odysseus4iot.main.Main;
 import odysseus4iot.model.Feature;
 
@@ -35,6 +36,7 @@ public class OperatorGenerator
 		
 		Schema attributes = new Schema();
 		attributes.addColumn(new Column("cattle_id", Integer.class));
+		attributes.addColumn(new Column("timestamp", StartTimestamp.class));
 		
 		String columnName = null;
 		
@@ -218,14 +220,14 @@ public class OperatorGenerator
 		return projectOperator;
 	}
 	
-	public static ClassificationOperator generateClassificationOperator(String model_title)
+	public static ClassificationOperator generateClassificationOperator(String model_title, String rpcServerSocket)
 	{
 		ClassificationOperator classificationOperator = new ClassificationOperator();
 		
 		classificationOperator.database = Main.properties.getProperty("modeldb.database");
 		classificationOperator.host = Main.properties.getProperty("modeldb.host");
 		classificationOperator.port = Integer.parseInt(Main.properties.getProperty("modeldb.port"));
-		classificationOperator.rpcServer = Main.properties.getProperty("pythonrpc.socket"); //TODO: ___ several rpc servers? Odysseus Java prediction
+		classificationOperator.rpcServer = rpcServerSocket;
 		classificationOperator.table = Main.properties.getProperty("modeldb.table");
 		classificationOperator.username = Main.properties.getProperty("modeldb.user");
 		classificationOperator.password = Main.properties.getProperty("modeldb.password");

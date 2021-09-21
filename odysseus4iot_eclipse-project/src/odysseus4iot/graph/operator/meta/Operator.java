@@ -29,16 +29,15 @@ public class Operator extends Vertex
 	public Operator assignedOperator0 = null;
 	public Operator assignedOperator1 = null;
 	
-	public Integer cpuConsumption = null;
-	public Integer memConsumption = null;
+	public Long cpuConsumption = null;
+	public Long memConsumption = null;
 	
 	public Operator()
 	{
 		models = new ArrayList<>();
 		
-		//TODO: ___ set consumptions
-		cpuConsumption = 0;
-		memConsumption = 0;
+		cpuConsumption = 0L;
+		memConsumption = 0L;
 	}
 	
 	@Override

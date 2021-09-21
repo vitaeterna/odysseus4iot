@@ -17,7 +17,7 @@ public class ModelManagementModel
 	public String window_size = null;
 	public String window_stride = null;
 	public ModelManagementFeatures features = null;
-	public Integer size = null;
+	public Long size = null;
 	public String algorithm = null;
 	
 	public Model toModel()

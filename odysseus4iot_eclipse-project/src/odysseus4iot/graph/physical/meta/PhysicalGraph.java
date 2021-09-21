@@ -6,6 +6,7 @@ import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
+import odysseus4iot.graph.physical.meta.Node.Type;
 
 public class PhysicalGraph extends Graph
 {
@@ -31,6 +32,25 @@ public class PhysicalGraph extends Graph
 		return null;
 	}
 	
+	public Long getMemConsumptionEdge()
+	{
+		Node currentNode = null;
+		
+		Long memConsumptionEdge = 0L;
+		
+		for(int index = 0; index < vertices.size(); index++)
+		{
+			currentNode = (Node)vertices.get(index);
+			
+			if(currentNode.type.equals(Type.EDGE))
+			{
+				memConsumptionEdge += currentNode.memConsumed;
+			}
+		}
+		
+		return memConsumptionEdge;
+	}
+	
 	public boolean allNodeCapacitiesFine(OperatorGraph operatorGraph)
 	{
 		Node currentNode = null;
@@ -39,8 +59,8 @@ public class PhysicalGraph extends Graph
 		
 		List<Operator> operators = null;
 		
-		Double cpuConsumption = null;
-		Double memConsumption = null;
+		Long cpuConsumption = null;
+		Long memConsumption = null;
 		
 		for(int index = 0; index < vertices.size(); index++)
 		{
@@ -48,8 +68,8 @@ public class PhysicalGraph extends Graph
 			
 			operators = operatorGraph.getOperatorsByAssignedID(currentNode.id);
 		
-			cpuConsumption = 0.0d;
-			memConsumption = 0.0d;
+			cpuConsumption = 0L;
+			memConsumption = 0L;
 			
 			for(int index2 = 0; index2 < operators.size(); index2++)
 			{
@@ -62,7 +82,7 @@ public class PhysicalGraph extends Graph
 			currentNode.cpuConsumed = cpuConsumption;
 			currentNode.memConsumed = memConsumption;
 			
-			if(currentNode.cpuCapacity < currentNode.cpuConsumed || currentNode.memCapacity < currentNode.memConsumed)
+			if((currentNode.cpuCapacity.longValue() != -1L && currentNode.cpuCapacity < currentNode.cpuConsumed) || (currentNode.memCapacity.longValue() != -1L && currentNode.memCapacity < currentNode.memConsumed))
 			{
 				return false;
 			}

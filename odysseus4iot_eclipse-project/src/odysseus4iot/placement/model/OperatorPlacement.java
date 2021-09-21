@@ -1,5 +1,7 @@
 package odysseus4iot.placement.model;
 
+import odysseus4iot.graph.operator.meta.OperatorGraph;
+import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.util.Util;
 
 public class OperatorPlacement implements Comparable<OperatorPlacement>
@@ -10,6 +12,10 @@ public class OperatorPlacement implements Comparable<OperatorPlacement>
 	public Double datarateTotal = null;
 	public Integer numberOfConnections = null;
 	public Integer numberOfEdgeOperators = null;
+	public Long memConsumptionEdge = null;
+	
+	public OperatorGraph operatorGraph = null;
+	public PhysicalGraph physicalGraph = null;
 	
 	@Override
 	public int compareTo(OperatorPlacement operatorPlacement)
@@ -26,7 +32,14 @@ public class OperatorPlacement implements Comparable<OperatorPlacement>
 			}
 			else
 			{
-				return numberOfEdgeOperators.compareTo(operatorPlacement.numberOfEdgeOperators);
+				if(numberOfEdgeOperators.intValue() != operatorPlacement.numberOfEdgeOperators.intValue())
+				{
+					return numberOfEdgeOperators.compareTo(operatorPlacement.numberOfEdgeOperators);
+				}
+				else
+				{
+					return memConsumptionEdge.compareTo(operatorPlacement.memConsumptionEdge);
+				}
 			}
 		}
 	}
@@ -34,6 +47,6 @@ public class OperatorPlacement implements Comparable<OperatorPlacement>
 	@Override
 	public String toString()
 	{
-		return "placement_" + id + " - DR=" + Util.formatDatarate(datarateTotal) + " | #Connections=" + numberOfConnections + " | #EdgeOperators=" + numberOfEdgeOperators;
+		return "placement_" + id + "_" + operatorGraph.label + " - DR=" + Util.formatSizeInBits(datarateTotal) + "/s | #Connections=" + numberOfConnections + " | #EdgeOperators=" + numberOfEdgeOperators + " | memConsumptionEdge=" + Util.formatSizeInBits((double)memConsumptionEdge);
 	}
 }

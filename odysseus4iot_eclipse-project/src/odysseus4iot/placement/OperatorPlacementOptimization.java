@@ -62,6 +62,14 @@ public class OperatorPlacementOptimization
 		System.out.println("    - Static:       " + (operatorGraph.vertices.size() - operators.size()) + " (fixed physical node assignment for sources and sinks)");
 		System.out.println("Search Space Size:  " + placementSearchSpaceSize + " (" + maxID + "^" + operators.size() + ")");
 		
+		int filteredGeneralConstraints = 0;
+		int filteredNodeConstraints = 0;
+		int filteredConnectionConstraints = 0;
+		int filteredBothConstraints = 0;
+		
+		boolean allNodeCapacitiesFine = false;
+		boolean allConnectionCapacitiesFine = false;
+		
 		Util.printProgressBar(placementCounter, placementSearchSpaceSize);
 		
 		while(nextPlacement())
@@ -70,30 +78,59 @@ public class OperatorPlacementOptimization
 			{
 				if(operatorGraph.allDataFlowsValid(physicalGraph))
 				{
-					if(physicalGraph.allNodeCapacitiesFine(operatorGraph))
+					allNodeCapacitiesFine = physicalGraph.allNodeCapacitiesFine(operatorGraph);
+					allConnectionCapacitiesFine = physicalGraph.allConnectionCapacitiesFine(operatorGraph);
+
+					if(!allNodeCapacitiesFine)
 					{
-						if(physicalGraph.allConnectionCapacitiesFine(operatorGraph))
-						{
-							OperatorPlacement operatorPlacement = new OperatorPlacement();
-							operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
-							operatorPlacement.id = placementCounter;
-							
-							operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
-							operatorPlacement.numberOfConnections = operatorGraph.getNumberOfConnections();
-							operatorPlacement.numberOfEdgeOperators = operatorGraph.getNumberOfEdgeOperators(physicalGraph);
-							
-							operatorPlacements.add(operatorPlacement);
-							
-							Util.printProgressBar(placementCounter, placementSearchSpaceSize);
-						}
+						filteredNodeConstraints++;
+					}
+					if(!allConnectionCapacitiesFine)
+					{
+						filteredConnectionConstraints++;
+					}
+					if(!allNodeCapacitiesFine && !allConnectionCapacitiesFine)
+					{
+						filteredBothConstraints++;
+					}
+					
+					if(allNodeCapacitiesFine && allConnectionCapacitiesFine)
+					{
+						OperatorPlacement operatorPlacement = new OperatorPlacement();
+						operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
+						operatorPlacement.id = placementCounter;
+						
+						operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
+						operatorPlacement.numberOfConnections = operatorGraph.getNumberOfConnections();
+						operatorPlacement.numberOfEdgeOperators = operatorGraph.getNumberOfEdgeOperators(physicalGraph);
+						operatorPlacement.memConsumptionEdge = physicalGraph.getMemConsumptionEdge();
+						
+						operatorPlacement.operatorGraph = operatorGraph;
+						operatorPlacement.physicalGraph = physicalGraph;
+						
+						operatorPlacements.add(operatorPlacement);
+						
+						Util.printProgressBar(placementCounter, placementSearchSpaceSize);
 					}
 				}
+				else
+				{
+					filteredGeneralConstraints++;
+				}
+			}
+			else
+			{
+				filteredGeneralConstraints++;
 			}
 		}
 		
 		Util.printProgressBar(placementCounter, placementSearchSpaceSize);
-		
-		System.out.println("\nValid Operator Placements found: " + operatorPlacements.size());
+		System.out.println("");
+		System.out.println("Placements filtered due to General Constraints:    " + filteredGeneralConstraints + "/" + placementSearchSpaceSize + " -> " + (placementSearchSpaceSize - filteredGeneralConstraints));
+		System.out.println("Placements filtered due to Node Constraints:       " + filteredNodeConstraints + "/" + (placementSearchSpaceSize - filteredGeneralConstraints));
+		System.out.println("Placements filtered due to Connection Constraints: " + filteredConnectionConstraints + "/" + (placementSearchSpaceSize - filteredGeneralConstraints));
+		System.out.println("Placements filtered due to Both Constraints:       " + filteredBothConstraints + "/" + (placementSearchSpaceSize - filteredGeneralConstraints));
+		System.out.println("Valid Operator Placements found:                   " + operatorPlacements.size() + "/" + placementSearchSpaceSize);
 		
 		Collections.sort(operatorPlacements);
 		

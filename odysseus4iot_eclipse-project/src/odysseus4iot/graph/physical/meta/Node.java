@@ -12,25 +12,25 @@ public class Node extends Vertex
 	public String name = null;
 	public String socket = null;
 	public Type type = null;
-	public Integer cpuCapacity = null;
-	public Integer memCapacity = null;
-	public Double cpuConsumed = null;
-	public Double memConsumed = null;
+	public Long cpuCapacity = null;
+	public Long memCapacity = null;
+	public Long cpuConsumed = null;
+	public Long memConsumed = null;
 	
-	public Node(String name, String socket, Type type, Integer cpuCapacity, Integer memCapacity)
+	public Node(String name, String socket, Type type, Long cpuCapacity, Long memCapacity)
 	{
 		this.name = name;
 		this.socket = socket;
 		this.type = type;
 		this.cpuCapacity = cpuCapacity;
 		this.memCapacity = memCapacity;
-		this.cpuConsumed = 0.0d;
-		this.memConsumed = 0.0d;
+		this.cpuConsumed = 0L;
+		this.memConsumed = 0L;
 	}
 	
 	@Override
 	public void setLabel()
 	{
-		this.label = String.format("%d_%s\n%s\nCPU=%.1f/%d | MEM=%.1f/%d", this.id ,this.name ,this.type ,this.cpuConsumed ,this.cpuCapacity ,this.memConsumed ,this.memCapacity);
+		this.label = String.format("%d_%s\n%s\nCPU=%d/%d | MEM=%d/%d", this.id ,this.name ,this.type ,this.cpuConsumed ,this.cpuCapacity ,this.memConsumed ,this.memCapacity);
 	}
 }

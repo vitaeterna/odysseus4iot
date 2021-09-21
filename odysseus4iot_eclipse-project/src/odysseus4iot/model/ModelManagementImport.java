@@ -37,7 +37,7 @@ public class ModelManagementImport
 		
 		System.out.println(Util.toJson(modelManagementRequest));
 		
-		//TODO: ___ send request
+		//TODO: _ send request
 		
 		String response = "{\r\n"
 				+ "    \"response\": [\r\n"

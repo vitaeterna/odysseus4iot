@@ -55,8 +55,7 @@ public class OperatorPlacementPartitioner
 			
 			if(operator0.assignedID.intValue() != operator1.assignedID.intValue())
 			{
-				//TODO: ___ add more metrics for optimization and sorting -> number of connections/number of operators on the edge
-				//TODO: ___ set group
+				//TODO: _ set group
 				edgesToRemove.add(currentDataFlow);
 				
 				node1 = physicalGraph.getNodeByID(operator1.assignedID.intValue());

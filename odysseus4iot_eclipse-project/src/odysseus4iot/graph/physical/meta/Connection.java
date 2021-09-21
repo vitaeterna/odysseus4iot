@@ -26,6 +26,6 @@ public class Connection extends Edge
 	@Override
 	public void setLabel()
 	{
-		this.label = String.format("%s/%s", Util.formatDatarate(datarateConsumed), Util.formatDatarate((double)this.datarateCapacity));
+		this.label = String.format("%s/%s", Util.formatSizeInBits(datarateConsumed), Util.formatSizeInBits((double)this.datarateCapacity));
 	}
 }

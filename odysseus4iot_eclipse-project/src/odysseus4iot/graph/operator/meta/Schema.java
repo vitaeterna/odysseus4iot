@@ -17,14 +17,14 @@ public class Schema
 		this.columns.add(column);
 	}
 	
-	public Integer getSize()
+	public Long getSize()
 	{
 		if(this.columns == null)
 		{
 			return null;
 		}
 		
-		Integer size = 0;
+		Long size = 0L;
 		
 		Column currentColumn = null;
 		
@@ -32,33 +32,32 @@ public class Schema
 		{
 			currentColumn = this.columns.get(index);
 			
-			Integer columnSize = null;
+			Long columnSize = null;
 			
 			//Not addressed: byte, char, short
 			if(currentColumn.type == Boolean.class)
 			{
-				columnSize = 1;
+				columnSize = 1L;
 			}
 			else if(currentColumn.type == Float.class)
 			{
-				columnSize = Float.SIZE;
+				columnSize = (long)Float.SIZE;
 			}
 			else if(currentColumn.type == Double.class)
 			{
-				columnSize = Double.SIZE;
+				columnSize = (long)Double.SIZE;
 			}
 			else if(currentColumn.type == Integer.class)
 			{
-				columnSize = Integer.SIZE;
+				columnSize = (long)Integer.SIZE;
 			}
-			else if(currentColumn.type == Long.class)
+			else if(currentColumn.type == Long.class || currentColumn.type == StartTimestamp.class)
 			{
-				columnSize = Long.SIZE;
+				columnSize = (long)Long.SIZE;
 			}
 			else if(currentColumn.type == String.class)
 			{
-				//TODO: ___ Worst-Case Scenario: Max String length
-				columnSize = Character.SIZE * 15;
+				columnSize = Character.SIZE * 15L;
 			}
 			
 			size += columnSize;

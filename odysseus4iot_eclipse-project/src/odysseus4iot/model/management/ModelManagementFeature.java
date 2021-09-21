@@ -1,5 +1,6 @@
 package odysseus4iot.model.management;
 
+import odysseus4iot.main.Main;
 import odysseus4iot.model.Feature;
 
 public class ModelManagementFeature implements Comparable<ModelManagementFeature>
@@ -14,7 +15,21 @@ public class ModelManagementFeature implements Comparable<ModelManagementFeature
 	{
 		Feature feature = new Feature();
 		
-		feature.name = (this.input + "_" + this.function).toLowerCase();
+		if(Main.properties.getProperty("preprocessing." + this.input.toLowerCase()) == null)
+		{
+			System.err.println("The schema property 'preprocessing." + this.input.toLowerCase() + "' could not be found.");
+			
+			System.exit(0);
+		}
+		
+		if(Main.properties.getProperty("feature." + this.function.toLowerCase()) == null)
+		{
+			System.err.println("The schema property 'feature." + this.function.toLowerCase() + "' could not be found.");
+			
+			System.exit(0);
+		}
+
+		feature.name = (Main.properties.getProperty("preprocessing." + this.input.toLowerCase()) + "_" + Main.properties.getProperty("feature." + this.function.toLowerCase())).toLowerCase();
 		feature.type = this.type.toUpperCase();
 		feature.order = this.order;
 		

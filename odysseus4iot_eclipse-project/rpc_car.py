@@ -14,7 +14,7 @@ import psycopg2
 
 logging.basicConfig(filename="mylog.log",level=logging.INFO,format='%(asctime)s :: %(levelname)s :: %(message)s')
 
-rpcPort = 9000
+rpcPort = 9001
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/rpc',)
 
@@ -52,7 +52,7 @@ with SimpleXMLRPCServer(('', rpcPort),
                 cur = conn.cursor()
                 # Connect to the table model to get meta-data =>
                 # 1. Get the model pickle content
-                sql_fetch_model_content = 'SELECT model_binary_content FROM ' + trained_models_table + ' WHERE model_title = %s '
+                sql_fetch_model_content = 'SELECT model_content FROM ' + trained_models_table + ' WHERE id = %s'
                 cur.execute(sql_fetch_model_content, (json_val["selectModelByValue"],))
                 model_retrieved = cur.fetchone()
                 if cur.rowcount == 0:

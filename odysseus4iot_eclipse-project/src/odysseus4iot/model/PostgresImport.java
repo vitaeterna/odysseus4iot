@@ -57,7 +57,7 @@ public class PostgresImport
 			connection.setAutoCommit(true);
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(String.format(SQL_QUERY_EXPERIMENTRESULT, table));
-			//TODO: ___ preparedStatement.setInt(1, foovalue);
+			//TODO: _ preparedStatement.setInt(1, foovalue);
 			
 			preparedStatement.setFetchSize(0);
 			
@@ -178,6 +178,11 @@ public class PostgresImport
 	
 	public static List<Model> importFromTrainedModelsSchema(List<Integer> ids)
 	{
+		if(ids.isEmpty())
+		{
+			return new ArrayList<>();
+		}
+		
 		Properties dbProperties = new Properties();
 		dbProperties.setProperty("user",user);
 		dbProperties.setProperty("password",password);
@@ -202,7 +207,7 @@ public class PostgresImport
 			connection.setAutoCommit(true);
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(String.format(SQL_QUERY_TRAINEDMODELS, table, idExpression));
-			//TODO: ___ preparedStatement.setInt(1, foovalue);
+			//TODO: _ preparedStatement.setInt(1, foovalue);
 			
 			preparedStatement.setFetchSize(0);
 			
@@ -228,7 +233,7 @@ public class PostgresImport
 				
 				model.setWaiteach(1000.0d/model.getResampled_rate_in_hz());
 				
-				model.setSize(resultSet.getInt(21));
+				model.setSize(resultSet.getLong(21) * 8);
 				
 				ModelManagementFeatures modelManagementFeatures = Util.fromJson(model.getFeatures_json_content(), ModelManagementFeatures.class);
 				

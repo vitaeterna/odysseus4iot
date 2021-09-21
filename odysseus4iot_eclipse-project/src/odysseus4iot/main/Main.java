@@ -2,12 +2,14 @@ package odysseus4iot.main;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import odysseus4iot.graph.operator.gen.OperatorGraphGenerator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
@@ -53,7 +55,7 @@ import odysseus4iot.util.Util;
 public class Main
 {
 	public static Properties properties = null;
-	//TODO: ___ add properties for model management system / in exchange for modeldb
+
 	public static void main(String[] args)
 	{
 		Util.charsetUTF8();
@@ -107,10 +109,29 @@ public class Main
 		System.out.println("edges        = " + edges);
 		System.out.println("edgeratecaps = " + edgeRateCaps + "\r\n");
 		
-		List<String> labels = Arrays.asList(properties.getProperty("input.labels").split(","));
+		List<Integer> ids = Arrays.asList(properties.getProperty("input.ids").split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+		List<String> rpcServerSockets = Arrays.asList(properties.getProperty("pythonrpc.sockets").split(","));
 		
-		System.out.println("Input - Labels - (Not implemented)");
-		System.out.println("labels = " + labels + "\r\n");
+		/*ModelManagementRequestData modelManagementRequestData = new ModelManagementRequestData();
+		modelManagementRequestData.sensor_system = "Blaupunkt_BST-BNO055-DS000-14_NDOF_10_AO";
+		
+		List<String> labels = Arrays.asList(properties.getProperty("input.labels").split(","));
+		List<Double> accs = Arrays.asList(properties.getProperty("input.accs").split(",")).stream().map(Double::parseDouble).collect(Collectors.toList());
+		
+		for(int index = 0; index < labels.size(); index++)
+		{
+			modelManagementRequestData.addLabel(labels.get(index), accs.get(index));
+		}
+		
+		modelManagementRequestData.maxsizeofbignode = 0;
+		modelManagementRequestData.maxsizeof_ALL = 0;
+		modelManagementRequestData.modelset_limit = 1;
+		
+		ModelManagementRequest modelManagementRequest = new ModelManagementRequest();
+		modelManagementRequest.request = modelManagementRequestData;
+		
+		System.out.println("Generated ModelManagementRequest:");
+		System.out.println(Util.toJson(modelManagementRequest)+"\n");*/
 		
 		//2 - Retrieving Model Information from Model Management System
 		PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
@@ -118,12 +139,57 @@ public class Main
 		PostgresImport.user = properties.getProperty("modeldb.user");
 		PostgresImport.password = properties.getProperty("modeldb.password");
 
-		List<Model> models = PostgresImport.importFromExperimentResultSchema();
+		List<List<Model>> modelsets = new ArrayList<>();
+		
+		List<List<Integer>> modelsetIDs = new ArrayList<>();
+		
+		boolean hardcoded = true;
+		
+		if(hardcoded)
+		{
+			List<Integer> modelsetIDs0 = new ArrayList<>();
+			modelsetIDs0.add(4271);
+			modelsetIDs0.add(4272);
+			
+			List<Integer> modelsetIDs1 = new ArrayList<>();
+			modelsetIDs1.add(4273);
+			modelsetIDs1.add(4274);
+			
+			modelsetIDs.add(modelsetIDs0);
+			modelsetIDs.add(modelsetIDs1);
+		}
+		else
+		{
+			modelsetIDs.add(ids);
+		}
+		
+		List<Model> models = null;
+		
+		for(int index = 0; index < modelsetIDs.size(); index++)
+		{
+			System.out.println("Loading models=" + modelsetIDs.get(index));
+			
+			models = PostgresImport.importFromTrainedModelsSchema(modelsetIDs.get(index));
+			
+			if(models.size() != modelsetIDs.get(index).size())
+			{
+				System.err.println("Model ids not found in the database!");
+				
+				System.exit(0);
+			}
+			
+			for(int index2 = 0; index2 < models.size(); index2++)
+			{
+				models.get(index2).setRpcServerSocket(rpcServerSockets.get(index2));
+			}
+			
+			modelsets.add(models);
+		}
+		
+		System.out.println("");
 		
 		//3 - Generating Logical Operator Graph for each model
-		List<OperatorGraph> graphs = new ArrayList<>();
-		
-		OperatorGraph operatorGraph = null;
+		/*List<OperatorGraph> graphs = new ArrayList<>();
 		
 		Model currentModel = null;
 		
@@ -133,6 +199,8 @@ public class Main
 		for(int index = 0; index < models.size(); index++)
 		{
 			currentModel = models.get(index);
+			
+			currentModel.setRpcServerSocket(rpcServerSockets.get(index));
 			
 			System.out.println(currentModel.printDetails()+"\r\n");
 			
@@ -148,41 +216,63 @@ public class Main
 			System.out.print("\r\n");
 			
 			graphs.add(operatorGraph);
-		}
+		}*/
 		
-		//4 - Generating Merged Logical Operator Graph for all models
-		operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
-		
-		Util.exportPQL(operatorGraph);
-		
-		Util.exportOperatorGraphToDOTPNG(operatorGraph);
-		
-		System.out.print("\r\n");
-		
-		//5 - Generating Physical Graph
+		//4 - Generating Physical Graph
 		PhysicalGraph physicalGraph = PhysicalGraphGenerator.generatePhysicalGraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
 		
 		Util.exportPhysicalGraphToDOTPNG(physicalGraph);
 		
 		System.out.print("\r\n");
 		
-		//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
-		List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
+		List<OperatorPlacement> operatorPlacementsGlobal = new ArrayList<>();
 		
-		for(int index = 0; index < operatorPlacements.size(); index++)
+		for(int index = 0; index < modelsets.size(); index++)
 		{
-			System.out.println(operatorPlacements.get(index));
+			models = modelsets.get(index);
+			
+			//5 - Generating Merged Logical Operator Graph for all models
+			OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, true, true);
+			
+			//Util.exportPQL(operatorGraph);
+			
+			//Util.exportOperatorGraphToDOTPNG(operatorGraph);
+			
+			//System.out.print("\r\n");
+			
+			//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
+			List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
+			
+			operatorPlacementsGlobal.addAll(operatorPlacements);
 		}
 		
-		boolean successfulLoading = operatorGraph.loadOperatorPlacement(operatorPlacements.get(0), physicalGraph);
+		if(operatorPlacementsGlobal.isEmpty())
+		{
+			System.err.println("No valid operator placements found!");
+			
+			System.exit(0);
+		}
+		
+		System.out.println(operatorPlacementsGlobal.size() + " operator placements verified for " + modelsets.size() + " modelsets\n");
+		
+		Collections.sort(operatorPlacementsGlobal);
+		
+		for(int index = 0; index < operatorPlacementsGlobal.size(); index++)
+		{
+			System.out.println(operatorPlacementsGlobal.get(index));
+		}
+		
+		OperatorGraph operatorGraph = operatorPlacementsGlobal.get(0).operatorGraph;
+		
+		boolean successfulLoading = operatorGraph.loadOperatorPlacement(operatorPlacementsGlobal.get(0), physicalGraph);
 		
 		if(successfulLoading)
 		{
-			System.out.println("Successfully loaded placement strategy " + operatorPlacements.get(0).id + "\n");
+			System.out.println("Successfully loaded placement strategy " + operatorPlacementsGlobal.get(0) + "\n");
 		}
 		else
 		{
-			System.err.println("Error loading placement strategy " + operatorPlacements.get(0).id);
+			System.err.println("Error loading placement strategy " + operatorPlacementsGlobal.get(0));
 			
 			System.exit(0);
 		}

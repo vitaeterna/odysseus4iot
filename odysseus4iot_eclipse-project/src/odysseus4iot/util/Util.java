@@ -88,22 +88,22 @@ public class Util
 	
     /**
      * 
-     * @param datarate in Bit/s
+     * @param sizeInBits in Bit/s
      * @return
      */
-    public static String formatDatarate(Double datarate)
+    public static String formatSizeInBits(Double sizeInBits)
     {
     	int unitSize = 1000;
     	
-    	if(datarate < unitSize)
+    	if(sizeInBits < unitSize)
     	{
-    		return String.format("%.3f Bit/s", datarate);
+    		return String.format("%.3f Bit", sizeInBits);
     	}
     	
-        int unitIndex = (int) (Math.log10(datarate) / Math.log10(unitSize));
+        int unitIndex = (int) (Math.log10(sizeInBits) / Math.log10(unitSize));
         Character unit = "KMGT".charAt(unitIndex - 1);
         
-        return String.format("%.3f %sBit/s", datarate / Math.pow(unitSize, unitIndex), unit);
+        return String.format("%.3f %sBit", sizeInBits / Math.pow(unitSize, unitIndex), unit);
     }
     
     /**
@@ -156,7 +156,8 @@ public class Util
 		requiredProperties.add("input.nodememcaps");
 		requiredProperties.add("input.edges");
 		requiredProperties.add("input.edgeratecaps");
-		requiredProperties.add("input.labels");
+		requiredProperties.add("input.ids");
+		requiredProperties.add("pythonrpc.sockets");
 		requiredProperties.add("sensordb.url");
 		requiredProperties.add("sensordb.user");
 		requiredProperties.add("sensordb.password");
@@ -186,6 +187,16 @@ public class Util
 				
 				System.exit(0);
 			}
+		}
+		
+		int idCount = Main.properties.getProperty("input.ids").split(",").length;
+		int rpcCount = Main.properties.getProperty("pythonrpc.sockets").split(",").length;
+		
+		if(idCount != rpcCount)
+		{
+			System.err.println("The length of the arrays 'input.ids' and 'pythonrpc.sockets' needs to be equal.");
+			
+			System.exit(0);
 		}
 		
 		int nodeNameCount = Main.properties.getProperty("input.nodenames").split(",").length;

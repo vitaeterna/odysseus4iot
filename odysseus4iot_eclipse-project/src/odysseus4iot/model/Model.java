@@ -24,7 +24,9 @@ public class Model
 	private List<String> preprocessing = null;
 	private List<Feature> features = null;
 	
-	private Integer size = null;
+	private Long size = null;
+	
+	private String rpcServerSocket = null;
 	
 	public String getModel_title() {
 		return model_title;
@@ -130,13 +132,18 @@ public class Model
 	public void setFeatures(List<Feature> features) {
 		this.features = features;
 	}
-	public Integer getSize() {
+	public Long getSize() {
 		return size;
 	}
-	public void setSize(Integer size) {
+	public void setSize(Long size) {
 		this.size = size;
 	}
-	
+	public String getRpcServerSocket() {
+		return rpcServerSocket;
+	}
+	public void setRpcServerSocket(String rpcServerSocket) {
+		this.rpcServerSocket = rpcServerSocket;
+	}
 	public String printDetails()
 	{
 		StringBuilder stringBuilder = new StringBuilder();
@@ -154,7 +161,11 @@ public class Model
 		stringBuilder.append("f1_test:                  " + f1_test + "\r\n");
 		stringBuilder.append("schema:                   " + schema + "\r\n");
 		stringBuilder.append("preprocessing:            " + preprocessing + "\r\n");
-		stringBuilder.append("features:                 " + features);
+		stringBuilder.append("features:                 " + features + "\r\n");
+		stringBuilder.append("window_slide:             " + window_slide + "\r\n");
+		stringBuilder.append("waiteach:                 " + waiteach + "\r\n");
+		stringBuilder.append("size:                     " + size + "\r\n");
+		stringBuilder.append("rpcServerSocket:          " + rpcServerSocket);
 		
 		return stringBuilder.toString();
 	}
