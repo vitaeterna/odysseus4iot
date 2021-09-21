@@ -15,6 +15,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import odysseus4iot.main.Main;
+import odysseus4iot.model.management.ModelManagementFeatures;
+import odysseus4iot.util.Util;
 
 public class PostgresImport
 {
@@ -83,7 +85,7 @@ public class PostgresImport
 				
 				List<String> schema = new ArrayList<>();
 				List<String> preprocessing = new ArrayList<>();
-				List<Feature> features = new ArrayList<>();
+				List<String> features = new ArrayList<>();
 				
 				JsonElement jsonElement = JsonParser.parseString(model.getFeatures_json_content());
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -148,13 +150,7 @@ public class PostgresImport
 							System.exit(0);
 						}
 						
-						Feature feature = new Feature();
-						
-						feature.name = preprocessingMapping + "_" + Main.properties.getProperty("feature." + currentSubValue);
-						feature.type = "DOUBLE";
-						feature.order = 1;
-						
-						features.add(feature);
+						features.add(preprocessingMapping + "_" + Main.properties.getProperty("feature." + currentSubValue));
 					}
 				}
 				
@@ -164,7 +160,7 @@ public class PostgresImport
 				
 				model.setSchema(schema);
 				model.setPreprocessing(preprocessing);
-				model.setFeatures(features);
+				model.setFeatures(Feature.getFeaturesFromNames(features));
 				
 				models.add(model);
 			}
@@ -234,82 +230,13 @@ public class PostgresImport
 				
 				model.setSize(resultSet.getInt(21));
 				
-				//TODO: ___
+				ModelManagementFeatures modelManagementFeatures = Util.fromJson(model.getFeatures_json_content(), ModelManagementFeatures.class);
+				
 				List<String> schema = new ArrayList<>();
 				List<String> preprocessing = new ArrayList<>();
 				List<Feature> features = new ArrayList<>();
 				
-				JsonElement jsonElement = JsonParser.parseString(model.getFeatures_json_content());
-				JsonObject jsonObject = jsonElement.getAsJsonObject();
-				Set<Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
-				
-				String currentKey = null;
-				JsonArray currentValue = null;
-				
-				for(Entry<String, JsonElement> entry : entrySet)
-				{
-					currentKey = entry.getKey().toLowerCase();
-					currentValue = entry.getValue().getAsJsonArray();
-					
-					//Schema
-					if(Main.properties.getProperty("schema." + currentKey) == null)
-					{
-						System.err.println("The schema property 'schema." + currentKey + "' could not be found.");
-						
-						System.exit(0);
-					}
-					
-					List<String> schemaElements = Arrays.asList(Main.properties.getProperty("schema." + currentKey).split(","));
-					
-					String currentSchemaElement = null;
-					
-					for(int index = 0; index < schemaElements.size(); index++)
-					{
-						currentSchemaElement = schemaElements.get(index).toLowerCase();
-						
-						if(!schema.contains(currentSchemaElement))
-						{
-							schema.add(currentSchemaElement);
-						}
-					}
-					
-					//Preprocessing
-					if(Main.properties.getProperty("preprocessing." + currentKey) == null)
-					{
-						System.err.println("The schema property 'preprocessing." + currentKey + "' could not be found.");
-						
-						System.exit(0);
-					}
-					
-					String preprocessingMapping = Main.properties.getProperty("preprocessing." + currentKey).toLowerCase();
-					
-					if(!preprocessing.contains(preprocessingMapping))
-					{
-						preprocessing.add(preprocessingMapping);
-					}
-					
-					//Features
-					//TODO: ___ proper sorting of features
-					String currentSubValue = null;
-					
-					for(int index = 0; index < currentValue.size(); index++)
-					{
-						currentSubValue = currentValue.get(index).getAsString().toLowerCase();
-						
-						if(Main.properties.getProperty("feature." + currentSubValue) == null)
-						{
-							System.err.println("The schema property 'feature." + currentSubValue + "' could not be found.");
-							
-							System.exit(0);
-						}
-						
-						features.add(preprocessingMapping + "_" + Main.properties.getProperty("feature." + currentSubValue));
-					}
-				}
-				
-				Collections.sort(schema);
-				Collections.sort(preprocessing);
-				Collections.sort(features);
+				modelManagementFeatures.processFeatures(schema, preprocessing, features);
 				
 				model.setSchema(schema);
 				model.setPreprocessing(preprocessing);

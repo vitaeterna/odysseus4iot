@@ -1,6 +1,7 @@
 package odysseus4iot.graph.operator.gen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import odysseus4iot.graph.operator.AccessOperator;
@@ -134,15 +135,17 @@ public class OperatorGenerator
 		
 		List<String> aggregations = new ArrayList<>();
 		
-		String currentFeature = null;
+		Feature currentFeature = null;
 		String[] currentFeatureSplit = null;
+		
+		Collections.sort(features);
 		
 		for(int index = 0; index < features.size(); index++)
 		{
 			currentFeature = features.get(index);
-			currentFeatureSplit = currentFeature.split("_");
+			currentFeatureSplit = currentFeature.name.split("_");
 			
-			aggregations.add("['" + currentFeatureSplit[1] + "', ['" + currentFeatureSplit[0] + "'], 'car_" + currentFeature + "', 'Double']");
+			aggregations.add("['" + currentFeatureSplit[1] + "', ['" + currentFeatureSplit[0] + "'], 'car_" + currentFeature.name + "', '" + currentFeature.type.toUpperCase() + "']");
 		}
 		
 		aggregateOperator.aggregations = aggregations;
@@ -168,12 +171,14 @@ public class OperatorGenerator
 	{
 		ProjectOperator projectOperator = new ProjectOperator();
 		
-		projectOperator.payloadAttributes = attributes;
+		Collections.sort(attributes);
+		
+		projectOperator.payloadAttributes = Feature.getNamesFromFeatures(attributes);
 		
 		projectOperator.attributes = new ArrayList<>();
 		projectOperator.attributes.add("'cattle_id'");
 		
-		String currentAttribute = null;
+		Feature currentAttribute = null;
 		
 		for(int index = 0; index < attributes.size(); index++)
 		{
@@ -181,11 +186,11 @@ public class OperatorGenerator
 			
 			if(attributePrefix != null)
 			{
-				projectOperator.attributes.add(attributePrefix + currentAttribute);
+				projectOperator.attributes.add(attributePrefix + currentAttribute.name);
 			}
 			else
 			{
-				projectOperator.attributes.add(currentAttribute);
+				projectOperator.attributes.add(currentAttribute.name);
 			}
 		}
 		
@@ -198,11 +203,11 @@ public class OperatorGenerator
 			
 			if(attributePrefix != null)
 			{
-				outputSchema.addColumn(new Column(attributePrefix + currentAttribute, Double.class));
+				outputSchema.addColumn(new Column(attributePrefix + currentAttribute.name, Double.class));
 			}
 			else
 			{
-				outputSchema.addColumn(new Column(currentAttribute, Double.class));
+				outputSchema.addColumn(new Column(currentAttribute.name, Double.class));
 			}
 		}
 		

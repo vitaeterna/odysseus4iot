@@ -371,7 +371,7 @@ public class OperatorGraphGenerator
 					{
 						projectOperator = projectOperators.get(index3);
 						
-						if(projectOperator.payloadAttributes.containsAll(currentModel.getFeatures()) && projectOperator.payloadAttributes.size() == currentModel.getFeatures().size())
+						if(projectOperator.payloadAttributes.containsAll(Feature.getNamesFromFeatures(currentModel.getFeatures())) && projectOperator.payloadAttributes.size() == currentModel.getFeatures().size())
 						{
 							projectOperatorExists = true;
 							

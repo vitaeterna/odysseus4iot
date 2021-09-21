@@ -14,8 +14,8 @@ public class ModelManagementFeature implements Comparable<ModelManagementFeature
 	{
 		Feature feature = new Feature();
 		
-		feature.name = this.input + "_" + this.function;
-		feature.type = this.type;
+		feature.name = (this.input + "_" + this.function).toLowerCase();
+		feature.type = this.type.toUpperCase();
 		feature.order = this.order;
 		
 		return feature;

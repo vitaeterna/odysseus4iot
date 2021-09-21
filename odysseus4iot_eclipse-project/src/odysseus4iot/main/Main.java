@@ -14,7 +14,6 @@ import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.model.Model;
-import odysseus4iot.model.ModelManagementImport;
 import odysseus4iot.model.PostgresImport;
 import odysseus4iot.placement.OperatorPlacementOptimization;
 import odysseus4iot.placement.OperatorPlacementPartitioner;
@@ -54,13 +53,9 @@ import odysseus4iot.util.Util;
 public class Main
 {
 	public static Properties properties = null;
-	
+	//TODO: ___ add properties for model management system / in exchange for modeldb
 	public static void main(String[] args)
 	{
-		ModelManagementImport.importFromModelManagementSystem();
-		
-		System.exit(0);
-		
 		Util.charsetUTF8();
 		
 		//1 - Input to System (sensors/nodes/labels)

@@ -1,11 +1,8 @@
 package odysseus4iot.model.management;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import odysseus4iot.main.Main;
 import odysseus4iot.model.Feature;
 import odysseus4iot.model.Model;
 
@@ -47,91 +44,7 @@ public class ModelManagementModel
 		List<String> preprocessing = new ArrayList<>();
 		List<Feature> features = new ArrayList<>();
 		
-		List<String> keys = new ArrayList<>();
-		
-		if(this.features.ax != null)
-		{
-			keys.add("ax");
-		}
-		if(this.features.ay != null)
-		{
-			keys.add("ay");
-		}
-		if(this.features.az != null)
-		{
-			keys.add("az");
-		}
-		if(this.features.gx != null)
-		{
-			keys.add("gx");
-		}
-		if(this.features.gy != null)
-		{
-			keys.add("gy");
-		}
-		if(this.features.gz != null)
-		{
-			keys.add("gz");
-		}
-		if(this.features.accMag != null)
-		{
-			keys.add("accMag");
-		}
-		if(this.features.gyrMag != null)
-		{
-			keys.add("gyrMag");
-		}
-		
-		String currentKey = null;
-		
-		for(int index = 0; index < keys.size(); index++)
-		{
-			currentKey = keys.get(index);
-			
-			//Schema
-			if(Main.properties.getProperty("schema." + currentKey) == null)
-			{
-				System.err.println("The schema property 'schema." + currentKey + "' could not be found.");
-				
-				System.exit(0);
-			}
-			
-			List<String> schemaElements = Arrays.asList(Main.properties.getProperty("schema." + currentKey).split(","));
-			
-			String currentSchemaElement = null;
-			
-			for(int index2 = 0; index2 < schemaElements.size(); index2++)
-			{
-				currentSchemaElement = schemaElements.get(index2).toLowerCase();
-				
-				if(!schema.contains(currentSchemaElement))
-				{
-					schema.add(currentSchemaElement);
-				}
-			}
-			
-			//Preprocessing
-			if(Main.properties.getProperty("preprocessing." + currentKey) == null)
-			{
-				System.err.println("The schema property 'preprocessing." + currentKey + "' could not be found.");
-				
-				System.exit(0);
-			}
-			
-			String preprocessingMapping = Main.properties.getProperty("preprocessing." + currentKey).toLowerCase();
-			
-			if(!preprocessing.contains(preprocessingMapping))
-			{
-				preprocessing.add(preprocessingMapping);
-			}
-		}
-		
-		//Features
-		features = this.features.getFeatures();
-		
-		Collections.sort(schema);
-		Collections.sort(preprocessing);
-		Collections.sort(features);
+		this.features.processFeatures(schema, preprocessing, features);
 		
 		model.setSchema(schema);
 		model.setPreprocessing(preprocessing);
