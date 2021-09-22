@@ -4,6 +4,23 @@ import odysseus4iot.graph.operator.meta.Operator;
 
 public class SenderOperator extends Operator
 {
+	private static Integer senderCount = 0;
+	
+	public static Integer getCurrentSenderCount()
+	{
+		return senderCount;
+	}
+	
+	public static Integer getNextSenderCount()
+	{
+		return ++senderCount;
+	}
+	
+	public static void resetSenderCount()
+	{
+		senderCount = 0;
+	}
+	
 	public String host = null;
 	public Integer port = null;
 	

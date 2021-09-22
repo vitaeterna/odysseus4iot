@@ -6,6 +6,23 @@ import odysseus4iot.graph.operator.meta.Schema;
 
 public class AccessOperator extends Operator
 {
+	private static Integer accessCount = 0;
+	
+	public static Integer getCurrentAccessCount()
+	{
+		return accessCount;
+	}
+	
+	public static Integer getNextAccessCount()
+	{
+		return ++accessCount;
+	}
+	
+	public static void resetAccessCount()
+	{
+		accessCount = 0;
+	}
+	
 	public String host = null;
 	public Integer port = null;
 	public Schema attributes = null;

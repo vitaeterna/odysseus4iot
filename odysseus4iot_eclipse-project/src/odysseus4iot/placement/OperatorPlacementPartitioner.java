@@ -6,6 +6,7 @@ import java.util.List;
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.AccessOperator;
+import odysseus4iot.graph.operator.DatarateOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.gen.OperatorGenerator;
@@ -24,7 +25,7 @@ public class OperatorPlacementPartitioner
 		Long startTimestamp = System.currentTimeMillis();
 		Long endTimestamp = null;
 		
-		System.out.println("Converting Operator Graph " + operatorGraph.label + " to Distirbuted Graph...");
+		System.out.println("Converting Operator Graph " + operatorGraph.label + " to Distributed Graph...");
 		
 		operatorGraph.label += "_distributed";
 		
@@ -74,9 +75,9 @@ public class OperatorPlacementPartitioner
 					
 					senderOperator.outputSchema = senderOperator.inputSchema.copy();
 					senderOperator.outputRate = senderOperator.inputRate;
-					senderOperator.outputName = senderOperator.inputName + "_sender";
+					senderOperator.outputName = "sender_" + SenderOperator.getNextSenderCount();
 					
-					operator0.assignedOperator1 = senderOperator;
+					//operator0.assignedOperator1 = senderOperator;
 					
 					operatorGraph.addVertex(senderOperator);
 					
@@ -111,7 +112,9 @@ public class OperatorPlacementPartitioner
 					}
 					else
 					{
-						accessOperator.outputName = operator1.inputName;
+						accessOperator.outputName = "access_" + AccessOperator.getNextAccessCount();
+						
+						operator1.inputName = accessOperator.outputName;
 					}
 					
 					accessOperator.inputSchema = accessOperator.outputSchema.copy();
@@ -142,7 +145,82 @@ public class OperatorPlacementPartitioner
 		
 		endTimestamp = System.currentTimeMillis();
 		
-		System.out.println("...Converting to Distirbuted Graph finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
+		System.out.println("...Converting to Distributed Graph finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
+	}
+	
+	public static void addBenchmarkOperators(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
+	{
+		Long startTimestamp = System.currentTimeMillis();
+		Long endTimestamp = null;
+		
+		System.out.println("Adding benchmark operators to Operator Graph " + operatorGraph.label + "...");
+		
+		operatorGraph.label += "_benchmark";
+		
+		SenderOperator currentSenderOperator = null;
+		
+		DataFlow currentDataFlow = null;
+		
+		List<Vertex> senderOperators = operatorGraph.getVerticesByType(SenderOperator.class);
+		
+		List<DataFlow> edgesToAdd = new ArrayList<>();
+		List<DataFlow> edgesToRemove = new ArrayList<>();
+		
+		for(int index = 0; index < senderOperators.size(); index++)
+		{
+			currentSenderOperator = (SenderOperator)senderOperators.get(index);
+			
+			DatarateOperator datarateOperator = OperatorGenerator.generateDatarateOperator(physicalGraph.getNodeByID(currentSenderOperator.assignedID).name);
+			
+			datarateOperator.assignedID = currentSenderOperator.assignedID;
+			
+			datarateOperator.inputSchema = currentSenderOperator.inputSchema.copy();
+			datarateOperator.inputRate = currentSenderOperator.inputRate;
+			datarateOperator.inputName = currentSenderOperator.inputName;
+			
+			datarateOperator.outputSchema = datarateOperator.inputSchema.copy();
+			datarateOperator.outputRate = datarateOperator.inputRate;
+			
+			currentSenderOperator.inputName = datarateOperator.outputName;
+			
+			operatorGraph.addVertex(datarateOperator);
+			
+			int senderInputCount = 0;
+			
+			for(int index2 = 0; index2 < operatorGraph.edges.size(); index2++)
+			{
+				currentDataFlow = (DataFlow)operatorGraph.edges.get(index2);
+				
+				if(currentDataFlow.vertex1 == currentSenderOperator)
+				{
+					senderInputCount++;
+					
+					edgesToRemove.add(currentDataFlow);
+					
+					edgesToAdd.add(new DataFlow(currentDataFlow.vertex0, datarateOperator));
+					edgesToAdd.add(new DataFlow(datarateOperator, currentSenderOperator));
+				}
+			}
+			
+			if(senderInputCount != 1)
+			{
+				System.err.println("There is something strange in the senderhood");
+				
+				System.exit(0);
+			}
+		}
+		
+		operatorGraph.edges.removeAll(edgesToRemove);
+		operatorGraph.edges.addAll(edgesToAdd);
+		
+		operatorGraph.setControlFlowDatarates();
+		
+		operatorGraph.setLabels();
+		
+		endTimestamp = System.currentTimeMillis();
+		
+		System.out.println("...Adding benchmark operators finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
+	
 	}
 	
 	public static List<OperatorGraph> buildSubgraphs(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
@@ -215,6 +293,22 @@ public class OperatorPlacementPartitioner
 						if(subGraph2.vertices.contains(operator0) && subGraph2.vertices.contains(operator1))
 						{
 							subGraph2.addEdge(currentDataFlow);
+						}
+					}
+					
+					List<Vertex> mergeOperators = subGraph2.getVerticesByType(MergeOperator.class);
+					
+					MergeOperator mergeOperator = null;
+					
+					for(int index3 = 0; index3 < mergeOperators.size(); index3++)
+					{
+						mergeOperator = (MergeOperator)mergeOperators.get(index3);
+						
+						if(mergeOperator.inputStreams.contains(subGraph2.label))
+						{
+							//TODO: ___ set merge input streams
+							mergeOperator.inputStreams = new ArrayList<>();
+							mergeOperator.inputStreams.add(subGraph2.label);
 						}
 					}
 					

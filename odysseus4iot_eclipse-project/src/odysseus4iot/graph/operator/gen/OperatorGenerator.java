@@ -10,6 +10,7 @@ import odysseus4iot.graph.operator.ChangedetectOperator;
 import odysseus4iot.graph.operator.ClassificationOperator;
 import odysseus4iot.graph.operator.DatabasesinkOperator;
 import odysseus4iot.graph.operator.DatabasesourceOperator;
+import odysseus4iot.graph.operator.DatarateOperator;
 import odysseus4iot.graph.operator.MapOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.OutlierRemovingOperator;
@@ -314,5 +315,17 @@ public class OperatorGenerator
 		accessOperator.outputName = null;
 		
 		return accessOperator;
+	}
+	
+	public static DatarateOperator generateDatarateOperator(String key)
+	{
+		DatarateOperator datarateOperator = new DatarateOperator();
+		datarateOperator.key = key + "_" + DatarateOperator.getNextDatarateCount();
+		
+		datarateOperator.outputSchema = null;
+		datarateOperator.outputRate = null;
+		datarateOperator.outputName = datarateOperator.key;
+		
+		return datarateOperator;
 	}
 }

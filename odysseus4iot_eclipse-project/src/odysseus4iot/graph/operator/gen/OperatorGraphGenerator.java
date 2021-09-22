@@ -24,7 +24,6 @@ import odysseus4iot.util.Util;
 //TODO: _ generate invisible filler nodes for visualization - project operator
 //TODO: __ handle metadata correctly!
 //TODO: ___ write metadata on databasesink
-//TODO: ___ integrate benchmark operators
 public class OperatorGraphGenerator
 {	
 	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)

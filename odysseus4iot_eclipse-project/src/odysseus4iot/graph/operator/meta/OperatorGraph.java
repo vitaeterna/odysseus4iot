@@ -5,8 +5,11 @@ import java.util.List;
 
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
+import odysseus4iot.graph.operator.AccessOperator;
+import odysseus4iot.graph.operator.DatarateOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
+import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.meta.Operator.Type;
 import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
@@ -20,6 +23,9 @@ public class OperatorGraph extends Graph
 		
 		MergeOperator.resetMergeCount();
 		ProjectOperator.resetProjectCount();
+		SenderOperator.resetSenderCount();
+		AccessOperator.resetAccessCount();
+		DatarateOperator.resetDatarateCount();
 	}
 	
 	public Double getTotalDatarate(PhysicalGraph physicalGraph)

@@ -13,13 +13,6 @@ public class DataFlow extends Edge
 		super(vertex0, vertex1);
 	}
 	
-	public DataFlow(Vertex vertex0, Vertex vertex1, Double datarateConsumption)
-	{
-		super(vertex0, vertex1);
-		
-		this.datarateConsumption = datarateConsumption;
-	}
-	
 	@Override
 	public void setLabel()
 	{

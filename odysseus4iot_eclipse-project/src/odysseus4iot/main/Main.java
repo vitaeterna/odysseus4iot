@@ -283,6 +283,7 @@ public class Main
 		
 		//7 - Transformation to distributed operator graph
 		OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
+		OperatorPlacementPartitioner.addBenchmarkOperators(operatorGraph, physicalGraph);
 		
 		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
 		
