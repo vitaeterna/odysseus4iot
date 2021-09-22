@@ -34,10 +34,66 @@ public class Operator extends Vertex
 	
 	public Operator()
 	{
+		super();
+		
 		models = new ArrayList<>();
 		
 		cpuConsumption = 0L;
 		memConsumption = 0L;
+	}
+	
+	public Operator(Operator operator)
+	{
+		super(operator.id, operator.group, operator.label);
+		
+		this.type = operator.type;
+		
+		this.models = operator.models;
+		
+		this.inputSchema = operator.inputSchema;
+		this.inputRate = operator.inputRate;
+		this.inputName = operator.inputName;
+		
+		this.outputSchema = operator.outputSchema;
+		this.outputRate = operator.outputRate;
+		this.outputName = operator.outputName;
+		
+		this.assignedID = operator.assignedID;
+		this.assignedOperator0 = operator.assignedOperator0;
+		this.assignedOperator1 = operator.assignedOperator1;
+		
+		this.cpuConsumption = operator.cpuConsumption;
+		this.memConsumption = operator.memConsumption;
+	}
+	
+	public Operator copy()
+	{
+		Operator operator = new Operator();
+		
+		operator.id = this.id.intValue();
+		operator.group = this.group.intValue();
+		operator.label = this.label;
+		
+		operator.type = Type.valueOf(this.type.toString());
+		
+		operator.models = new ArrayList<>(this.models); //References to list elements are kept
+		
+		operator.inputSchema = this.inputSchema.copy();
+		operator.inputRate = this.inputRate.doubleValue();
+		operator.inputName = this.inputName;;
+		
+		operator.outputSchema = this.outputSchema.copy();
+		operator.outputRate = this.outputRate.doubleValue();
+		operator.outputName = this.outputName;
+		
+		operator.assignedID = this.assignedID.intValue();
+		operator.assignedOperator0 = this.assignedOperator0; //Referce is kept
+		operator.assignedOperator1 = this.assignedOperator1; //Referce is kept
+		
+		operator.cpuConsumption = this.cpuConsumption.longValue();
+		operator.memConsumption = this.memConsumption.longValue();
+		
+		return this;
 	}
 	
 	@Override

@@ -14,7 +14,6 @@ import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.meta.Node;
-import odysseus4iot.graph.physical.meta.Node.Type;
 import odysseus4iot.util.Util;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 
@@ -220,7 +219,100 @@ public class OperatorPlacementPartitioner
 		endTimestamp = System.currentTimeMillis();
 		
 		System.out.println("...Adding benchmark operators finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
+	}
 	
+	public static void addBenchmarkOperatorsSingleNode(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
+	{
+		Long startTimestamp = System.currentTimeMillis();
+		Long endTimestamp = null;
+		
+		System.out.println("Adding benchmark operators to Operator Graph " + operatorGraph.label + "...");
+		
+		operatorGraph.label += "_benchmark";
+		
+		List<Edge> edgesToAdd = new ArrayList<>();
+		List<Edge> edgesToRemove = new ArrayList<>();
+		
+		Operator operator0 = null;
+		Operator operator1 = null;
+		
+		DataFlow currentDataFlow = null;
+		
+		for(int index = 0; index < operatorGraph.edges.size(); index++)
+		{
+			currentDataFlow = (DataFlow)operatorGraph.edges.get(index);
+			
+			operator0 = (Operator)currentDataFlow.vertex0;
+			operator1 = (Operator)currentDataFlow.vertex1;
+			
+			if(operator0.assignedID.intValue() != operator1.assignedID.intValue())
+			{
+				edgesToRemove.add(currentDataFlow);
+
+				DatarateOperator datarateOperator = null;
+				
+				if(operator0.assignedOperator1 == null)
+				{
+					datarateOperator = OperatorGenerator.generateDatarateOperator(physicalGraph.getNodeByID(operator0.assignedID).name);
+					
+					datarateOperator.assignedID = operator1.assignedID;
+					
+					datarateOperator.inputSchema = operator0.outputSchema.copy();
+					datarateOperator.inputRate = operator0.outputRate;
+					datarateOperator.inputName = operator0.outputName;
+					
+					datarateOperator.outputSchema = datarateOperator.inputSchema.copy();
+					datarateOperator.outputRate = datarateOperator.inputRate;
+					
+					if(operator1.inputName == null)
+					{
+						MergeOperator mergeOperator = (MergeOperator)operator1;
+						
+						mergeOperator.inputStreams.remove(operator0.outputName);
+						mergeOperator.inputStreams.add(datarateOperator.outputName);
+					}
+					else
+					{
+						operator1.inputName = datarateOperator.outputName;
+					}
+					
+					operator0.assignedOperator1 = datarateOperator;
+					
+					operatorGraph.addVertex(datarateOperator);
+					
+					edgesToAdd.add(new DataFlow(operator0, datarateOperator));
+				}
+				else
+				{
+					datarateOperator = (DatarateOperator)operator0.assignedOperator1;
+					
+					if(operator1.inputName == null)
+					{
+						MergeOperator mergeOperator = (MergeOperator)operator1;
+						
+						mergeOperator.inputStreams.remove(operator0.outputName);
+						mergeOperator.inputStreams.add(datarateOperator.outputName);
+					}
+					else
+					{
+						operator1.inputName = datarateOperator.outputName;
+					}
+				}
+				
+				edgesToAdd.add(new DataFlow(datarateOperator, operator1));
+			}
+		}
+		
+		operatorGraph.edges.removeAll(edgesToRemove);
+		operatorGraph.addAllEdges(edgesToAdd);
+		
+		operatorGraph.setControlFlowDatarates();
+		
+		operatorGraph.setLabels();
+		
+		endTimestamp = System.currentTimeMillis();
+		
+		System.out.println("...Adding benchmark operators finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
 	}
 	
 	public static List<OperatorGraph> buildSubgraphs(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
@@ -233,7 +325,7 @@ public class OperatorPlacementPartitioner
 		List<OperatorGraph> subGraphs = new ArrayList<>();
 		
 		OperatorGraph subGraph = null;
-		OperatorGraph subGraph2 = null;
+		//OperatorGraph subGraph2 = null;
 		
 		Operator operator0 = null;
 		Operator operator1 = null;
@@ -271,7 +363,7 @@ public class OperatorPlacementPartitioner
 				}
 			}
 			
-			if(currentNode.type.equals(Type.EDGE))
+			/*if(currentNode.type.equals(Type.EDGE))
 			{
 				List<Vertex> startingVertices = subGraph.getStartingVertices();
 				
@@ -298,17 +390,57 @@ public class OperatorPlacementPartitioner
 					
 					List<Vertex> mergeOperators = subGraph2.getVerticesByType(MergeOperator.class);
 					
-					MergeOperator mergeOperator = null;
+					List<Edge> inputEdges = null;
+					List<Edge> inputEdgesNew = null;
+					List<Edge> outputEdges = null;
+					List<Edge> outputEdgesNew = null;
 					
+					MergeOperator mergeOperator = null;
+					MergeOperator mergeOperatorNew = null;
+					
+					//TODO: ___ instead of copying the merge nodes and modify them they can just be removed!
 					for(int index3 = 0; index3 < mergeOperators.size(); index3++)
 					{
 						mergeOperator = (MergeOperator)mergeOperators.get(index3);
 						
-						if(mergeOperator.inputStreams.contains(subGraph2.label))
+						inputEdges = subGraph2.getInputEdges(mergeOperator);
+						outputEdges = subGraph2.getOutputEdges(mergeOperator);
+						
+						mergeOperatorNew = mergeOperator.copy();
+						
+						inputEdgesNew = new ArrayList<>();
+						
+						for(int index4 = 0; index4 < inputEdges.size(); index4++)
 						{
-							//TODO: ___ set merge input streams
-							mergeOperator.inputStreams = new ArrayList<>();
-							mergeOperator.inputStreams.add(subGraph2.label);
+							currentDataFlow = ((DataFlow)inputEdges.get(index4)).copy();
+							
+							currentDataFlow.vertex1 = mergeOperatorNew;
+							
+							inputEdgesNew.add(currentDataFlow);
+						}
+						
+						outputEdgesNew = new ArrayList<>();
+						
+						for(int index4 = 0; index4 < outputEdges.size(); index4++)
+						{
+							currentDataFlow = ((DataFlow)outputEdges.get(index4)).copy();
+							
+							currentDataFlow.vertex0 = mergeOperatorNew;
+							
+							outputEdgesNew.add(currentDataFlow);
+						}
+						
+						subGraph2.vertices.remove(mergeOperator);
+						subGraph2.addVertex(mergeOperatorNew);
+						subGraph2.edges.removeAll(inputEdges);
+						subGraph2.addAllEdges(inputEdgesNew);
+						subGraph2.edges.removeAll(outputEdges);
+						subGraph2.addAllEdges(outputEdgesNew);
+						
+						if(mergeOperatorNew.inputStreams.contains(subGraph2.label))
+						{
+							mergeOperatorNew.inputStreams.clear();
+							mergeOperatorNew.inputStreams.add(subGraph2.label);
 						}
 					}
 					
@@ -324,6 +456,11 @@ public class OperatorPlacementPartitioner
 				{
 					subGraphs.add(subGraph);
 				}
+			}*/
+			
+			if(!subGraph.isEmpty())
+			{
+				subGraphs.add(subGraph);
 			}
 		}
 		

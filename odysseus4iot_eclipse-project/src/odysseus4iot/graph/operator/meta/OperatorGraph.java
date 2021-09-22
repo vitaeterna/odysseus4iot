@@ -160,7 +160,7 @@ public class OperatorGraph extends Graph
 		return true;
 	}
 	
-	public boolean allDataFlowsValid(Graph physicalGraph)
+	public boolean allDataFlowsValid(PhysicalGraph physicalGraph)
 	{
 		Edge currentEdge = null;
 		

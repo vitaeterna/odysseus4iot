@@ -19,7 +19,6 @@ import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Schema;
-import odysseus4iot.graph.operator.meta.StartTimestamp;
 import odysseus4iot.main.Main;
 import odysseus4iot.model.Feature;
 
@@ -37,7 +36,7 @@ public class OperatorGenerator
 		
 		Schema attributes = new Schema();
 		attributes.addColumn(new Column("cattle_id", Integer.class));
-		attributes.addColumn(new Column("timestamp", StartTimestamp.class));
+		//attributes.addColumn(new Column("timestamp", StartTimestamp.class));
 		
 		String columnName = null;
 		

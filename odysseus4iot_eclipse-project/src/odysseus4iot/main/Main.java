@@ -17,6 +17,8 @@ import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
+import odysseus4iot.model.management.ModelManagementRequest;
+import odysseus4iot.model.management.ModelManagementRequestData;
 import odysseus4iot.placement.OperatorPlacementOptimization;
 import odysseus4iot.placement.OperatorPlacementPartitioner;
 import odysseus4iot.placement.model.OperatorPlacement;
@@ -55,6 +57,8 @@ import odysseus4iot.util.Util;
 public class Main
 {
 	public static Properties properties = null;
+	
+	public static Double evaluationSpeedupFactor = 2.0d;
 
 	public static void main(String[] args)
 	{
@@ -112,7 +116,7 @@ public class Main
 		List<Integer> ids = Arrays.asList(properties.getProperty("input.ids").split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 		List<String> rpcServerSockets = Arrays.asList(properties.getProperty("pythonrpc.sockets").split(","));
 		
-		/*ModelManagementRequestData modelManagementRequestData = new ModelManagementRequestData();
+		ModelManagementRequestData modelManagementRequestData = new ModelManagementRequestData();
 		modelManagementRequestData.sensor_system = "Blaupunkt_BST-BNO055-DS000-14_NDOF_10_AO";
 		
 		List<String> labels = Arrays.asList(properties.getProperty("input.labels").split(","));
@@ -123,15 +127,15 @@ public class Main
 			modelManagementRequestData.addLabel(labels.get(index), accs.get(index));
 		}
 		
-		modelManagementRequestData.maxsizeofbignode = 0;
-		modelManagementRequestData.maxsizeof_ALL = 0;
-		modelManagementRequestData.modelset_limit = 1;
+		modelManagementRequestData.maxsizeofbignode = 28000;
+		modelManagementRequestData.maxsizeof_ALL = 28000;
+		modelManagementRequestData.modelset_limit = 3;
 		
 		ModelManagementRequest modelManagementRequest = new ModelManagementRequest();
 		modelManagementRequest.request = modelManagementRequestData;
 		
 		System.out.println("Generated ModelManagementRequest:");
-		System.out.println(Util.toJson(modelManagementRequest)+"\n");*/
+		System.out.println(Util.toJson(modelManagementRequest)+"\n");
 		
 		//2 - Retrieving Model Information from Model Management System
 		PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
@@ -282,20 +286,22 @@ public class Main
 		System.out.print("\r\n");
 		
 		//7 - Transformation to distributed operator graph
-		OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
-		OperatorPlacementPartitioner.addBenchmarkOperators(operatorGraph, physicalGraph);
+		//OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
+		//OperatorPlacementPartitioner.addBenchmarkOperators(operatorGraph, physicalGraph);
+		OperatorPlacementPartitioner.addBenchmarkOperatorsSingleNode(operatorGraph, physicalGraph);
 		
+		Util.exportPQL(operatorGraph);
 		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
 		
 		System.out.print("\r\n");
 		
 		//8 - Generation of subgraphs for distribution
-		List<OperatorGraph> subGraphs = OperatorPlacementPartitioner.buildSubgraphs(operatorGraph, physicalGraph);
+		/*List<OperatorGraph> subGraphs = OperatorPlacementPartitioner.buildSubgraphs(operatorGraph, physicalGraph);
 		
 		for(int index = 0; index < subGraphs.size(); index++)
 		{
 			Util.exportPQL(subGraphs.get(index));
 			Util.exportOperatorGraphToDOTPNG(subGraphs.get(index));
-		}
+		}*/
 	}
 }

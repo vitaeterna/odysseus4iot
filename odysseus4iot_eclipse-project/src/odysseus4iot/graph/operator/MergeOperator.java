@@ -1,5 +1,6 @@
 package odysseus4iot.graph.operator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import odysseus4iot.graph.operator.meta.Operator;
@@ -30,6 +31,22 @@ public class MergeOperator extends Operator
 		super();
 		
 		type = Type.MERGE;
+	}
+	
+	public MergeOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public MergeOperator copy()
+	{
+		Operator operator = super.copy();
+		
+		MergeOperator mergeOperator = new MergeOperator(operator);
+		
+		mergeOperator.inputStreams = new ArrayList<>(this.inputStreams);
+		
+		return mergeOperator;
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
+import odysseus4iot.main.Main;
 
 public class TimewindowOperator extends Operator
 {
@@ -17,7 +18,7 @@ public class TimewindowOperator extends Operator
 	@Override
 	public String toString()
 	{
-		return String.format(QUERY, this.outputName, this.size, this.slide, this.inputName);
+		return String.format(QUERY, this.outputName, (int)(this.size/Main.evaluationSpeedupFactor), (int)(this.slide/Main.evaluationSpeedupFactor), this.inputName);
 	}
 	
 	public static final String QUERY = 

@@ -13,6 +13,17 @@ public class DataFlow extends Edge
 		super(vertex0, vertex1);
 	}
 	
+	public DataFlow copy()
+	{
+		DataFlow dataFlow = new DataFlow(this.vertex0, this.vertex1);
+		
+		dataFlow.label = this.label;
+		
+		dataFlow.datarateConsumption = this.datarateConsumption.doubleValue();
+		
+		return dataFlow;
+	}
+	
 	@Override
 	public void setLabel()
 	{

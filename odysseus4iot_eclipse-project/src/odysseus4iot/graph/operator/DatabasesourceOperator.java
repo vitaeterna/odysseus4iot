@@ -3,6 +3,7 @@ package odysseus4iot.graph.operator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.Schema;
+import odysseus4iot.main.Main;
 
 public class DatabasesourceOperator extends Operator
 {
@@ -34,7 +35,7 @@ public class DatabasesourceOperator extends Operator
 			attributesString += String.format(QUERY_ATTRIBUTE, currentColumn.name, currentColumn.type.getSimpleName(), index==this.attributes.columns.size()-1?"":",");
 		}
 		
-		return String.format(QUERY, this.outputName, this.table, this.jdbc, this.user, this.password, attributesString, this.waiteach);
+		return String.format(QUERY, this.outputName, this.table, this.jdbc, this.user, this.password, attributesString, (int)(this.waiteach/Main.evaluationSpeedupFactor));
 	}
 	
 	private static final String QUERY = 

@@ -304,6 +304,61 @@ public abstract class Graph
 		return vertices;
 	}
 	
+	public List<Edge> getInputEdges(Vertex vertex)
+	{
+		List<Edge> inputEdges = new ArrayList<>();
+		
+		Edge currentEdge = null;
+		
+		for(int index = 0; index < this.edges.size(); index++)
+		{
+			currentEdge = edges.get(index);
+			
+			if(currentEdge.vertex1 == vertex)
+			{
+				inputEdges.add(currentEdge);
+			}
+		}
+		
+		return inputEdges;
+	}
+	
+	public List<Edge> getOutputEdges(Vertex vertex)
+	{
+		List<Edge> outputEdges = new ArrayList<>();
+		
+		Edge currentEdge = null;
+		
+		for(int index = 0; index < this.edges.size(); index++)
+		{
+			currentEdge = edges.get(index);
+			
+			if(currentEdge.vertex0 == vertex)
+			{
+				outputEdges.add(currentEdge);
+			}
+		}
+		
+		return outputEdges;
+	}
+	
+	public Edge getEdge(Vertex vertex0, Vertex vertex1)
+	{
+		Edge currentEdge = null;
+		
+		for(int index = 0; index < this.edges.size(); index++)
+		{
+			currentEdge = edges.get(index);
+			
+			if(currentEdge.vertex0 == vertex0 && currentEdge.vertex1 == vertex1)
+			{
+				return currentEdge;
+			}
+		}
+		
+		return null;
+	}
+	
 	public void setLabels()
 	{
 		for(int index = 0; index < this.vertices.size(); index++)
