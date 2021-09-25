@@ -118,7 +118,7 @@ public class PhysicalGraph extends Graph
 			
 			currentConnection.datarateConsumed = datarateConsumption;
 			
-			if(currentConnection.datarateCapacity < currentConnection.datarateConsumed)
+			if(currentConnection.datarateCapacity.longValue() != -1L && currentConnection.datarateCapacity < currentConnection.datarateConsumed)
 			{
 				return false;
 			}

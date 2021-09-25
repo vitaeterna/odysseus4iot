@@ -58,7 +58,11 @@ public class Main
 {
 	public static Properties properties = null;
 	
-	public static Double evaluationSpeedupFactor = 2.0d;
+	public static boolean hardcodedIDs = true;
+	
+	public static Double evaluationSpeedupFactor = 1.0d;
+	public static boolean postprocessing = false;
+	public static boolean merge = true;
 
 	public static void main(String[] args)
 	{
@@ -147,9 +151,7 @@ public class Main
 		
 		List<List<Integer>> modelsetIDs = new ArrayList<>();
 		
-		boolean hardcoded = true;
-		
-		if(hardcoded)
+		if(hardcodedIDs)
 		{
 			List<Integer> modelsetIDs0 = new ArrayList<>();
 			modelsetIDs0.add(4271);
@@ -236,7 +238,7 @@ public class Main
 			models = modelsets.get(index);
 			
 			//5 - Generating Merged Logical Operator Graph for all models
-			OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, true, true);
+			OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 			
 			//Util.exportPQL(operatorGraph);
 			

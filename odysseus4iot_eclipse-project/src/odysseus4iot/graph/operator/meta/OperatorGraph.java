@@ -46,14 +46,7 @@ public class OperatorGraph extends Graph
 			
 			if(operator0.assignedID != operator1.assignedID)
 			{
-				if(physicalGraph.getNodeByID(operator0.assignedID).type.equals(Node.Type.EDGE))
-				{
-					datarateTotal += currentDataFlow.datarateConsumption * this.getStartingVertices().size();
-				}
-				else
-				{
-					datarateTotal += currentDataFlow.datarateConsumption;
-				}
+				datarateTotal += currentDataFlow.datarateConsumption;
 			}
 		}
 		

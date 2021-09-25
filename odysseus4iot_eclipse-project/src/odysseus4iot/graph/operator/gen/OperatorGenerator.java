@@ -129,7 +129,7 @@ public class OperatorGenerator
 		return timewindowOperator;
 	}
 	
-	public static AggregateOperator generateAggregateOperator(List<Feature> features)
+	public static AggregateOperator generateAggregateOperator(List<Feature> features, String suffix)
 	{
 		AggregateOperator aggregateOperator = new AggregateOperator();
 		
@@ -147,7 +147,7 @@ public class OperatorGenerator
 			currentFeature = features.get(index);
 			currentFeatureSplit = currentFeature.name.split("_");
 			
-			aggregations.add("['" + currentFeatureSplit[1] + "', ['" + currentFeatureSplit[0] + "'], 'car_" + currentFeature.name + "', '" + currentFeature.type.toUpperCase() + "']");
+			aggregations.add("['" + currentFeatureSplit[1] + "', ['" + currentFeatureSplit[0] + "'], '" + currentFeature.name + suffix + "', '" + currentFeature.type.toUpperCase() + "']");
 		}
 		
 		aggregateOperator.aggregations = aggregations;
@@ -169,7 +169,7 @@ public class OperatorGenerator
 		return aggregateOperator;
 	}
 	
-	public static ProjectOperator generateProjectOperator(List<Feature> attributes, String attributePrefix)
+	public static ProjectOperator generateProjectOperator(List<Feature> attributes, String suffix)
 	{
 		ProjectOperator projectOperator = new ProjectOperator();
 		
@@ -186,9 +186,9 @@ public class OperatorGenerator
 		{
 			currentAttribute = attributes.get(index);
 			
-			if(attributePrefix != null)
+			if(suffix != null)
 			{
-				projectOperator.attributes.add(attributePrefix + currentAttribute.name);
+				projectOperator.attributes.add(currentAttribute.name + suffix);
 			}
 			else
 			{
@@ -203,9 +203,9 @@ public class OperatorGenerator
 		{
 			currentAttribute = attributes.get(index);
 			
-			if(attributePrefix != null)
+			if(suffix != null)
 			{
-				outputSchema.addColumn(new Column(attributePrefix + currentAttribute.name, Double.class));
+				outputSchema.addColumn(new Column(suffix + currentAttribute.name, Double.class));
 			}
 			else
 			{

@@ -38,7 +38,7 @@ public class Operator extends Vertex
 		
 		models = new ArrayList<>();
 		
-		cpuConsumption = 0L;
+		cpuConsumption = 1L;
 		memConsumption = 0L;
 	}
 	

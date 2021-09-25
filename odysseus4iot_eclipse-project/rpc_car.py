@@ -1,117 +1,142 @@
 import json
 import logging
 import pickle
+import pandas
+import psycopg2
 import re
-import sys
-from json import JSONDecodeError
 import sklearn
-import pandas as pd
+import sys
+from psycopg2 import sql
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
-# Restrict to a particular path.
-import psycopg2
+myLogger = logging.getLogger()
+myLogger.setLevel(logging.DEBUG)
 
-logging.basicConfig(filename="mylog.log",level=logging.INFO,format='%(asctime)s :: %(levelname)s :: %(message)s')
+fileLogger = logging.FileHandler("fileLog.log")
+fileLogger.setLevel(logging.DEBUG)
+fileLogger.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(message)s",datefmt="%H:%M:%S"))
+myLogger.addHandler(fileLogger)
 
-rpcPort = 9001
+consoleLogger = logging.StreamHandler()
+consoleLogger.setLevel(logging.INFO)
+consoleLogger.setFormatter(logging.Formatter("%(message)s"))
+myLogger.addHandler(consoleLogger)
+
+rpcHost = 'localhost'
+rpcPort = 9000
+rpcPath = '/rpc'
+
+loadedModelName = None;
+loadedModel = None;
+
 class RequestHandler(SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/rpc',)
-
+    rpc_paths = (rpcPath,)
 
 # Create server
-with SimpleXMLRPCServer(('', rpcPort),
-                        requestHandler=RequestHandler) as server:
-    loadedModelName = "";
-    loadedModel = any;
+with SimpleXMLRPCServer((rpcHost, rpcPort), requestHandler=RequestHandler) as server:
     server.register_introspection_functions()
 
     # Register a function under a different name
     def predict(dbPropertiesJson, sensorDataJson):
         try:
-            arg = re.sub("([\w-]+):", r'"\1":', dbPropertiesJson)
-            json_val = json.loads(arg)
-            logging.info("Database properties loaded :" + str(json_val['database']
-                                                                 + " " + json_val['host']
-                                                                 + " " + json_val['port']
-                                                                 + " " + json_val['table']))
+            logging.debug("dbPropertiesJson:\n"+dbPropertiesJson)
+            logging.debug("sensorDataJson:\n"+sensorDataJson)
+
+            dbPropertiesDict = json.loads(dbPropertiesJson)
+
+            logging.debug("dbPropertiesDict:\n"+str(dbPropertiesDict))
+
         except JSONDecodeError:
             logging.error("Exception occurred while trying to"
                           " read database properties :" + str(dbPropertiesJson))
             logging.error(sys.exc_info())
 
-        params_db = {'host': json_val["host"], 'port': json_val["port"], 'database': json_val["database"],
-                     'user': json_val["username"], 'password': json_val["password"]}
-        trained_models_table = json_val["table"]
+        host = dbPropertiesDict["host"]
+        port = dbPropertiesDict["port"]
+        database = dbPropertiesDict["database"]
+        username = dbPropertiesDict["username"]
+        password = dbPropertiesDict["password"]
+        table = dbPropertiesDict["table"]
+        column = dbPropertiesDict["selectModelByColumn"]
+        modelid = dbPropertiesDict["selectModelByValue"]
+
+        params_db = {'host': host, 'port': port, 'database': database,'user': username, 'password': password}
 
         try:
-            global loadedModelName, loadedModel
-            if not (loadedModelName == json_val["selectModelByValue"]):
-                logging.info("Loading new model " + str(json_val["selectModelByValue"]))
+            global loadedModelName
+            global loadedModel
+            if not (loadedModelName == modelid):
+                logging.info("Loading new model id=" + str(modelid) + " from " + host + ":" + port + "/" + database + "/" + table + "/" + column)
                 conn = psycopg2.connect(**params_db)
-                cur = conn.cursor()
-                # Connect to the table model to get meta-data =>
-                # 1. Get the model pickle content
-                sql_fetch_model_content = 'SELECT model_content FROM ' + trained_models_table + ' WHERE id = %s'
-                cur.execute(sql_fetch_model_content, (json_val["selectModelByValue"],))
-                model_retrieved = cur.fetchone()
-                if cur.rowcount == 0:
-                    # No model with the given  name is found
-                    logging.error("No model with the given name is found on the database!")
+                cursor = conn.cursor()
+                query = sql.SQL("SELECT {column} FROM {table} WHERE id = %s").format(column=sql.Identifier(column),table=sql.Identifier(table))
+                
+                logging.debug("SQL query:\n"+str(query))
+                
+                cursor.execute(query, (modelid,))
+                model_retrieved = cursor.fetchone()
+
+                if cursor.rowcount == 0:
+                    logging.error("No model with the given id is found on the database!")
                 else:
                     loadedModel = pickle.loads(model_retrieved[0])
-                    loadedModelName = json_val["selectModelByValue"]
+                    loadedModelName = modelid
+
+                    logging.info("Model successfully loaded! id=" + str(modelid) + " " + str(loadedModel) + " #features=" + str(loadedModel.n_features_in_))
             else:
-                logging.info("Using existing model " + str(json_val["selectModelByValue"]))
+                logging.info("Using existing model! id=" + str(modelid) + " " + str(loadedModel) + " #features=" + str(loadedModel.n_features_in_))
         except:
             logging.error("Exception occurred while trying to"
                           " load model from database :")
             logging.error(sys.exc_info())
 
         try:
-            arg1 = re.sub("([\w-]+):", r'"\1":', sensorDataJson)
-            arg1 = arg1.replace("_", "-")
-            sensorJson = json.loads(arg1)
+            sensorDataDict = json.loads(sensorDataJson)
+            sensorDataDict = dict(sorted(sensorDataDict.items()))
+
+            logging.debug("sensorDataDict:\n"+str(sensorDataDict))
+
         except:
             logging.error("Exception occurred while trying to"
                           " load sensor data :")
             logging.error(sys.exc_info())
 
-        data = {}
-        for signal in sensorJson:
-            #if not (signal == 'cattle-id') and not (signal == 'round') and not (signal == 'count'):
-            if signal.startswith('car-'):
-                data[signal] = [sensorJson[signal]]
-        logging.info("The length of the input data is "+str(len(data)))
-        print("The length of the input data is "+str(len(data)))
+        featureDict = {}
+        for key in sensorDataDict:
+            if key.endswith('_car'):
+                featureDict[key] = [sensorDataDict[key]]
+
+        logging.debug("featureDict:\n"+str(featureDict))
+        logging.debug("The size of the feature set is "+str(len(featureDict)))
+
         try:
-            df = pd.DataFrame(data, columns=data.keys())
-            for col in data.keys():
-                df[col] = df[col].astype(float)
+            dataFrame = pandas.DataFrame(data=featureDict)
+            logging.debug("Pandas Dataframe:\n"+str(dataFrame))
+            logging.debug("Pandas Dataframe Data Types:\n"+str(dataFrame.dtypes))
         except:
             logging.error("Exception occurred while trying to"
                           " create data frame :")
             logging.error(sys.exc_info())
+
         try:
-            if len(loadedModel) > 0:
-                
-                logging.info("The number of features of the loaded model is "+str(loadedModel.n_features_))
-                print("The number of features of the loaded model is "+str(loadedModel.n_features_))
-                res = loadedModel.predict(df)
-                logging.info("prediction : "+res)
-                return str(res)
+            if loadedModel is not None:
+                result = loadedModel.predict(dataFrame)
+                #logging.info("prediction : "+str(result)+" "+str(type(result)))      # -> <class 'numpy.ndarray'>
+                logging.info("prediction : "+str(result[0]))                          # -> <class 'numpy.str_'>
+                return str(result[0])
             else:
-                logging.error("did not receive model")
+                logging.error("Model is undefined!")
                 logging.error(sys.exc_info())
         except ValueError:
             logging.error("could not predict label")
             logging.error(sys.exc_info())
+
         return "error"
 
-
     server.register_function(predict, 'predict')
-    logging.info("function predict published in port "+str(rpcPort))
-    print("function predict published in port "+str(rpcPort))
+
+    logging.info("RPC server started at url "+rpcHost+":"+str(rpcPort)+rpcPath)
 
     # Run the server's main loop
     server.serve_forever()

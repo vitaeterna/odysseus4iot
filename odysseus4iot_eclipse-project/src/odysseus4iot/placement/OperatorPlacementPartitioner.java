@@ -268,8 +268,11 @@ public class OperatorPlacementPartitioner
 					{
 						MergeOperator mergeOperator = (MergeOperator)operator1;
 						
-						mergeOperator.inputStreams.remove(operator0.outputName);
-						mergeOperator.inputStreams.add(datarateOperator.outputName);
+						List<String> inputStreams = new ArrayList<>(mergeOperator.inputStreams);
+						inputStreams.remove(operator0.outputName);
+						inputStreams.add(datarateOperator.outputName);
+						
+						mergeOperator.inputStreams = inputStreams;
 					}
 					else
 					{

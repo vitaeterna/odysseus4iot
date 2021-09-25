@@ -26,7 +26,9 @@ import odysseus4iot.util.Util;
 //TODO: ___ write metadata on databasesink+
 //TODO: ___ Optimize dataflows between nodes (merge them, remove redundancy in sending sender/access for placement optimization and distributed graph transform)
 public class OperatorGraphGenerator
-{	
+{
+	public static String suffix = "car_";
+	
 	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
 	{
 		if(sensors == null || sensors.isEmpty() || models == null || models.isEmpty())
@@ -70,6 +72,8 @@ public class OperatorGraphGenerator
 			currentSensor = sensors.get(index);
 			
 			databasesourceOperator = OperatorGenerator.generateDatabasesourceOperator(currentSensor, unionOfSchemata, Model.getMinWaiteach(models).intValue());
+			
+			databasesourceOperator.cpuConsumption = 0L;
 			
 			databasesourceOperators.add(databasesourceOperator);
 			
@@ -299,7 +303,7 @@ public class OperatorGraphGenerator
 		{
 			previousOperator = previousOperators.get(index);
 			
-			aggregateOperator = OperatorGenerator.generateAggregateOperator(Model.getUnionOfFeatures(previousOperator.models));
+			aggregateOperator = OperatorGenerator.generateAggregateOperator(Model.getUnionOfFeatures(previousOperator.models), suffix);
 			
 			aggregateOperator.models = previousOperator.models;
 			
@@ -374,6 +378,7 @@ public class OperatorGraphGenerator
 					{
 						projectOperator = projectOperators.get(index3);
 						
+						//TODO: ___ So far it is assumed that when the set of features is identical, the order is automatically identical too!
 						if(projectOperator.payloadAttributes.containsAll(Feature.getNamesFromFeatures(currentModel.getFeatures())) && projectOperator.payloadAttributes.size() == currentModel.getFeatures().size())
 						{
 							projectOperatorExists = true;
@@ -386,7 +391,7 @@ public class OperatorGraphGenerator
 					
 					if(!projectOperatorExists)
 					{
-						projectOperator = OperatorGenerator.generateProjectOperator(currentModel.getFeatures(), "car_");
+						projectOperator = OperatorGenerator.generateProjectOperator(currentModel.getFeatures(), suffix);
 					
 						projectOperator.models.add(currentModel);
 						
