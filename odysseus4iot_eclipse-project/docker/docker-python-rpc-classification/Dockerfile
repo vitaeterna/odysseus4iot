@@ -1,5 +1,4 @@
 FROM python:3
-ADD rpc-classification.py /
+ADD rpc_classification.py /
 RUN pip install pandas psycopg2 sklearn
-EXPOSE 9001
-CMD ["python","./rpc-classification.py","9001"]
+ENTRYPOINT ["python","/rpc_classification.py"]
