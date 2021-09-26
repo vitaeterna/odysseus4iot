@@ -30,6 +30,12 @@ rpcPath = '/rpc'
 loadedModelName = None;
 loadedModel = None;
 
+try:
+    if len(sys.argv) == 2:
+        rpcPort = int(sys.argv[1])
+except:
+    pass
+
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = (rpcPath,)
 
