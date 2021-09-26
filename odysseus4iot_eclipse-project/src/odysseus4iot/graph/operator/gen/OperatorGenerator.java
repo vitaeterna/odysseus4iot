@@ -147,7 +147,7 @@ public class OperatorGenerator
 			currentFeature = features.get(index);
 			currentFeatureSplit = currentFeature.name.split("_");
 			
-			aggregations.add("['" + currentFeatureSplit[1] + "', ['" + currentFeatureSplit[0] + "'], '" + currentFeature.name + suffix + "', '" + currentFeature.type.toUpperCase() + "']");
+			aggregations.add("['" + currentFeatureSplit[1] + "', '" + currentFeatureSplit[0] + "', '" + currentFeature.name + suffix + "', '" + currentFeature.type.toUpperCase() + "']");
 		}
 		
 		aggregateOperator.aggregations = aggregations;
@@ -188,11 +188,11 @@ public class OperatorGenerator
 			
 			if(suffix != null)
 			{
-				projectOperator.attributes.add(currentAttribute.name + suffix);
+				projectOperator.attributes.add("'" + currentAttribute.name + suffix + "'");
 			}
 			else
 			{
-				projectOperator.attributes.add(currentAttribute.name);
+				projectOperator.attributes.add("'" + currentAttribute.name + "'");
 			}
 		}
 		

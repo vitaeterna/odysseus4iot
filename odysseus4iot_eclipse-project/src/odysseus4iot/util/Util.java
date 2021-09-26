@@ -274,9 +274,9 @@ public class Util
 			}
 		}
 		
-		Util.writeFile(operatorGraph.label + ".qry", stringBuilder.toString(), Charset.defaultCharset());
+		Util.writeFile("./generated/" + operatorGraph.label + ".qry", stringBuilder.toString(), Charset.defaultCharset());
 		
-		System.out.print("Written to " + operatorGraph.label + ".qry\n");
+		System.out.print("Written to " + "./generated/" + operatorGraph.label + ".qry\n");
 	}
     
     public static void exportOperatorGraphToDOTPNG(OperatorGraph operatorGraph)
@@ -335,12 +335,12 @@ public class Util
 
         dot.append("}");
 
-        Util.writeFile(operatorGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
+        Util.writeFile("./generated/" + operatorGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
         
-        System.out.print("Written to " + operatorGraph.label + ".dot\n");
+        System.out.print("Written to " + "./generated/" + operatorGraph.label + ".dot\n");
         
         //dot -Tpng outputFilename.dot -o outputFilename.png
-        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", operatorGraph.label + ".dot", "-o", operatorGraph.label + ".png");
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", "./generated/" + operatorGraph.label + ".dot", "-o", "./generated/" + operatorGraph.label + ".png");
         builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -349,7 +349,7 @@ public class Util
         {
             builder.start().waitFor();
 
-            System.out.print("Written to " + operatorGraph.label + ".png\n");
+            System.out.print("Written to " + "./generated/" + operatorGraph.label + ".png\n");
         }
         catch(InterruptedException e)
         {
@@ -414,12 +414,12 @@ public class Util
 
         dot.append("}");
 
-        Util.writeFile(physicalGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
+        Util.writeFile("./generated/" + physicalGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
         
-        System.out.print("Written to " + physicalGraph.label + ".dot\n");
+        System.out.print("Written to " + "./generated/" + physicalGraph.label + ".dot\n");
         
         //dot -Tpng outputFilename.dot -o outputFilename.png
-        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", physicalGraph.label + ".dot", "-o", physicalGraph.label + ".png");
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", "./generated/" + physicalGraph.label + ".dot", "-o", "./generated/" + physicalGraph.label + ".png");
         builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -428,7 +428,7 @@ public class Util
         {
             builder.start().waitFor();
 
-            System.out.print("Written to " + physicalGraph.label + ".png\n");
+            System.out.print("Written to " + "./generated/" + physicalGraph.label + ".png\n");
         }
         catch(InterruptedException e)
         {
@@ -517,12 +517,12 @@ public class Util
 
         dot.append("}");
 
-        Util.writeFile(operatorGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
+        Util.writeFile("./generated/" + operatorGraph.label + ".dot", dot.toString(), Charset.defaultCharset());
         
-        System.out.print("Written to " + operatorGraph.label + ".dot\n");
+        System.out.print("Written to " + "./generated/" + operatorGraph.label + ".dot\n");
         
         //dot -Tpng outputFilename.dot -o outputFilename.png
-        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", operatorGraph.label + ".dot", "-o", operatorGraph.label + ".png");
+        ProcessBuilder builder = new ProcessBuilder("dot", "-Tpng", "./generated/" + operatorGraph.label + ".dot", "-o", "./generated/" + operatorGraph.label + ".png");
         builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -531,7 +531,7 @@ public class Util
         {
             builder.start().waitFor();
 
-            System.out.print("Written to " + operatorGraph.label + ".png\n");
+            System.out.print("Written to " + "./generated/" + operatorGraph.label + ".png\n");
         }
         catch(InterruptedException e)
         {

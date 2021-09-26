@@ -18,7 +18,7 @@ public class PhysicalGraphGenerator
 		
 		System.out.println("Generation of Physical Graph started...");
 		
-		PhysicalGraph graph = new PhysicalGraph("physical");
+		PhysicalGraph physicalGraph = new PhysicalGraph("physical");
 		
 		List<Node> nodes = new ArrayList<>();
 		
@@ -40,11 +40,11 @@ public class PhysicalGraphGenerator
 			
 			node = NodeGenerator.generateNode(currentNodeName, currentNodeSocket, currentNodeType, currentNodeCPUCap, currentNodeMemCap);
 			
-			node.setLabel();
-			
 			nodes.add(node);
 			
-			graph.addVertex(node);
+			physicalGraph.addVertex(node);
+			
+			node.setLabel();
 		}
 		
 		List<Connection> connections = new ArrayList<>();
@@ -70,19 +70,19 @@ public class PhysicalGraphGenerator
 				System.exit(0);
 			}
 			
-			connection = new Connection(graph.getVertexByID(Integer.parseInt(currentEdgeSplit[0])), graph.getVertexByID(Integer.parseInt(currentEdgeSplit[1])), currentEdgeRateCap);
+			connection = new Connection(physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[0])), physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[1])), currentEdgeRateCap);
 			
 			connection.setLabel();
 
 			connections.add(connection);
 			
-			graph.addEdge(connection);
+			physicalGraph.addEdge(connection);
 		}
 		
 		endTimestamp = System.currentTimeMillis();
 		
 		System.out.println("...Generation of Physical Graph finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
 		
-		return graph;
+		return physicalGraph;
 	}
 }

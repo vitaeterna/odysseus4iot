@@ -27,7 +27,7 @@ import odysseus4iot.util.Util;
 //TODO: ___ Optimize dataflows between nodes (merge them, remove redundancy in sending sender/access for placement optimization and distributed graph transform)
 public class OperatorGraphGenerator
 {
-	public static String suffix = "car_";
+	public static String suffix = "_car";
 	
 	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
 	{

@@ -17,8 +17,6 @@ import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
-import odysseus4iot.model.management.ModelManagementRequest;
-import odysseus4iot.model.management.ModelManagementRequestData;
 import odysseus4iot.placement.OperatorPlacementOptimization;
 import odysseus4iot.placement.OperatorPlacementPartitioner;
 import odysseus4iot.placement.model.OperatorPlacement;
@@ -58,7 +56,7 @@ public class Main
 {
 	public static Properties properties = null;
 	
-	public static boolean hardcodedIDs = true;
+	public static Integer evalCase = 1;
 	
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
@@ -73,7 +71,14 @@ public class Main
 		
 		try
 		{
-			input = new FileInputStream("./config.properties");
+			if(evalCase == 1)
+			{
+				input = new FileInputStream("./config_ec.properties");
+			}
+			else
+			{
+				input = new FileInputStream("./config_efc.properties");
+			}
 		}
 		catch (FileNotFoundException e)
 		{
@@ -120,7 +125,7 @@ public class Main
 		List<Integer> ids = Arrays.asList(properties.getProperty("input.ids").split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 		List<String> rpcServerSockets = Arrays.asList(properties.getProperty("pythonrpc.sockets").split(","));
 		
-		ModelManagementRequestData modelManagementRequestData = new ModelManagementRequestData();
+		/*ModelManagementRequestData modelManagementRequestData = new ModelManagementRequestData();
 		modelManagementRequestData.sensor_system = "Blaupunkt_BST-BNO055-DS000-14_NDOF_10_AO";
 		
 		List<String> labels = Arrays.asList(properties.getProperty("input.labels").split(","));
@@ -139,7 +144,7 @@ public class Main
 		modelManagementRequest.request = modelManagementRequestData;
 		
 		System.out.println("Generated ModelManagementRequest:");
-		System.out.println(Util.toJson(modelManagementRequest)+"\n");
+		System.out.println(Util.toJson(modelManagementRequest)+"\n");*/
 		
 		//2 - Retrieving Model Information from Model Management System
 		PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
@@ -151,24 +156,90 @@ public class Main
 		
 		List<List<Integer>> modelsetIDs = new ArrayList<>();
 		
-		if(hardcodedIDs)
+		switch(evalCase.intValue())
 		{
-			List<Integer> modelsetIDs0 = new ArrayList<>();
-			modelsetIDs0.add(4271);
-			modelsetIDs0.add(4272);
-			
-			List<Integer> modelsetIDs1 = new ArrayList<>();
-			modelsetIDs1.add(4273);
-			modelsetIDs1.add(4274);
-			
-			modelsetIDs.add(modelsetIDs0);
-			modelsetIDs.add(modelsetIDs1);
+			case 1:
+				//Case 1 - Sensors, Cloud - 1.0 acc 18730_27039_11340 (problem: all models are window aligned)
+				List<Integer> modelsetIDsCase12_1 = new ArrayList<>();
+				modelsetIDsCase12_1.add(11340);
+				modelsetIDsCase12_1.add(18730);
+				modelsetIDsCase12_1.add(27039);
+				
+				modelsetIDs.add(modelsetIDsCase12_1);
+			case 2:
+				//Case 2 - Sensors, Fog, Cloud - 1.0 acc 18730_27039_11340 (problem: all models are window aligned)
+				break;
+			case 3:
+				//Case 3 - Sensors, Fog, Cloud - 0.5 acc edge: 16499_6529, 18444_7568, 17809_7253 fog: 18400_7535, 18400_7539, 17765_7224
+				List<Integer> modelsetIDsCase13_1 = new ArrayList<>();
+				modelsetIDsCase13_1.add(6529);
+				modelsetIDsCase13_1.add(16499);
+				
+				List<Integer> modelsetIDsCase13_2 = new ArrayList<>();
+				modelsetIDsCase13_2.add(7568);
+				modelsetIDsCase13_2.add(18444);
+				
+				List<Integer> modelsetIDsCase13_3 = new ArrayList<>();
+				modelsetIDsCase13_3.add(7253);
+				modelsetIDsCase13_3.add(17809);
+				
+				List<Integer> modelsetIDsCase13_4 = new ArrayList<>();
+				modelsetIDsCase13_4.add(7535);
+				modelsetIDsCase13_4.add(18400);
+				
+				List<Integer> modelsetIDsCase13_5 = new ArrayList<>();
+				modelsetIDsCase13_5.add(7539);
+				modelsetIDsCase13_5.add(18400);
+				
+				List<Integer> modelsetIDsCase13_6 = new ArrayList<>();
+				modelsetIDsCase13_6.add(7224);
+				modelsetIDsCase13_6.add(17765);
+				
+				modelsetIDs.add(modelsetIDsCase13_1);
+				modelsetIDs.add(modelsetIDsCase13_2);
+				modelsetIDs.add(modelsetIDsCase13_3);
+				modelsetIDs.add(modelsetIDsCase13_4);
+				modelsetIDs.add(modelsetIDsCase13_5);
+				modelsetIDs.add(modelsetIDsCase13_6);
+				break;
+			case 4:
+				//Case 4 - Sensors, Fog, Cloud - 0.0 acc edge: 11979_4309, 11979_20333_4309, 11979_20333_8158 fog: 11916_4272, 11916_4273, 11916_4275
+				List<Integer> modelsetIDsCase14_1 = new ArrayList<>();
+				modelsetIDsCase14_1.add(6529);
+				modelsetIDsCase14_1.add(16499);
+				
+				List<Integer> modelsetIDsCase14_2 = new ArrayList<>();
+				modelsetIDsCase14_2.add(7568);
+				modelsetIDsCase14_2.add(18444);
+				
+				List<Integer> modelsetIDsCase14_3 = new ArrayList<>();
+				modelsetIDsCase14_3.add(7253);
+				modelsetIDsCase14_3.add(17809);
+				
+				List<Integer> modelsetIDsCase14_4 = new ArrayList<>();
+				modelsetIDsCase14_4.add(7535);
+				modelsetIDsCase14_4.add(18400);
+				
+				List<Integer> modelsetIDsCase14_5 = new ArrayList<>();
+				modelsetIDsCase14_5.add(7539);
+				modelsetIDsCase14_5.add(18400);
+				
+				List<Integer> modelsetIDsCase14_6 = new ArrayList<>();
+				modelsetIDsCase14_6.add(7224);
+				modelsetIDsCase14_6.add(17765);
+				
+				modelsetIDs.add(modelsetIDsCase14_1);
+				modelsetIDs.add(modelsetIDsCase14_2);
+				modelsetIDs.add(modelsetIDsCase14_3);
+				modelsetIDs.add(modelsetIDsCase14_4);
+				modelsetIDs.add(modelsetIDsCase14_5);
+				modelsetIDs.add(modelsetIDsCase14_6);
+				break;
+			default:
+				modelsetIDs.add(ids);
+				break;
 		}
-		else
-		{
-			modelsetIDs.add(ids);
-		}
-		
+
 		List<Model> models = null;
 		
 		for(int index = 0; index < modelsetIDs.size(); index++)
