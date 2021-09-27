@@ -17,8 +17,9 @@ import odysseus4iot.graph.physical.gen.PhysicalGraphGenerator;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.model.Model;
 import odysseus4iot.model.PostgresImport;
+import odysseus4iot.placement.OperatorPlacementBenchmark;
 import odysseus4iot.placement.OperatorPlacementOptimization;
-import odysseus4iot.placement.OperatorPlacementPartitioner;
+import odysseus4iot.placement.OperatorPlacementPartitioning;
 import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
@@ -371,13 +372,10 @@ public class Main
 		//7 - Transformation to distributed operator graph
 		if(distributed)
 		{
-			OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
-			OperatorPlacementPartitioner.addBenchmarkOperators(operatorGraph, physicalGraph);
+			OperatorPlacementPartitioning.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
 		}
-		else
-		{
-			OperatorPlacementPartitioner.addBenchmarkOperatorsSingleNode(operatorGraph, physicalGraph);
-		}
+		
+		OperatorPlacementBenchmark.addBenchmarkOperators(operatorGraph, physicalGraph);
 		
 		String globalQuery = Util.exportPQL(operatorGraph);
 		
@@ -394,7 +392,7 @@ public class Main
 		
 		if(distributed)
 		{
-			List<OperatorGraph> subGraphs = OperatorPlacementPartitioner.buildSubgraphs(operatorGraph, physicalGraph);
+			List<OperatorGraph> subGraphs = OperatorPlacementPartitioning.buildSubgraphs(operatorGraph, physicalGraph);
 			
 			for(int index = 0; index < subGraphs.size(); index++)
 			{

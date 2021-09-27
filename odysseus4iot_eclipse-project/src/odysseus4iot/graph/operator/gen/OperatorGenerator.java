@@ -160,7 +160,7 @@ public class OperatorGenerator
 		{
 			currentFeature = features.get(index);
 			
-			outputSchema.addColumn(new Column("car_" + currentFeature, Double.class));
+			outputSchema.addColumn(new Column(currentFeature + suffix, Double.class));
 		}
 		
 		aggregateOperator.outputSchema = outputSchema;
@@ -206,7 +206,7 @@ public class OperatorGenerator
 			
 			if(suffix != null)
 			{
-				outputSchema.addColumn(new Column(suffix + currentAttribute.name, Double.class));
+				outputSchema.addColumn(new Column(currentAttribute.name + suffix, Double.class));
 			}
 			else
 			{
@@ -320,7 +320,7 @@ public class OperatorGenerator
 	public static DatarateOperator generateDatarateOperator(String key)
 	{
 		DatarateOperator datarateOperator = new DatarateOperator();
-		datarateOperator.key = key + "_" + DatarateOperator.getNextDatarateCount();
+		datarateOperator.key = "datarate_" + key + "_" + DatarateOperator.getNextDatarateCount();
 		
 		datarateOperator.outputSchema = null;
 		datarateOperator.outputRate = null;

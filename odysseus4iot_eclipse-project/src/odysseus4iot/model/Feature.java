@@ -12,7 +12,7 @@ public class Feature implements Comparable<Feature>
 	@Override
 	public String toString()
 	{
-		return order + "_" + name + "_" + type;
+		return name;
 	}
 
 	@Override
