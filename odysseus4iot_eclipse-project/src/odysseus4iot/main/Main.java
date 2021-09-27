@@ -23,8 +23,7 @@ import odysseus4iot.placement.OperatorPlacementPartitioning;
 import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
-//Window problem with window slide
-//databasesink exception
+//TODO: __ Window problem with window slide
 /*
  * Operator Placement Query Optimization
  * 
@@ -387,7 +386,6 @@ public class Main
 		System.out.print("\r\n");
 		
 		//8 - Generation of subgraphs for distribution
-		
 		List<String> partialPQLQueries = new ArrayList<>();
 		
 		if(distributed)

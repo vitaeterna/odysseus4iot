@@ -21,9 +21,8 @@ import odysseus4iot.model.Model;
 import odysseus4iot.util.Util;
 
 //TODO: _ project operator generation order (id mixup)
-//TODO: _ generate invisible filler nodes for visualization - project operator
+//TODO: _ generate invisible filler nodes/ranks/groups for visualization - project operator
 //TODO: __ handle metadata correctly!
-//TODO: ___ write metadata on databasesink+
 //TODO: ___ Optimize dataflows between nodes (merge them, remove redundancy in sending sender/access for placement optimization and distributed graph transform)
 public class OperatorGraphGenerator
 {

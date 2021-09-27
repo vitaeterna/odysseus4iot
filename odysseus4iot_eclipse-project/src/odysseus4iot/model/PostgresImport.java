@@ -57,7 +57,6 @@ public class PostgresImport
 			connection.setAutoCommit(true);
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(String.format(SQL_QUERY_EXPERIMENTRESULT, table));
-			//TODO: _ preparedStatement.setInt(1, foovalue);
 			
 			preparedStatement.setFetchSize(0);
 			
@@ -193,7 +192,7 @@ public class PostgresImport
 		
 		for(int index = 0; index < ids.size(); index++)
 		{
-			idExpression += "id = " + ids.get(index);
+			idExpression += "id = ?";
 			
 			if(index != ids.size() - 1)
 			{
@@ -207,7 +206,11 @@ public class PostgresImport
 			connection.setAutoCommit(true);
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(String.format(SQL_QUERY_TRAINEDMODELS, table, idExpression));
-			//TODO: _ preparedStatement.setInt(1, foovalue);
+
+			for(int index = 0; index < ids.size(); index++)
+			{
+				preparedStatement.setInt(index + 1, ids.get(index));
+			}
 			
 			preparedStatement.setFetchSize(0);
 			

@@ -10,9 +10,6 @@ import odysseus4iot.model.management.ModelManagementRequestData;
 import odysseus4iot.model.management.ModelManagementResponse;
 import odysseus4iot.util.Util;
 
-//sensor system -> sensor_system (input)
-//window.type_size_stride -> split into window_size and window_stride (remove type and no point in name)
-//What is the sense of boolean type and number of sensor systems?
 public class ModelManagementImport
 {
 	public static String host = null;
