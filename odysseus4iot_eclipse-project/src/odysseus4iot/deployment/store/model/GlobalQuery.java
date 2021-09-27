@@ -6,6 +6,7 @@ public class GlobalQuery
 {
 	private String name = null;
 	private List<PartialQuery> partialQueries = null;
+	
 	private Boolean deployed = null;
 	
 	public GlobalQuery()

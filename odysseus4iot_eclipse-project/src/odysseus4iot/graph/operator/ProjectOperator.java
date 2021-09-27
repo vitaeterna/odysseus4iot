@@ -31,7 +31,7 @@ public class ProjectOperator extends Operator
 	{
 		super();
 		
-		type = Type.PROCESSING;
+		type = Type.PROJECT;
 	}
 	
 	@Override

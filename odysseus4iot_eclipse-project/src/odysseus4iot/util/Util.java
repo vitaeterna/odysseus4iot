@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import odysseus4iot.deployment.store.model.GlobalQuery;
+import odysseus4iot.deployment.store.model.PartialQuery;
+import odysseus4iot.deployment.store.model.Server;
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.meta.DataFlow;
@@ -248,7 +251,7 @@ public class Util
         }
     }
 	
-	public static void exportPQL(OperatorGraph operatorGraph)
+	public static String exportPQL(OperatorGraph operatorGraph)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		
@@ -277,6 +280,8 @@ public class Util
 		Util.writeFile("./generated/" + operatorGraph.label + ".qry", stringBuilder.toString(), Charset.defaultCharset());
 		
 		System.out.print("Written to " + "./generated/" + operatorGraph.label + ".qry\n");
+		
+		return stringBuilder.toString();
 	}
     
     public static void exportOperatorGraphToDOTPNG(OperatorGraph operatorGraph)
@@ -305,6 +310,10 @@ public class Util
         	else if(currentOperator.type.equals(Operator.Type.MERGE))
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=invtriangle, width=3];\n");
+        	}
+        	else if(currentOperator.type.equals(Operator.Type.PROJECT))
+        	{
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=tab, width=2];\n");
         	}
         	else if(currentOperator.type.equals(Operator.Type.PROCESSING))
         	{
@@ -485,6 +494,10 @@ public class Util
             	{
             		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=invtriangle, width=3];\n");
             	}
+            	else if(currentOperator.type.equals(Operator.Type.PROJECT))
+            	{
+            		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=tab, width=2];\n");
+            	}
             	else if(currentOperator.type.equals(Operator.Type.PROCESSING))
             	{
             		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=box, width=2];\n");
@@ -546,6 +559,102 @@ public class Util
             System.out.print("\nPlease check whether you have installed a dot renderer like GraphViz (http://www.graphviz.org/) and if the binaries are available via your PATH variable.\n");
             System.out.print("The generated dot file was not rendered to png.\n");
         }
+    }
+    
+    public static void exportDockerComposeYAML(List<String> rpcServerSockets, List<String> sensors, List<String> nodeSockets, List<String> nodeTypes)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("version: \"3.9\"\r\n");
+        stringBuilder.append("services:\r\n");
+
+        String currentRPCServerSocket = null;
+        String[] currentRPCServerSocketSplit = null;
+        
+		for(int index = 0; index < rpcServerSockets.size(); index++)
+		{
+			currentRPCServerSocket = rpcServerSockets.get(index);
+			currentRPCServerSocketSplit = currentRPCServerSocket.split(":");
+			
+			stringBuilder.append("   " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + ":\r\n");
+			stringBuilder.append("      container_name: " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + "\r\n");
+			stringBuilder.append("      image: docker-python-rpc-classification\r\n");
+			stringBuilder.append("      ports:\r\n");
+			stringBuilder.append("         - \"" + (index + 9001) + ":" + currentRPCServerSocketSplit[1] + "\"\r\n");
+			stringBuilder.append("      command: [\"" + currentRPCServerSocketSplit[1] + "\"]\r\n");
+		}
+		
+		String currentSensor = null;
+		
+		int nodeCount = 0;
+		
+		for(int index = 0; index < sensors.size(); index++)
+		{
+			currentSensor = sensors.get(index);
+			
+			stringBuilder.append("   odysseus_" + currentSensor + ":\r\n");
+			stringBuilder.append("      container_name: odysseus_" + currentSensor + "\r\n");
+			stringBuilder.append("      image: docker-odysseus\r\n");
+			stringBuilder.append("      ports:\r\n");
+			stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
+		}
+
+		String currentNodeSocket = null;
+		String[] currentNodeSocketSplit = null;
+		
+		for(int index = 0; index < nodeSockets.size(); index++)
+		{
+			if(!nodeTypes.get(index).toLowerCase().equals("edge"))
+			{
+				currentNodeSocket = nodeSockets.get(index);
+				currentNodeSocketSplit = currentNodeSocket.split(":");
+				
+				stringBuilder.append("   " + currentNodeSocketSplit[0] + ":\r\n");
+				stringBuilder.append("      container_name: " + currentNodeSocketSplit[0] + "\r\n");
+				stringBuilder.append("      image: docker-odysseus\r\n");
+				stringBuilder.append("      ports:\r\n");
+				stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
+				stringBuilder.append("      expose:\r\n");
+				stringBuilder.append("         - \"" + currentNodeSocketSplit[1] + "\"\r\n");
+			}
+		}
+		
+		Util.writeFile("./docker/docker-compose.yml", stringBuilder.toString(), Charset.defaultCharset());
+		
+		System.out.print("Written to ./docker/docker-compose.yml\n");
+    }
+    
+    public static void exportGlobalQueryScript(List<String> partialPQLQueries)
+    {
+    	List<PartialQuery> partialQueries = new ArrayList<>();
+    	
+    	String currentPartialPQLQuery = null;
+    	
+    	for(int index = 0; index < partialPQLQueries.size(); index++)
+    	{
+    		currentPartialPQLQuery = partialPQLQueries.get(index);
+    		
+        	Server server = new Server();
+        	server.setSocket("localhost:" + (9101 + index));
+        	server.setUsername("System");
+        	server.setPassword("manager");
+        	
+        	PartialQuery partialQuery = new PartialQuery();
+        	partialQuery.setName("partialQuery_" + (index + 1));
+        	partialQuery.setParser("OdysseusScript");
+        	partialQuery.setQueryText(currentPartialPQLQuery);
+        	partialQuery.setServer(server);
+        	
+        	partialQueries.add(partialQuery);
+    	}
+    	
+    	GlobalQuery globalQuery = new GlobalQuery();
+    	globalQuery.setName("globalQuery_1");
+    	globalQuery.setPartialQueries(partialQueries);
+		
+		Util.writeFile("./generated/globalQuery_1.json", Util.toJson(globalQuery), Charset.defaultCharset());
+		
+		System.out.print("Written to ./generated/globalQuery_1.json\n");
     }
     
     /*

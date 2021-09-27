@@ -10,6 +10,7 @@ public class PartialQuery
 	private String parser       = null;
 	private String queryText    = null;
 	private Server server       = null;
+	
 	private List<Query> queries = null;
 	
 	public PartialQuery()

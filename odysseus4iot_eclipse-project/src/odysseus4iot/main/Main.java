@@ -22,14 +22,10 @@ import odysseus4iot.placement.OperatorPlacementPartitioner;
 import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
-//Timestamp from db problem
 //Window problem with window slide
-//activitypredict id problem with several sensors
 //databasesink exception
 /*
  * Operator Placement Query Optimization
- * 
- * using JGraphT (https://github.com/jgrapht/jgrapht)
  * 
  * Graph Interface implementation choice:
  * directed       = true
@@ -56,14 +52,23 @@ public class Main
 {
 	public static Properties properties = null;
 	
+	//Parameters
 	public static Integer evalCase = 1;
 	
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
 	public static boolean merge = true;
+	
+	public static boolean dotpng = true;
+	public static boolean distributed = false;
+	
+	public static String configProperties = "./config_ec.properties";
 
 	public static void main(String[] args)
 	{
+		Long startTimestamp = System.currentTimeMillis();
+		Long endTimestamp = null;
+		
 		Util.charsetUTF8();
 		
 		//1 - Input to System (sensors/nodes/labels)
@@ -71,14 +76,7 @@ public class Main
 		
 		try
 		{
-			if(evalCase == 1)
-			{
-				input = new FileInputStream("./config_ec.properties");
-			}
-			else
-			{
-				input = new FileInputStream("./config_efc.properties");
-			}
+			input = new FileInputStream(configProperties);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -288,7 +286,10 @@ public class Main
 			
 			Util.exportPQL(operatorGraph);
 			
-			Util.exportOperatorGraphToDOTPNG(operatorGraph);
+			if(dotpng)
+			{
+				Util.exportOperatorGraphToDOTPNG(operatorGraph);
+			}
 			
 			System.out.print("\r\n");
 			
@@ -298,7 +299,10 @@ public class Main
 		//4 - Generating Physical Graph
 		PhysicalGraph physicalGraph = PhysicalGraphGenerator.generatePhysicalGraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
 		
-		Util.exportPhysicalGraphToDOTPNG(physicalGraph);
+		if(dotpng)
+		{
+			Util.exportPhysicalGraphToDOTPNG(physicalGraph);
+		}
 		
 		System.out.print("\r\n");
 		
@@ -311,11 +315,14 @@ public class Main
 			//5 - Generating Merged Logical Operator Graph for all models
 			OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 			
-			//Util.exportPQL(operatorGraph);
+			/*Util.exportPQL(operatorGraph);
 			
-			//Util.exportOperatorGraphToDOTPNG(operatorGraph);
+			if(dotpng)
+			{
+				Util.exportOperatorGraphToDOTPNG(operatorGraph);
+			}
 			
-			//System.out.print("\r\n");
+			System.out.print("\r\n");*/
 			
 			//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
 			List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
@@ -345,7 +352,7 @@ public class Main
 		
 		if(successfulLoading)
 		{
-			System.out.println("Successfully loaded placement strategy " + operatorPlacementsGlobal.get(0) + "\n");
+			System.out.println("Successfully loaded placement strategy " + operatorPlacementsGlobal.get(0));
 		}
 		else
 		{
@@ -354,27 +361,64 @@ public class Main
 			System.exit(0);
 		}
 		
-		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
+		if(dotpng)
+		{
+			Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
+		}
 		
 		System.out.print("\r\n");
 		
 		//7 - Transformation to distributed operator graph
-		//OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
-		//OperatorPlacementPartitioner.addBenchmarkOperators(operatorGraph, physicalGraph);
-		OperatorPlacementPartitioner.addBenchmarkOperatorsSingleNode(operatorGraph, physicalGraph);
+		if(distributed)
+		{
+			OperatorPlacementPartitioner.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
+			OperatorPlacementPartitioner.addBenchmarkOperators(operatorGraph, physicalGraph);
+		}
+		else
+		{
+			OperatorPlacementPartitioner.addBenchmarkOperatorsSingleNode(operatorGraph, physicalGraph);
+		}
 		
-		Util.exportPQL(operatorGraph);
-		Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
+		String globalQuery = Util.exportPQL(operatorGraph);
+		
+		if(dotpng)
+		{
+			Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
+		}
 		
 		System.out.print("\r\n");
 		
 		//8 - Generation of subgraphs for distribution
-		/*List<OperatorGraph> subGraphs = OperatorPlacementPartitioner.buildSubgraphs(operatorGraph, physicalGraph);
 		
-		for(int index = 0; index < subGraphs.size(); index++)
+		List<String> partialPQLQueries = new ArrayList<>();
+		
+		if(distributed)
 		{
-			Util.exportPQL(subGraphs.get(index));
-			Util.exportOperatorGraphToDOTPNG(subGraphs.get(index));
-		}*/
+			List<OperatorGraph> subGraphs = OperatorPlacementPartitioner.buildSubgraphs(operatorGraph, physicalGraph);
+			
+			for(int index = 0; index < subGraphs.size(); index++)
+			{
+				partialPQLQueries.add(Util.exportPQL(subGraphs.get(index)));
+				
+				if(dotpng)
+				{
+					Util.exportOperatorGraphToDOTPNG(subGraphs.get(index));
+				}
+			}
+		}
+		else
+		{
+			partialPQLQueries.add(globalQuery);
+		}
+		
+		//9 - Generation of Docker Compose YAMNL
+		Util.exportDockerComposeYAML(rpcServerSockets, sensors, nodeSockets, nodeTypes);
+		
+		//10 - Generation of Global Query Script (Deployment File)
+		Util.exportGlobalQueryScript(partialPQLQueries);
+		
+		endTimestamp = System.currentTimeMillis();
+		
+		System.out.println("\r\nFinished after " + Util.formatTimestamp(endTimestamp - startTimestamp));
 	}
 }
