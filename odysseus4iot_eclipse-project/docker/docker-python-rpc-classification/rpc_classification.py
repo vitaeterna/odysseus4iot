@@ -24,7 +24,7 @@ consoleLogger.setLevel(logging.INFO)
 consoleLogger.setFormatter(logging.Formatter("%(message)s"))
 myLogger.addHandler(consoleLogger)
 
-rpcHost = 'localhost'
+rpcHost = '0.0.0.0'
 rpcPort = 9000
 rpcPath = '/rpc'
 
@@ -144,8 +144,8 @@ def predict(dbPropertiesJson, sensorDataJson):
 
     return "error"
 
-#server = SimpleXMLRPCServer((rpcHost, rpcPort), logRequests=False)        # single-threaded
-server = ThreadedSimpleXMLRPCServer((rpcHost, rpcPort), logRequests=False) # multi-threaded
+server = SimpleXMLRPCServer((rpcHost, rpcPort), logRequests=False)          # single-threaded
+#server = ThreadedSimpleXMLRPCServer((rpcHost, rpcPort), logRequests=False) # multi-threaded (needs debugging)
 server.register_function(predict, 'predict')
 
 logging.info("RPC server started at url "+rpcHost+":"+str(rpcPort)+rpcPath)

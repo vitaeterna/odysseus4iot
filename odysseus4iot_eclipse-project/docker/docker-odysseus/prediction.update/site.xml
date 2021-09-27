@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/prediction_1.0.0.202109261755.jar" id="prediction" version="1.0.0.202109261755">
+      <category name="Activity Classification"/>
+   </feature>
+   <category-def name="Activity Classification" label="Activity Classification"/>
+</site>

@@ -4,17 +4,22 @@ services:
       container_name: rpc_classification_1
       image: docker-python-rpc-classification
       ports:
-         - "9001:9001"
-      command: ["9001"]
+         - "9001:9000"
+      command: ["9000"]
    rpc_classification_2:
       container_name: rpc_classification_2
       image: docker-python-rpc-classification
       ports:
-         - "9002:9002"
-      command: ["9002"]
+         - "9002:9000"
+      command: ["9000"]
    rpc_classification_3:
       container_name: rpc_classification_3
       image: docker-python-rpc-classification
       ports:
-         - "9003:9003"
-      command: ["9003"]
+         - "9003:9000"
+      command: ["9000"]
+   odysseus_1:
+      container_name: odysseus_1
+      image: docker-odysseus
+      ports:
+         - "8888:8888"
