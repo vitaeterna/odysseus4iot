@@ -23,7 +23,7 @@ import odysseus4iot.placement.OperatorPlacementPartitioning;
 import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
-//TODO: __ Window problem with window slide
+//TODO: _ Window problem with window slide
 /*
  * Operator Placement Query Optimization
  * 
@@ -415,6 +415,6 @@ public class Main
 		
 		endTimestamp = System.currentTimeMillis();
 		
-		System.out.println("\r\nFinished after " + Util.formatTimestamp(endTimestamp - startTimestamp));
+		System.out.println("\r\nFinished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "OperatorCounts: " + operatorGraph.getNumberOfOperatorsPerPipelineStep());
 	}
 }

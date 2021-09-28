@@ -6,10 +6,16 @@ import java.util.List;
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
 import odysseus4iot.graph.operator.AccessOperator;
+import odysseus4iot.graph.operator.AggregateOperator;
+import odysseus4iot.graph.operator.ChangedetectOperator;
+import odysseus4iot.graph.operator.ClassificationOperator;
 import odysseus4iot.graph.operator.DatarateOperator;
+import odysseus4iot.graph.operator.MapOperator;
 import odysseus4iot.graph.operator.MergeOperator;
+import odysseus4iot.graph.operator.OutlierRemovingOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
 import odysseus4iot.graph.operator.SenderOperator;
+import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Operator.Type;
 import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
@@ -95,6 +101,56 @@ public class OperatorGraph extends Graph
 		}
 		
 		return numberOfEdgeOperators;
+	}
+	
+	public List<Integer> getNumberOfOperatorsPerPipelineStep()
+	{
+		Integer numberOfPreprocessingOperators = 0;
+		Integer numberOfSegmentationOperators = 0;
+		Integer numberOfAggregationOperators = 0;
+		Integer numberOfClassificationOperators = 0;
+		Integer numberOfPostprocessingOperators = 0;
+		
+		Operator currentOperator = null;
+		
+		for(int index = 0; index < vertices.size(); index++)
+		{
+			currentOperator = (Operator)vertices.get(index);
+			
+			if(currentOperator.type.equals(Type.PROCESSING))
+			{
+				if(currentOperator instanceof MapOperator)
+				{
+					numberOfPreprocessingOperators++;
+				}
+				if(currentOperator instanceof TimewindowOperator)
+				{
+					numberOfSegmentationOperators++;
+				}
+				if(currentOperator instanceof AggregateOperator)
+				{
+					numberOfAggregationOperators++;
+				}
+				if(currentOperator instanceof ClassificationOperator)
+				{
+					numberOfClassificationOperators++;
+				}
+				if(currentOperator instanceof OutlierRemovingOperator || currentOperator instanceof ChangedetectOperator)
+				{
+					numberOfPostprocessingOperators++;
+				}
+			}
+		}
+		
+		List<Integer> numberOfOperatorsPerPiplineStep = new ArrayList<>();
+		
+		numberOfOperatorsPerPiplineStep.add(numberOfPreprocessingOperators);
+		numberOfOperatorsPerPiplineStep.add(numberOfSegmentationOperators);
+		numberOfOperatorsPerPiplineStep.add(numberOfAggregationOperators);
+		numberOfOperatorsPerPiplineStep.add(numberOfClassificationOperators);
+		numberOfOperatorsPerPiplineStep.add(numberOfPostprocessingOperators);
+		
+		return numberOfOperatorsPerPiplineStep;
 	}
 
 	public boolean loadOperatorPlacement(OperatorPlacement operatorPlacement, PhysicalGraph physicalGraph)
