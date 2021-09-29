@@ -25,6 +25,7 @@ import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.meta.Connection;
 import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
+import odysseus4iot.graph.physical.meta.Node.Type;
 import odysseus4iot.main.Main;
 
 public class Util
@@ -561,7 +562,7 @@ public class Util
         }
     }
     
-    public static void exportDockerComposeYAML(List<String> rpcServerSockets, List<String> sensors, List<String> nodeSockets, List<String> nodeTypes)
+    public static void exportDockerComposeYAML(List<String> rpcServerSockets, List<String> sensors, PhysicalGraph physicalGraph)
     {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -599,15 +600,16 @@ public class Util
 			stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
 		}
 
-		String currentNodeSocket = null;
+		Node currentNode = null;
 		String[] currentNodeSocketSplit = null;
 		
-		for(int index = 0; index < nodeSockets.size(); index++)
+		for(int index = 0; index < physicalGraph.vertices.size(); index++)
 		{
-			if(!nodeTypes.get(index).toLowerCase().equals("edge"))
+			currentNode = (Node)physicalGraph.vertices.get(index);
+			
+			if(!currentNode.type.equals(Type.EDGE))
 			{
-				currentNodeSocket = nodeSockets.get(index);
-				currentNodeSocketSplit = currentNodeSocket.split(":");
+				currentNodeSocketSplit = currentNode.socket.split(":");
 				
 				stringBuilder.append("   " + currentNodeSocketSplit[0] + ":\r\n");
 				stringBuilder.append("      container_name: " + currentNodeSocketSplit[0] + "\r\n");
@@ -616,6 +618,11 @@ public class Util
 				stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
 				stringBuilder.append("      expose:\r\n");
 				stringBuilder.append("         - \"" + currentNodeSocketSplit[1] + "\"\r\n");
+				
+				for(int index2 = 0; index2 < currentNode.ports.size(); index2++)
+				{
+					stringBuilder.append("         - \"" + currentNode.ports.get(index2) + "\"\r\n");
+				}
 			}
 		}
 		

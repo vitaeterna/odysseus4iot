@@ -1,5 +1,8 @@
 package odysseus4iot.graph.physical.meta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import odysseus4iot.graph.Vertex;
 
 public class Node extends Vertex
@@ -16,6 +19,7 @@ public class Node extends Vertex
 	public Long memCapacity = null;
 	public Long cpuConsumed = null;
 	public Long memConsumed = null;
+	public List<Integer> ports = null;
 	
 	public Node(String name, String socket, Type type, Long cpuCapacity, Long memCapacity)
 	{
@@ -26,6 +30,7 @@ public class Node extends Vertex
 		this.memCapacity = memCapacity;
 		this.cpuConsumed = 0L;
 		this.memConsumed = 0L;
+		this.ports = new ArrayList<>();
 	}
 	
 	@Override

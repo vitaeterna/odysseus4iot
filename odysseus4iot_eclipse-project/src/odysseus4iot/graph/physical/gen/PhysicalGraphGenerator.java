@@ -43,8 +43,6 @@ public class PhysicalGraphGenerator
 			nodes.add(node);
 			
 			physicalGraph.addVertex(node);
-			
-			node.setLabel();
 		}
 		
 		List<Connection> connections = new ArrayList<>();
@@ -72,12 +70,12 @@ public class PhysicalGraphGenerator
 			
 			connection = new Connection(physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[0])), physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[1])), currentEdgeRateCap);
 			
-			connection.setLabel();
-
 			connections.add(connection);
 			
 			physicalGraph.addEdge(connection);
 		}
+		
+		physicalGraph.setLabels();
 		
 		endTimestamp = System.currentTimeMillis();
 		

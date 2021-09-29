@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import odysseus4iot.graph.Edge;
+import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.AccessOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.SenderOperator;
@@ -12,6 +13,7 @@ import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.meta.Node;
+import odysseus4iot.graph.physical.meta.Node.Type;
 import odysseus4iot.util.Util;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 
@@ -44,6 +46,10 @@ public class OperatorPlacementPartitioning
 		
 		int counterAccessMerge = 0;
 		
+		int currentPort = 9200;
+		
+		boolean senderOperatorToSameNodeExists = false;
+		
 		for(int index = 0; index < operatorGraph.edges.size(); index++)
 		{
 			currentDataFlow = (DataFlow)operatorGraph.edges.get(index);
@@ -59,9 +65,26 @@ public class OperatorPlacementPartitioning
 				
 				socketSplit = node1.socket.split(":");
 				
-				if(operator0.assignedOperator1 == null)
+				senderOperator = null;
+				
+				for(int index2 = 0; index2 < operator0.assignedOperators1.size(); index2++)
+				{
+					if(operator0.assignedOperators1.get(index2).assignedOperators1.get(0).assignedID.intValue() == operator1.assignedID.intValue())
+					{
+						//Case 3.2
+						senderOperator = (SenderOperator)operator0.assignedOperators1.get(index2);
+						
+						senderOperatorToSameNodeExists = true;
+						
+						break;
+					}
+				}
+				
+				if(senderOperator == null)
 				{
 					senderOperator = OperatorGenerator.generateSenderOperator(socketSplit[0], Integer.parseInt(socketSplit[1]));
+					
+					senderOperator.group = operator0.group + 1;
 					
 					senderOperator.assignedID = operator0.assignedID;
 					
@@ -73,62 +96,84 @@ public class OperatorPlacementPartitioning
 					senderOperator.outputRate = senderOperator.inputRate;
 					senderOperator.outputName = "sender_" + SenderOperator.getNextSenderCount();
 					
-					//operator0.assignedOperator1 = senderOperator;
+					operator0.assignedOperators1.add(senderOperator);
 					
 					operatorGraph.addVertex(senderOperator);
 					
 					edgesToAdd.add(new DataFlow(operator0, senderOperator));
 				}
-				else
-				{
-					senderOperator = (SenderOperator)operator0.assignedOperator1;
-				}
 				
-				if(operator1.assignedOperator0 == null)
+				if(senderOperatorToSameNodeExists)
 				{
-					accessOperator = OperatorGenerator.generateAccessOperator(socketSplit[0], Integer.parseInt(socketSplit[1]));
+					//Case 3.2
+					accessOperator = (AccessOperator)senderOperator.assignedOperators1.get(0);
 					
-					accessOperator.assignedID = operator1.assignedID;
+					operator1.inputName = accessOperator.outputName;
 					
-					accessOperator.attributes = operator1.inputSchema.copy();
-					
-					accessOperator.outputSchema = operator1.inputSchema.copy();
-					accessOperator.outputRate = operator1.inputRate;
-					
-					if(operator1.inputName == null)
-					{
-						counterAccessMerge++;
-						
-						MergeOperator mergeOperator = (MergeOperator)operator1;
-						
-						accessOperator.outputName = "access_merge_" + counterAccessMerge;
-						
-						mergeOperator.inputStreams.clear();
-						mergeOperator.inputStreams.add(accessOperator.outputName);
-					}
-					else
-					{
-						accessOperator.outputName = "access_" + AccessOperator.getNextAccessCount();
-						
-						operator1.inputName = accessOperator.outputName;
-					}
-					
-					accessOperator.inputSchema = accessOperator.outputSchema.copy();
-					accessOperator.inputRate = accessOperator.outputRate;
-					accessOperator.inputName = null;
-					
-					operator1.assignedOperator0 = accessOperator;
-					
-					operatorGraph.addVertex(accessOperator);
+					operator1.assignedOperators0.add(accessOperator);
 					
 					edgesToAdd.add(new DataFlow(accessOperator, operator1));
 				}
 				else
 				{
-					accessOperator = (AccessOperator)operator1.assignedOperator0;
+					if(operator1.assignedOperators0.isEmpty())
+					{
+						accessOperator = OperatorGenerator.generateAccessOperator(socketSplit[0], ++currentPort);
+						
+						node1.ports.add(currentPort);
+						
+						accessOperator.group = operator1.group - 1;
+						
+						accessOperator.assignedID = operator1.assignedID;
+						
+						accessOperator.attributes = operator1.inputSchema.copy();
+						
+						accessOperator.outputSchema = operator1.inputSchema.copy();
+						accessOperator.outputRate = operator1.inputRate;
+						
+						if(operator1.inputName == null)
+						{
+							counterAccessMerge++;
+							
+							MergeOperator mergeOperator = (MergeOperator)operator1;
+							
+							accessOperator.outputName = "access_merge_" + counterAccessMerge;
+							
+							mergeOperator.inputStreams.remove(operator0.outputName);
+							mergeOperator.inputStreams.add(accessOperator.outputName);
+						}
+						else
+						{
+							accessOperator.outputName = "access_" + AccessOperator.getNextAccessCount();
+							
+							operator1.inputName = accessOperator.outputName;
+						}
+						
+						accessOperator.inputSchema = accessOperator.outputSchema.copy();
+						accessOperator.inputRate = accessOperator.outputRate;
+						accessOperator.inputName = null;
+						
+						operator1.assignedOperators0.add(accessOperator);
+						
+						operatorGraph.addVertex(accessOperator);
+						
+						edgesToAdd.add(new DataFlow(accessOperator, operator1));
+					}
+					else
+					{
+						//Case 2.1
+						accessOperator = (AccessOperator)operator1.assignedOperators0.get(0);
+					}
 				}
 				
-				edgesToAdd.add(new DataFlow(senderOperator, accessOperator));
+				if(!senderOperator.assignedOperators1.contains(accessOperator))
+				{
+					senderOperator.assignedOperators1.add(accessOperator);
+					
+					senderOperator.port = accessOperator.port;
+					
+					edgesToAdd.add(new DataFlow(senderOperator, accessOperator));
+				}
 			}
 		}
 		
@@ -154,7 +199,7 @@ public class OperatorPlacementPartitioning
 		List<OperatorGraph> subGraphs = new ArrayList<>();
 		
 		OperatorGraph subGraph = null;
-		//OperatorGraph subGraph2 = null;
+		OperatorGraph subGraph2 = null;
 		
 		Operator operator0 = null;
 		Operator operator1 = null;
@@ -192,7 +237,7 @@ public class OperatorPlacementPartitioning
 				}
 			}
 			
-			/*if(currentNode.type.equals(Type.EDGE))
+			if(currentNode.type.equals(Type.EDGE))
 			{
 				List<Vertex> startingVertices = subGraph.getStartingVertices();
 				
@@ -227,7 +272,7 @@ public class OperatorPlacementPartitioning
 					MergeOperator mergeOperator = null;
 					MergeOperator mergeOperatorNew = null;
 					
-					//TODO: ___ instead of copying the merge nodes and modify them they can just be removed!
+					//TODO: _ This copying is no longer needed. Remove in future commit?
 					for(int index3 = 0; index3 < mergeOperators.size(); index3++)
 					{
 						mergeOperator = (MergeOperator)mergeOperators.get(index3);
@@ -273,6 +318,8 @@ public class OperatorPlacementPartitioning
 						}
 					}
 					
+					subGraph2.removeSuperfluousOperators();
+					
 					if(!subGraph2.isEmpty())
 					{
 						subGraphs.add(subGraph2);
@@ -285,12 +332,13 @@ public class OperatorPlacementPartitioning
 				{
 					subGraphs.add(subGraph);
 				}
-			}*/
-			
-			if(!subGraph.isEmpty())
-			{
-				subGraphs.add(subGraph);
 			}
+		}
+		
+		for(int index = 0; index < subGraphs.size(); index++)
+		{
+			subGraphs.get(index).setControlFlowDatarates();
+			subGraphs.get(index).setLabels();
 		}
 		
 		endTimestamp = System.currentTimeMillis();

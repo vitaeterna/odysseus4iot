@@ -26,8 +26,8 @@ public class Operator extends Vertex
 	public String outputName = null;
 	
 	public Integer assignedID = null;
-	public Operator assignedOperator0 = null;
-	public Operator assignedOperator1 = null;
+	public List<Operator> assignedOperators0 = null;
+	public List<Operator> assignedOperators1 = null;
 	
 	public Long cpuConsumption = null;
 	public Long memConsumption = null;
@@ -37,6 +37,9 @@ public class Operator extends Vertex
 		super();
 		
 		models = new ArrayList<>();
+		
+		assignedOperators0 = new ArrayList<>();
+		assignedOperators1 = new ArrayList<>();
 		
 		cpuConsumption = 1L;
 		memConsumption = 0L;
@@ -59,8 +62,8 @@ public class Operator extends Vertex
 		this.outputName = operator.outputName;
 		
 		this.assignedID = operator.assignedID;
-		this.assignedOperator0 = operator.assignedOperator0;
-		this.assignedOperator1 = operator.assignedOperator1;
+		this.assignedOperators0 = new ArrayList<>(operator.assignedOperators0);
+		this.assignedOperators1 = new ArrayList<>(operator.assignedOperators1);
 		
 		this.cpuConsumption = operator.cpuConsumption;
 		this.memConsumption = operator.memConsumption;
@@ -87,8 +90,8 @@ public class Operator extends Vertex
 		operator.outputName = this.outputName;
 		
 		operator.assignedID = this.assignedID.intValue();
-		operator.assignedOperator0 = this.assignedOperator0; //Referce is kept
-		operator.assignedOperator1 = this.assignedOperator1; //Referce is kept
+		operator.assignedOperators0 = new ArrayList<>(this.assignedOperators0); //References within the list are kept
+		operator.assignedOperators1 = new ArrayList<>(this.assignedOperators1); //References within the list are kept
 		
 		operator.cpuConsumption = this.cpuConsumption.longValue();
 		operator.memConsumption = this.memConsumption.longValue();

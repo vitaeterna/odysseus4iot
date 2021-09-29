@@ -60,9 +60,10 @@ public class Main
 	public static boolean merge = true;
 	
 	public static boolean dotpng = true;
-	public static boolean distributed = false;
+	public static boolean distributed = true;
+	public static boolean benchmark = false;
 	
-	public static String configProperties = "./config_ec.properties";
+	public static String configProperties = "./config_efc.properties";
 
 	public static void main(String[] args)
 	{
@@ -374,7 +375,10 @@ public class Main
 			OperatorPlacementPartitioning.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
 		}
 		
-		OperatorPlacementBenchmark.addBenchmarkOperators(operatorGraph, physicalGraph);
+		if(benchmark)
+		{
+			OperatorPlacementBenchmark.addBenchmarkOperators(operatorGraph, physicalGraph);
+		}
 		
 		String globalQuery = Util.exportPQL(operatorGraph);
 		
@@ -408,7 +412,7 @@ public class Main
 		}
 		
 		//9 - Generation of Docker Compose YAMNL
-		Util.exportDockerComposeYAML(rpcServerSockets, sensors, nodeSockets, nodeTypes);
+		Util.exportDockerComposeYAML(rpcServerSockets, sensors, physicalGraph);
 		
 		//10 - Generation of Global Query Script (Deployment File)
 		Util.exportGlobalQueryScript(partialPQLQueries);

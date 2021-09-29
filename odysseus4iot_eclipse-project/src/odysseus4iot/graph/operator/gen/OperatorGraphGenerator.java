@@ -23,7 +23,10 @@ import odysseus4iot.util.Util;
 //TODO: _ project operator generation order (id mixup)
 //TODO: _ generate invisible filler nodes/ranks/groups for visualization - project operator
 //TODO: _ handle metadata correctly!
-//TODO: ___ Optimize dataflows between nodes (merge them, remove redundancy in sending sender/access for placement optimization and distributed graph transform)
+//TODO: ___ Optimize dataflows between nodes (Prevent case 2.2 and 3.2 from appearing in distributed cases
+//2.2 is caused by merge operators being the first node without inputs on a phyiscal node
+//3.2 so far is removed in graph transformation but is not considered for optimization! and solving this will reduce network load!
+//TODO: ___ Pinned operators -> Range of available nodes e.g. sink to fog or cloud
 public class OperatorGraphGenerator
 {
 	public static String suffix = "_car";

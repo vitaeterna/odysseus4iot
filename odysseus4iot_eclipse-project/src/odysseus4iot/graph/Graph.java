@@ -20,7 +20,7 @@ public abstract class Graph
 	
 	public Integer getNextGroup()
 	{
-		return ++currentVertexGroup;
+		return currentVertexGroup += 3;
 	}
 	
 	public String label = null;

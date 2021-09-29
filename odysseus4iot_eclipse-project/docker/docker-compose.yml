@@ -23,10 +23,26 @@ services:
       image: docker-odysseus
       ports:
          - "9101:8888"
-   odysseus-cloud:
-      container_name: odysseus-cloud
+   odysseus_sensor_data_19_eval:
+      container_name: odysseus_sensor_data_19_eval
       image: docker-odysseus
       ports:
          - "9102:8888"
+   localhost:
+      container_name: localhost
+      image: docker-odysseus
+      ports:
+         - "9103:8888"
       expose:
          - "9102"
+         - "9201"
+         - "9202"
+         - "9203"
+   localhost:
+      container_name: localhost
+      image: docker-odysseus
+      ports:
+         - "9104:8888"
+      expose:
+         - "9103"
+         - "9204"

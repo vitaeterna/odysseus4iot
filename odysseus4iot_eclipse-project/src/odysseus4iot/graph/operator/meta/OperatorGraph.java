@@ -5,6 +5,7 @@ import java.util.List;
 
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
+import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.AccessOperator;
 import odysseus4iot.graph.operator.AggregateOperator;
 import odysseus4iot.graph.operator.ChangedetectOperator;
@@ -289,6 +290,40 @@ public class OperatorGraph extends Graph
 			currentDataFlow = (DataFlow)this.edges.get(index);
 			
 			currentDataFlow.datarateConsumption = ((Operator)currentDataFlow.vertex0).outputRate * ((Operator)currentDataFlow.vertex0).outputSchema.getSize();
+		}
+	}
+	
+	public void removeSuperfluousOperators()
+	{
+		List<Vertex> mergeOperators = this.getVerticesByType(MergeOperator.class);
+		List<Edge> inputEdges = null;
+		List<Edge> outputEdges = null;
+		
+		MergeOperator mergeOperatpr = null;
+		Vertex vertex0 = null;
+		
+		for(int index = 0; index < mergeOperators.size(); index++)
+		{
+			mergeOperatpr = (MergeOperator)mergeOperators.get(index);
+			
+			inputEdges = this.getInputEdges(mergeOperatpr);
+			outputEdges = this.getOutputEdges(mergeOperatpr);
+			
+			if(inputEdges.size() == 1)
+			{
+				vertex0 = inputEdges.get(0).vertex0;
+				
+				this.edges.remove(inputEdges.get(0));
+				
+				this.vertices.remove(mergeOperatpr);
+				
+				for(int index2 = 0; index2 < outputEdges.size(); index2++)
+				{
+					this.edges.remove(outputEdges.get(index2));
+					
+					this.addEdge(new DataFlow(vertex0, outputEdges.get(index2).vertex1));
+				}
+			}
 		}
 	}
 }
