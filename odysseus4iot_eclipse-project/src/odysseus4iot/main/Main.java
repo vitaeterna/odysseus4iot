@@ -61,9 +61,9 @@ public class Main
 	
 	public static boolean dotpng = true;
 	public static boolean distributed = true;
-	public static boolean benchmark = false;
+	public static boolean benchmark = true;
 	
-	public static String configProperties = "./config_efc.properties";
+	public static String configProperties = "./config_ec.properties";
 
 	public static void main(String[] args)
 	{
@@ -303,97 +303,125 @@ public class Main
 		if(dotpng)
 		{
 			Util.exportPhysicalGraphToDOTPNG(physicalGraph);
+			
+			System.out.print("\r\n");
 		}
 		
-		System.out.print("\r\n");
-		
 		List<OperatorPlacement> operatorPlacementsGlobal = new ArrayList<>();
+		
+		List<OperatorGraph> operatorGraphs = new ArrayList<>();
+		
+		OperatorGraph operatorGraph = null;
 		
 		for(int index = 0; index < modelsets.size(); index++)
 		{
 			models = modelsets.get(index);
 			
 			//5 - Generating Merged Logical Operator Graph for all models
-			OperatorGraph operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
+			operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, merge);
 			
-			/*Util.exportPQL(operatorGraph);
+			operatorGraphs.add(operatorGraph);
+			
+			Util.exportPQL(operatorGraph);
 			
 			if(dotpng)
 			{
 				Util.exportOperatorGraphToDOTPNG(operatorGraph);
+				
+				System.out.print("\r\n");
 			}
 			
-			System.out.print("\r\n");*/
-			
-			//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
-			List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
-			
-			operatorPlacementsGlobal.addAll(operatorPlacements);
+			if(distributed)
+			{
+				//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
+				List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
+				
+				operatorPlacementsGlobal.addAll(operatorPlacements);
+			}
 		}
-		
-		if(operatorPlacementsGlobal.isEmpty())
-		{
-			System.err.println("No valid operator placements found!");
-			
-			System.exit(0);
-		}
-		
-		System.out.println(operatorPlacementsGlobal.size() + " operator placements verified for " + modelsets.size() + " modelsets\n");
-		
-		Collections.sort(operatorPlacementsGlobal);
-		
-		for(int index = 0; index < operatorPlacementsGlobal.size(); index++)
-		{
-			System.out.println(operatorPlacementsGlobal.get(index));
-		}
-		
-		OperatorGraph operatorGraph = operatorPlacementsGlobal.get(0).operatorGraph;
-		
-		boolean successfulLoading = operatorGraph.loadOperatorPlacement(operatorPlacementsGlobal.get(0), physicalGraph);
-		
-		if(successfulLoading)
-		{
-			System.out.println("Successfully loaded placement strategy " + operatorPlacementsGlobal.get(0));
-		}
-		else
-		{
-			System.err.println("Error loading placement strategy " + operatorPlacementsGlobal.get(0));
-			
-			System.exit(0);
-		}
-		
-		if(dotpng)
-		{
-			Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
-		}
-		
-		System.out.print("\r\n");
 		
 		//7 - Transformation to distributed operator graph
 		if(distributed)
 		{
+			if(operatorPlacementsGlobal.isEmpty())
+			{
+				System.err.println("No valid operator placements found!");
+				
+				System.exit(0);
+			}
+			
+			System.out.println(operatorPlacementsGlobal.size() + " operator placements verified for " + modelsets.size() + " modelsets\n");
+			
+			Collections.sort(operatorPlacementsGlobal);
+			
+			for(int index = 0; index < operatorPlacementsGlobal.size(); index++)
+			{
+				System.out.println(operatorPlacementsGlobal.get(index));
+			}
+			
+			operatorGraph = operatorPlacementsGlobal.get(0).operatorGraph;
+			operatorGraphs.clear();
+			operatorGraphs.add(operatorGraph);
+			
+			boolean successfulLoading = operatorGraph.loadOperatorPlacement(operatorPlacementsGlobal.get(0), physicalGraph);
+			
+			if(successfulLoading)
+			{
+				System.out.println("Successfully loaded placement strategy " + operatorPlacementsGlobal.get(0));
+			}
+			else
+			{
+				System.err.println("Error loading placement strategy " + operatorPlacementsGlobal.get(0));
+				
+				System.exit(0);
+			}
+			
+			if(dotpng)
+			{
+				Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
+			}
+			
+			System.out.print("\r\n");
+			
 			OperatorPlacementPartitioning.transformOperatorGraphToDistributed(operatorGraph, physicalGraph);
 		}
 		
-		if(benchmark)
+		for(int index = 0; index < operatorGraphs.size(); index++)
 		{
-			OperatorPlacementBenchmark.addBenchmarkOperators(operatorGraph, physicalGraph);
+			operatorGraph = operatorGraphs.get(index);
+			
+			if(benchmark)
+			{
+				OperatorPlacementBenchmark.addBenchmarkOperators(operatorGraph, physicalGraph);
+			}
+			
+			Util.exportPQL(operatorGraph);
+			
+			if(dotpng)
+			{
+				if(distributed)
+				{
+					Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
+					
+					System.out.print("\r\n");
+				}
+				else
+				{
+					if(benchmark)
+					{
+						Util.exportOperatorGraphToDOTPNG(operatorGraph);
+						
+						System.out.print("\r\n");
+					}
+				}
+			}
 		}
-		
-		String globalQuery = Util.exportPQL(operatorGraph);
-		
-		if(dotpng)
-		{
-			Util.exportOperatorPlacementToDOTPNG(operatorGraph, physicalGraph);
-		}
-		
-		System.out.print("\r\n");
-		
-		//8 - Generation of subgraphs for distribution
-		List<String> partialPQLQueries = new ArrayList<>();
 		
 		if(distributed)
 		{
+			//8 - Generation of subgraphs for distribution
+			List<String> partialPQLQueries = new ArrayList<>();
+			
 			List<OperatorGraph> subGraphs = OperatorPlacementPartitioning.buildSubgraphs(operatorGraph, physicalGraph);
 			
 			for(int index = 0; index < subGraphs.size(); index++)
@@ -405,20 +433,18 @@ public class Main
 					Util.exportOperatorGraphToDOTPNG(subGraphs.get(index));
 				}
 			}
+			
+			//9 - Generation of Docker Compose YAMNL
+			Util.exportDockerComposeYAML(rpcServerSockets, sensors, physicalGraph);
+			
+			//10 - Generation of Global Query Script (Deployment File)
+			Util.exportGlobalQueryScript(partialPQLQueries);
+			
+			System.out.print("\r\n");
 		}
-		else
-		{
-			partialPQLQueries.add(globalQuery);
-		}
-		
-		//9 - Generation of Docker Compose YAMNL
-		Util.exportDockerComposeYAML(rpcServerSockets, sensors, physicalGraph);
-		
-		//10 - Generation of Global Query Script (Deployment File)
-		Util.exportGlobalQueryScript(partialPQLQueries);
 		
 		endTimestamp = System.currentTimeMillis();
 		
-		System.out.println("\r\nFinished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "OperatorCounts: " + operatorGraph.getNumberOfOperatorsPerPipelineStep());
+		System.out.println("Finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "OperatorCounts: " + operatorGraph.getNumberOfOperatorsPerPipelineStep());
 	}
 }

@@ -38,6 +38,8 @@ public class Operator extends Vertex
 		
 		models = new ArrayList<>();
 		
+		assignedID = 0;
+		
 		assignedOperators0 = new ArrayList<>();
 		assignedOperators1 = new ArrayList<>();
 		
