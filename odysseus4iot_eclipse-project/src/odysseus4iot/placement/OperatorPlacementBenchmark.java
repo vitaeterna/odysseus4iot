@@ -1,5 +1,8 @@
 package odysseus4iot.placement;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import odysseus4iot.graph.operator.DatabasesinkOperator;
 import odysseus4iot.graph.operator.DatarateOperator;
 import odysseus4iot.graph.operator.MapOperator;
@@ -144,7 +147,15 @@ public class OperatorPlacementBenchmark
 				mapOperator.inputRate = datarateOperator.outputRate;
 				mapOperator.inputName = datarateOperator.outputName;
 				
-				mapOperator.expressions = mapOperator.inputSchema.toStringList();
+				List<String> epressions = mapOperator.inputSchema.toStringList();
+				
+				mapOperator.expressions = new ArrayList<>();
+				
+				for(int index2 = 0; index2 < epressions.size(); index2++)
+				{
+					mapOperator.expressions.add("'" + epressions.get(index2) + "'");
+				}
+				
 				mapOperator.expressions.add("['TimeInterval.start', 'time_start']");
 				mapOperator.expressions.add("['TimeInterval.end', 'time_end']");
 				mapOperator.expressions.add("['ToInteger(elementAt(Datarate.Measurements[0],1))', 'bytes_sent']");
