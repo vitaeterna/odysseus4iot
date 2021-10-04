@@ -12,6 +12,7 @@ import odysseus4iot.graph.operator.MapOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.OutlierRemovingOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
+import odysseus4iot.graph.operator.SelectOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.DataFlow;
 import odysseus4iot.graph.operator.meta.Operator;
@@ -23,7 +24,7 @@ import odysseus4iot.util.Util;
 //TODO: _ project operator generation order (id mixup)
 //TODO: _ generate invisible filler nodes/ranks/groups for visualization - project operator
 //TODO: _ handle metadata correctly!
-//TODO: ___ Optimize dataflows between nodes (Prevent case 2.2 and 3.2 from appearing in distributed cases
+//TODO: ___ Remove NOP Operators from final graph
 //2.2 is caused by merge operators being the first node without inputs on a phyiscal node
 //3.2 so far is removed in graph transformation but is not considered for optimization! and solving this will reduce network load!
 //TODO: ___ Pinned operators -> Range of available nodes e.g. sink to fog or cloud
@@ -235,6 +236,27 @@ public class OperatorGraphGenerator
 			currentSchema = unionOfSchemata;
 		}
 		
+		if(timewindowOperators.size() != 1)
+		{
+			//NOP before split (needed for improved operator placement)
+			SelectOperator selectOperator = new SelectOperator();
+			
+			selectOperator.inputSchema = previousOperator.outputSchema.copy();
+			selectOperator.inputRate = previousOperator.outputRate;
+			selectOperator.inputName = previousOperator.outputName;
+			
+			selectOperator.outputSchema = selectOperator.inputSchema.copy();
+			selectOperator.outputRate = selectOperator.inputRate;
+			selectOperator.outputName = "select_nop_" + SelectOperator.getNextSelectCount();
+			
+			operatorGraph.addVertex(selectOperator);
+			operatorGraph.addEdge(new DataFlow(previousOperator, selectOperator));
+			
+			previousOperators.clear();
+			previousOperators.add(selectOperator);
+			previousOperator = selectOperator;
+		}
+		
 		for(int index = 0; index < timewindowOperators.size(); index++)
 		{
 			timewindowOperator = timewindowOperators.get(index);
@@ -350,6 +372,27 @@ public class OperatorGraphGenerator
 		for(int index = 0; index < previousOperators.size(); index++)
 		{
 			previousOperator = previousOperators.get(index);
+			
+			if(previousOperator.models.size() != 1)
+			{
+				//NOP before split (needed for improved operator placement)
+				SelectOperator selectOperator = new SelectOperator();
+				
+				selectOperator.models = previousOperator.models;
+				
+				selectOperator.inputSchema = previousOperator.outputSchema.copy();
+				selectOperator.inputRate = previousOperator.outputRate;
+				selectOperator.inputName = previousOperator.outputName;
+				
+				selectOperator.outputSchema = selectOperator.inputSchema.copy();
+				selectOperator.outputRate = selectOperator.inputRate;
+				selectOperator.outputName = "select_nop_" + SelectOperator.getNextSelectCount();
+				
+				operatorGraph.addVertex(selectOperator);
+				operatorGraph.addEdge(new DataFlow(previousOperator, selectOperator));
+				
+				previousOperator = selectOperator;
+			}
 			
 			unionOfFeatures = Model.getUnionOfFeatures(previousOperator.models);
 			

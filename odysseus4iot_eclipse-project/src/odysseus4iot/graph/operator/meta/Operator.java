@@ -10,7 +10,7 @@ public class Operator extends Vertex
 {
 	public enum Type
 	{
-		SOURCE, SINK, MERGE, PROJECT, PROCESSING, BENCHMARK
+		SOURCE, SINK, MERGE, PROJECT, PROCESSING, BENCHMARK, NOP
 	}
 	
 	public Type type = null;

@@ -15,6 +15,7 @@ import odysseus4iot.graph.operator.MapOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.OutlierRemovingOperator;
 import odysseus4iot.graph.operator.ProjectOperator;
+import odysseus4iot.graph.operator.SelectOperator;
 import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Operator.Type;
@@ -33,6 +34,7 @@ public class OperatorGraph extends Graph
 		SenderOperator.resetSenderCount();
 		AccessOperator.resetAccessCount();
 		DatarateOperator.resetDatarateCount();
+		SelectOperator.resetSelectCount();
 	}
 	
 	public Double getTotalDatarate(PhysicalGraph physicalGraph)

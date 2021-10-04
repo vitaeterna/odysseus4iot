@@ -6,6 +6,7 @@ import java.util.List;
 import odysseus4iot.graph.operator.DatabasesinkOperator;
 import odysseus4iot.graph.operator.DatarateOperator;
 import odysseus4iot.graph.operator.MapOperator;
+import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.gen.OperatorGenerator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.DataFlow;
@@ -119,6 +120,11 @@ public class OperatorPlacementBenchmark
 			
 			if(operator0.assignedID.intValue() != operator1.assignedID.intValue())
 			{
+				if(operator0 instanceof SenderOperator)
+				{
+					operator0 = (Operator)operatorGraph.getPredecessors(operator0).get(0);
+				}
+				
 				//Datarate Operator
 				DatarateOperator datarateOperator = OperatorGenerator.generateDatarateOperator(currentNode.name);
 

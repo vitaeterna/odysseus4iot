@@ -260,7 +260,7 @@ public class Util
 		stringBuilder.append("#METADATA TimeInterval\r\n");
 		stringBuilder.append("#METADATA Datarate\r\n\r\n");
 		stringBuilder.append("#REQUIRED de.uniol.inf.is.odysseus.database.feature.feature.group false\r\n\r\n");
-		stringBuilder.append("#ADDQUERY\r\n\r\n");
+		stringBuilder.append("#RUNQUERY\r\n\r\n");
 		
 		List<Vertex> vertices = operatorGraph.getVerticesBreadthFirst(null);
 		
@@ -291,7 +291,7 @@ public class Util
 
         dot.append("digraph OG\n");
         dot.append("{\n");
-        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=200, fontname=\"Courier New Bold\"];\n\n");
         dot.append("    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
 
         Operator currentOperator = null;
@@ -323,6 +323,10 @@ public class Util
         	else if(currentOperator.type.equals(Operator.Type.BENCHMARK))
         	{
         		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=note, width=2];\n");
+        	}
+        	else if(currentOperator.type.equals(Operator.Type.NOP))
+        	{
+        		dot.append("    " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=Msquare, width=2];\n");
         	}
         	else
         	{
@@ -382,7 +386,7 @@ public class Util
 
         dot.append("digraph PG\n");
         dot.append("{\n");
-        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=200, fontname=\"Courier New Bold\"];\n\n");
         dot.append("    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n");
 
         Node currentNode = null;
@@ -461,7 +465,7 @@ public class Util
 
         dot.append("digraph PG\n");
         dot.append("{\n");
-        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=300, fontname=\"Courier New Bold\"];\n\n");
+        dot.append("    graph [outputorder=edgesfirst, splines=true, dpi=200, fontname=\"Courier New Bold\"];\n\n");
         dot.append("    node [style=filled, fillcolor=white, color=black, fontname=\"Courier New Bold\"];\n\n");
 
         Node currentNode = null;
@@ -506,6 +510,10 @@ public class Util
             	else if(currentOperator.type.equals(Operator.Type.BENCHMARK))
             	{
             		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=note, width=2];\n");
+            	}
+            	else if(currentOperator.type.equals(Operator.Type.NOP))
+            	{
+            		dot.append("        " + currentOperator.id + " [group=g" + currentOperator.group + ", label=\"" + currentOperator.label + "\", shape=Msquare, width=2];\n");
             	}
             	else
             	{

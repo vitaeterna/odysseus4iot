@@ -47,6 +47,10 @@ import odysseus4iot.util.Util;
  *             5. Best placement is chosen
  *             6. Queries are created for that placement strategy
  * Output:     Queries for each single node
+ * 
+ * Case1: Finished after 1 seconds  89 millisecondsOperatorCounts: [1, 1, 1, 3, 0] - node1_1=6000bytesSent - placement_1024
+ * Case2: Finished after 1 seconds 190 millisecondsOperatorCounts: [1, 1, 1, 3, 0] - placement_22141
+ * placement_22141_[11340, 18730, 27039] - DR=129,143 Bit/s | #Connections=4 | #EdgeOperators=3 | memConsumptionEdge=22,400 KBit
  */
 public class Main
 {
@@ -63,7 +67,7 @@ public class Main
 	public static boolean distributed = true;
 	public static boolean benchmark = true;
 	
-	public static String configProperties = "./config_ec.properties";
+	public static String configProperties = "./config_efc_docker.properties";
 
 	public static void main(String[] args)
 	{
@@ -204,28 +208,30 @@ public class Main
 			case 4:
 				//Case 4 - Sensors, Fog, Cloud - 0.0 acc edge: 11979_4309, 11979_20333_4309, 11979_20333_8158 fog: 11916_4272, 11916_4273, 11916_4275
 				List<Integer> modelsetIDsCase14_1 = new ArrayList<>();
-				modelsetIDsCase14_1.add(6529);
-				modelsetIDsCase14_1.add(16499);
+				modelsetIDsCase14_1.add(4309);
+				modelsetIDsCase14_1.add(11979);
 				
 				List<Integer> modelsetIDsCase14_2 = new ArrayList<>();
-				modelsetIDsCase14_2.add(7568);
-				modelsetIDsCase14_2.add(18444);
+				modelsetIDsCase14_2.add(4309);
+				modelsetIDsCase14_2.add(11979);
+				modelsetIDsCase14_2.add(20333);
 				
 				List<Integer> modelsetIDsCase14_3 = new ArrayList<>();
-				modelsetIDsCase14_3.add(7253);
-				modelsetIDsCase14_3.add(17809);
+				modelsetIDsCase14_3.add(8158);
+				modelsetIDsCase14_3.add(11979);
+				modelsetIDsCase14_3.add(20333);
 				
 				List<Integer> modelsetIDsCase14_4 = new ArrayList<>();
-				modelsetIDsCase14_4.add(7535);
-				modelsetIDsCase14_4.add(18400);
+				modelsetIDsCase14_4.add(4272);
+				modelsetIDsCase14_4.add(11916);
 				
 				List<Integer> modelsetIDsCase14_5 = new ArrayList<>();
-				modelsetIDsCase14_5.add(7539);
-				modelsetIDsCase14_5.add(18400);
+				modelsetIDsCase14_5.add(4273);
+				modelsetIDsCase14_5.add(11916);
 				
 				List<Integer> modelsetIDsCase14_6 = new ArrayList<>();
-				modelsetIDsCase14_6.add(7224);
-				modelsetIDsCase14_6.add(17765);
+				modelsetIDsCase14_6.add(4275);
+				modelsetIDsCase14_6.add(11916);
 				
 				modelsetIDs.add(modelsetIDsCase14_1);
 				modelsetIDs.add(modelsetIDsCase14_2);

@@ -37,6 +37,9 @@ public class GlobalQueryScript
 	
 	public static void main(String[] args)
 	{
+		//For testing
+		args = new String[] {"./generated/script1.gqs"};
+		
 		printlnSynced("Welcome to GlobalQueryScript(GQS) for Odysseus\n", System.out);
 		printlnSynced("This tool can be used in two different modes:", System.out);
 		printlnSynced("   interactive mode - Passing 0 arguments you can interactively enter commands one by one", System.out);
@@ -264,7 +267,8 @@ public class GlobalQueryScript
 	        			
 	        			boolean deployed = true;
 	        			
-	    				for(int index = 0; index < globalQuery.getPartialQueries().size(); index++)
+	        			for(int index = globalQuery.getPartialQueries().size() - 1; index >= 0; index--)
+	    				//for(int index = 0; index < globalQuery.getPartialQueries().size(); index++)
 	    				{
 	    					partialQuery = globalQuery.getPartialQueries().get(index);
 	    					
