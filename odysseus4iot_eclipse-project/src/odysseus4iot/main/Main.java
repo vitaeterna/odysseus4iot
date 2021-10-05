@@ -48,22 +48,31 @@ import odysseus4iot.util.Util;
  *             6. Queries are created for that placement strategy
  * Output:     Queries for each single node
  * 
- * Case1: Finished after 1 seconds  89 millisecondsOperatorCounts: [1, 1, 1, 3, 0] - node1_1=6000bytesSent - placement_1024
- * Case2: Finished after 1 seconds 190 millisecondsOperatorCounts: [1, 1, 1, 3, 0] - placement_22141
- * placement_22141_[11340, 18730, 27039] - DR=129,143 Bit/s | #Connections=4 | #EdgeOperators=3 | memConsumptionEdge=22,400 KBit
+ * Case1: Finished after 1 seconds 142 milliseconds +  96 millis OperatorCounts: [1, 1, 1, 3, 0] Everything Cloud
+ *        placement_2048_[11340, 18730, 27039] - DR=4,800 KBit/s | #Connections=1 | #EdgeOperators=0 | memConsumptionEdge=0,000 Bit
+ *        36000 Bytes Sent by node1                           - avg acc = 96,81%
+ * Case2: Finished after 1 seconds 222 milliseconds +  96 millis OperatorCounts: [1, 1, 1, 3, 0] Aggregation Edge Classification Fog
+ *        placement_88561_[11340, 18730, 27039] - DR=97,143 Bit/s | #Connections=2 | #EdgeOperators=3 | memConsumptionEdge=22,400 KBit
+ *          408 Bytes Sent by node1 | 330 Bytes Sent by node2 - avg acc = 96,81%
+ * Case3: Finished after 1 seconds 520 milliseconds + 522 millis OperatorCounts: [1, 1, 1, 2, 0] Aggregation Edge Classification Cloud
+ *        placement_2134_[7535, 18400] - DR=48,000 Bit/s | #Connections=3 | #EdgeOperators=3 | memConsumptionEdge=22,400 KBit
+ *          168 Bytes Sent by node1 | 168 Bytes Sent by node2 - avg acc = 95.,01%
+ * Case4: Finished after 1 seconds 524 milliseconds + 510 millis OperatorCounts: [1, 1, 1, 2, 0] Aggregation Edge Classification Cloud
+ *        placement_2134_[4272, 11916] - DR=72,000 Bit/s | #Connections=3 | #EdgeOperators=3 | memConsumptionEdge=3,840 KBit
+ *          192 Bytes Sent by node1 | 192 Bytes Sent by node2 - avg acc = 86,09%
  */
 public class Main
 {
 	public static Properties properties = null;
 	
 	//Parameters
-	public static Integer evalCase = 1;
+	public static Integer evalCase = 3;
 	
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
 	public static boolean merge = true;
 	
-	public static boolean dotpng = true;
+	public static boolean dotpng = false;
 	public static boolean distributed = true;
 	public static boolean benchmark = true;
 	
@@ -174,7 +183,7 @@ public class Main
 				break;
 			case 3:
 				//Case 3 - Sensors, Fog, Cloud - 0.5 acc edge: 16499_6529, 18444_7568, 17809_7253 fog: 18400_7535, 18400_7539, 17765_7224
-				List<Integer> modelsetIDsCase13_1 = new ArrayList<>();
+				/*List<Integer> modelsetIDsCase13_1 = new ArrayList<>();
 				modelsetIDsCase13_1.add(6529);
 				modelsetIDsCase13_1.add(16499);
 				
@@ -184,7 +193,7 @@ public class Main
 				
 				List<Integer> modelsetIDsCase13_3 = new ArrayList<>();
 				modelsetIDsCase13_3.add(7253);
-				modelsetIDsCase13_3.add(17809);
+				modelsetIDsCase13_3.add(17809);*/
 				
 				List<Integer> modelsetIDsCase13_4 = new ArrayList<>();
 				modelsetIDsCase13_4.add(7535);
@@ -198,16 +207,16 @@ public class Main
 				modelsetIDsCase13_6.add(7224);
 				modelsetIDsCase13_6.add(17765);
 				
-				modelsetIDs.add(modelsetIDsCase13_1);
-				modelsetIDs.add(modelsetIDsCase13_2);
-				modelsetIDs.add(modelsetIDsCase13_3);
+				//modelsetIDs.add(modelsetIDsCase13_1);
+				//modelsetIDs.add(modelsetIDsCase13_2);
+				//modelsetIDs.add(modelsetIDsCase13_3);
 				modelsetIDs.add(modelsetIDsCase13_4);
 				modelsetIDs.add(modelsetIDsCase13_5);
 				modelsetIDs.add(modelsetIDsCase13_6);
 				break;
 			case 4:
 				//Case 4 - Sensors, Fog, Cloud - 0.0 acc edge: 11979_4309, 11979_20333_4309, 11979_20333_8158 fog: 11916_4272, 11916_4273, 11916_4275
-				List<Integer> modelsetIDsCase14_1 = new ArrayList<>();
+				/*List<Integer> modelsetIDsCase14_1 = new ArrayList<>();
 				modelsetIDsCase14_1.add(4309);
 				modelsetIDsCase14_1.add(11979);
 				
@@ -219,7 +228,7 @@ public class Main
 				List<Integer> modelsetIDsCase14_3 = new ArrayList<>();
 				modelsetIDsCase14_3.add(8158);
 				modelsetIDsCase14_3.add(11979);
-				modelsetIDsCase14_3.add(20333);
+				modelsetIDsCase14_3.add(20333);*/
 				
 				List<Integer> modelsetIDsCase14_4 = new ArrayList<>();
 				modelsetIDsCase14_4.add(4272);
@@ -233,9 +242,9 @@ public class Main
 				modelsetIDsCase14_6.add(4275);
 				modelsetIDsCase14_6.add(11916);
 				
-				modelsetIDs.add(modelsetIDsCase14_1);
-				modelsetIDs.add(modelsetIDsCase14_2);
-				modelsetIDs.add(modelsetIDsCase14_3);
+				//modelsetIDs.add(modelsetIDsCase14_1);
+				//modelsetIDs.add(modelsetIDsCase14_2);
+				//modelsetIDs.add(modelsetIDsCase14_3);
 				modelsetIDs.add(modelsetIDsCase14_4);
 				modelsetIDs.add(modelsetIDsCase14_5);
 				modelsetIDs.add(modelsetIDsCase14_6);

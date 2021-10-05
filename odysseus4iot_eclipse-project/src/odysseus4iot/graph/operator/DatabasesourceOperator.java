@@ -35,7 +35,7 @@ public class DatabasesourceOperator extends Operator
 			attributesString += String.format(QUERY_ATTRIBUTE, currentColumn.name, currentColumn.type.getSimpleName(), index==this.attributes.columns.size()-1?"":",");
 		}
 		
-		return String.format(QUERY, this.outputName, this.table, this.jdbc, this.user, this.password, attributesString, (int)(this.waiteach/Main.evaluationSpeedupFactor));
+		return String.format(QUERY, this.outputName, this.table, this.jdbc, this.user, this.password, this.id, attributesString, (int)(this.waiteach/Main.evaluationSpeedupFactor));
 	}
 	
 	private static final String QUERY = 
@@ -46,7 +46,7 @@ public class DatabasesourceOperator extends Operator
 			+ "\t\tjdbc='%s',\r\n"
 			+ "\t\tuser='%s',\r\n"
 			+ "\t\tpassword='%s',\r\n"
-			+ "\t\tconnection='connection',\r\n"
+			+ "\t\tconnection='connection%d',\r\n"
 			+ "\t\tattributes=\r\n"
 			+ "\t\t[\r\n"
 			+ "%s"

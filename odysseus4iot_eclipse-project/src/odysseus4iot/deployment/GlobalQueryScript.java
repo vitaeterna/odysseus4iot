@@ -38,7 +38,7 @@ public class GlobalQueryScript
 	public static void main(String[] args)
 	{
 		//For testing
-		args = new String[] {"./generated/script1.gqs"};
+		args = new String[] {"./script1.gqs"};
 		
 		printlnSynced("Welcome to GlobalQueryScript(GQS) for Odysseus\n", System.out);
 		printlnSynced("This tool can be used in two different modes:", System.out);

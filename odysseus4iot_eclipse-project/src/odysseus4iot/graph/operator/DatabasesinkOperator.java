@@ -19,7 +19,7 @@ public class DatabasesinkOperator extends Operator
 	@Override
 	public String toString()
 	{
-		return String.format(QUERY, this.outputName, this.table, this.jdbc, this.user, this.password, this.inputName);
+		return String.format(QUERY, this.outputName, this.table, this.jdbc, this.user, this.password, this.id, this.inputName);
 	}
 	
 	private static final String QUERY = 
@@ -30,7 +30,7 @@ public class DatabasesinkOperator extends Operator
 			+ "\t\tjdbc='%s',\r\n"
 			+ "\t\tuser='%s',\r\n"
 			+ "\t\tpassword='%s',\r\n"
-			+ "\t\tconnection='connection',\r\n"
+			+ "\t\tconnection='connection%d',\r\n"
 			+ "\t\tdrop=true,\r\n"
 			+ "\t\ttruncate=false,\r\n"
 			+ "\t\tbatchsize=50,\r\n"
