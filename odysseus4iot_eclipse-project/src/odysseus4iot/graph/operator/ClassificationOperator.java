@@ -28,7 +28,7 @@ public class ClassificationOperator extends Operator
 	}
 	
 	public static final String QUERY = 
-			  "%s = ACTIVITYPREDICT\r\n"
+			  "%s = ACTIVITYCLASSIFY\r\n"
 			+ "(\r\n"
 			+ "\t{\r\n"
 			+ "\t\tdatabase='%s',\r\n"
