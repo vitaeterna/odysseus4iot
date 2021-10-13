@@ -85,9 +85,15 @@ public class Model
 	}
 	public void setWindow_stride(String window_stride) {
 		this.window_stride = window_stride;
+		if(!this.window_stride.equals("100"))
+		{
+			this.window_stride = "100";
+			System.out.println("Defaulting to window_stride = \"100\" for model " + this.getModel_title());
+			//TODO: _ window stride fix
+		}
 		if(this.window_size != null && this.window_stride != null)
 		{
-			this.window_slide = (int) (this.window_size * (Double.parseDouble(window_stride.replace("%", "")) / 100.0d));
+			this.window_slide = (int) (this.window_size * (Double.parseDouble(this.window_stride.replace("%", "")) / 100.0d));
 		}
 	}
 	public Double getAccuracy_test() {

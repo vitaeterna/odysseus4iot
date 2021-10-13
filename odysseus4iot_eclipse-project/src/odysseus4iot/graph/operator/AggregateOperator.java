@@ -1,5 +1,6 @@
 package odysseus4iot.graph.operator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import odysseus4iot.graph.operator.meta.Operator;
@@ -14,6 +15,21 @@ public class AggregateOperator extends Operator
 		super();
 		
 		type = Type.PROCESSING;
+	}
+	
+	public AggregateOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public AggregateOperator copy()
+	{
+		AggregateOperator operator = new AggregateOperator(super.copy());
+		
+		operator.group_by = this.group_by;
+		operator.aggregations = new ArrayList<>(this.aggregations);
+		
+		return operator;
 	}
 	
 	@Override

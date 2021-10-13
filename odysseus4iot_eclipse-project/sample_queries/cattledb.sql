@@ -366,20 +366,6 @@ FROM sensor_data
 WHERE cattle_id = 19
 ORDER BY "timestamp" ASC;
 
-CREATE TABLE IF NOT EXISTS public.prediction
-(
-    cattle_id integer NOT NULL,
-	prediction Text NOT NULL,
-    "start" bigint NOT NULL,
-	"end" bigint NOT NULL,
-	Measurements Text NOT NULL
-)
-WITH
-(
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
 --Sensor Tuple Count per Cattle
 SELECT sensor_data.cattle_id, cattle.name, cattle.round, COUNT(*)
 FROM sensor_data, cattle

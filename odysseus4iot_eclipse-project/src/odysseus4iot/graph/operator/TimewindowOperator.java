@@ -15,6 +15,21 @@ public class TimewindowOperator extends Operator
 		type = Type.PROCESSING;
 	}
 	
+	public TimewindowOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public TimewindowOperator copy()
+	{
+		TimewindowOperator operator = new TimewindowOperator(super.copy());
+		
+		operator.size = this.size.intValue();
+		operator.slide = this.slide.intValue();
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -40,13 +40,11 @@ public class MergeOperator extends Operator
 	
 	public MergeOperator copy()
 	{
-		Operator operator = super.copy();
+		MergeOperator operator = new MergeOperator(super.copy());
 		
-		MergeOperator mergeOperator = new MergeOperator(operator);
+		operator.inputStreams = new ArrayList<>(this.inputStreams);
 		
-		mergeOperator.inputStreams = new ArrayList<>(this.inputStreams);
-		
-		return mergeOperator;
+		return operator;
 	}
 	
 	@Override

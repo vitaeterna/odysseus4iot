@@ -1,5 +1,6 @@
 package odysseus4iot.graph.operator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import odysseus4iot.graph.operator.meta.Operator;
@@ -13,6 +14,20 @@ public class MapOperator extends Operator
 		super();
 		
 		type = Type.PROCESSING;
+	}
+	
+	public MapOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public MapOperator copy()
+	{
+		MapOperator operator = new MapOperator(super.copy());
+		
+		operator.expressions = new ArrayList<>(this.expressions);
+		
+		return operator;
 	}
 	
 	@Override

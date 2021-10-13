@@ -14,6 +14,21 @@ public class ChangedetectOperator extends Operator
 		type = Type.PROCESSING;
 	}
 	
+	public ChangedetectOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public ChangedetectOperator copy()
+	{
+		ChangedetectOperator operator = new ChangedetectOperator(super.copy());
+		
+		operator.attr = this.attr;
+		operator.group_by = this.group_by;
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

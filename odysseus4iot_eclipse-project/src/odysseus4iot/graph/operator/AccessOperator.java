@@ -34,6 +34,22 @@ public class AccessOperator extends Operator
 		type = Type.SOURCE;
 	}
 	
+	public AccessOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public AccessOperator copy()
+	{
+		AccessOperator operator = new AccessOperator(super.copy());
+		
+		operator.host = this.host;
+		operator.port = this.port.intValue();
+		operator.attributes = this.attributes.copy();
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

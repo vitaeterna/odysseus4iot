@@ -1,5 +1,6 @@
 package odysseus4iot.graph.operator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import odysseus4iot.graph.operator.meta.Operator;
@@ -24,7 +25,6 @@ public class ProjectOperator extends Operator
 	}
 	
 	public List<String> payloadAttributes = null;
-	
 	public List<String> attributes = null;
 	
 	public ProjectOperator()
@@ -32,6 +32,21 @@ public class ProjectOperator extends Operator
 		super();
 		
 		type = Type.PROJECT;
+	}
+	
+	public ProjectOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public ProjectOperator copy()
+	{
+		ProjectOperator operator = new ProjectOperator(super.copy());
+		
+		operator.payloadAttributes = new ArrayList<>(this.payloadAttributes);
+		operator.attributes = new ArrayList<>(this.attributes);
+		
+		return operator;
 	}
 	
 	@Override

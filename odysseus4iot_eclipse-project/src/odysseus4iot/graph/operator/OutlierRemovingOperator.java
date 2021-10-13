@@ -5,7 +5,6 @@ import odysseus4iot.graph.operator.meta.Operator;
 public class OutlierRemovingOperator extends Operator
 {
 	public String group_by = null;
-	
 	public String model_title = null;
 	
 	public OutlierRemovingOperator()
@@ -13,6 +12,21 @@ public class OutlierRemovingOperator extends Operator
 		super();
 		
 		type = Type.PROCESSING;
+	}
+	
+	public OutlierRemovingOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public OutlierRemovingOperator copy()
+	{
+		OutlierRemovingOperator operator = new OutlierRemovingOperator(super.copy());
+		
+		operator.group_by = this.group_by;
+		operator.model_title = this.model_title;
+		
+		return operator;
 	}
 	
 	@Override

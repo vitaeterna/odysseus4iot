@@ -16,6 +16,23 @@ public class DatabasesinkOperator extends Operator
 		type = Type.SINK;
 	}
 	
+	public DatabasesinkOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public DatabasesinkOperator copy()
+	{
+		DatabasesinkOperator operator = new DatabasesinkOperator(super.copy());
+		
+		operator.table = this.table;
+		operator.jdbc = this.jdbc;
+		operator.user = this.user;
+		operator.password = this.password;
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

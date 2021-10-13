@@ -40,8 +40,7 @@ public class PostgresImport
 	public static String SQL_QUERY_TRAINEDMODELS = 
 			  "SELECT id, model_name, developer, binary_model, labels, sensor_system, sensor_list, algorithm, hyperparameters, frequency, window_type, window_size, window_stride, features, train_dataset, validation_method, train_valid_accuracy, test_accuracy, test_dataset, model_repository, model_size_in_bytes, created_time\r\n"
 			+ "FROM public.%s\r\n"
-			+ "WHERE window_stride = 100\r\n"
-			+ "AND (%s);";
+			+ "WHERE (%s);";
 	
 	public static List<Model> importFromExperimentResultSchema()
 	{

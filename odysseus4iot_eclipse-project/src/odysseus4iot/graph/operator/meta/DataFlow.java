@@ -29,6 +29,6 @@ public class DataFlow extends Edge
 	{
 		Schema outputSchema = ((Operator)this.vertex0).outputSchema;
 		
-		this.label = String.format("%s\n%s", outputSchema.columns.size()>10?outputSchema.columns.size():outputSchema.toString(), Util.formatSizeInBits(datarateConsumption));
+		this.label = String.format("%s\n%s/s", outputSchema.columns.size()>10?outputSchema.columns.size():outputSchema.toString(), Util.formatSizeInBits(datarateConsumption));
 	}
 }

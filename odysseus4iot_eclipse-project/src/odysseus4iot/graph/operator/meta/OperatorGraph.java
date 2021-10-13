@@ -5,7 +5,6 @@ import java.util.List;
 
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Graph;
-import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.AccessOperator;
 import odysseus4iot.graph.operator.AggregateOperator;
 import odysseus4iot.graph.operator.ChangedetectOperator;
@@ -283,6 +282,25 @@ public class OperatorGraph extends Graph
 		return operators;
 	}
 	
+	public List<Operator> getVerticesByOperatorType(Type type)
+	{
+		List<Operator> requestedOperators = new ArrayList<>();
+		
+		Operator currentOperator = null;
+		
+		for(int index = 0; index < this.vertices.size(); index++)
+		{
+			currentOperator = (Operator)this.vertices.get(index);
+			
+			if(currentOperator.type.equals(type))
+			{
+				requestedOperators.add(currentOperator);
+			}
+		}
+		
+		return requestedOperators;
+	}
+	
 	public void setControlFlowDatarates()
 	{
 		DataFlow currentDataFlow = null;
@@ -297,34 +315,46 @@ public class OperatorGraph extends Graph
 	
 	public void removeSuperfluousOperators()
 	{
-		List<Vertex> mergeOperators = this.getVerticesByType(MergeOperator.class);
+		List<Operator> superfluousOperators = new ArrayList<>();
+		
+		Operator superfluousOperator = null;
+		
+		superfluousOperators.addAll(this.getVerticesByOperatorType(Type.MERGE));
+		superfluousOperators.addAll(this.getVerticesByOperatorType(Type.NOP));
+		
 		List<Edge> inputEdges = null;
 		List<Edge> outputEdges = null;
 		
-		MergeOperator mergeOperatpr = null;
-		Vertex vertex0 = null;
+		Operator operator0 = null;
+		Operator operator1 = null;
 		
-		for(int index = 0; index < mergeOperators.size(); index++)
+		for(int index = 0; index < superfluousOperators.size(); index++)
 		{
-			mergeOperatpr = (MergeOperator)mergeOperators.get(index);
+			superfluousOperator = superfluousOperators.get(index);
 			
-			inputEdges = this.getInputEdges(mergeOperatpr);
-			outputEdges = this.getOutputEdges(mergeOperatpr);
+			inputEdges = this.getInputEdges(superfluousOperator);
+			outputEdges = this.getOutputEdges(superfluousOperator);
 			
 			if(inputEdges.size() == 1)
 			{
-				vertex0 = inputEdges.get(0).vertex0;
+				operator0 = (Operator)inputEdges.get(0).vertex0;
 				
 				this.edges.remove(inputEdges.get(0));
 				
-				this.vertices.remove(mergeOperatpr);
+				this.vertices.remove(superfluousOperator);
 				
 				for(int index2 = 0; index2 < outputEdges.size(); index2++)
 				{
+					operator1 = (Operator)outputEdges.get(index2).vertex1;
+					
 					this.edges.remove(outputEdges.get(index2));
 					
-					this.addEdge(new DataFlow(vertex0, outputEdges.get(index2).vertex1));
+					this.addEdge(new DataFlow(operator0, operator1));
+					
+					operator1.inputName = operator0.outputName;
 				}
+				
+				System.out.println("Superfluous " + superfluousOperator.getClass().getSimpleName() + " removed (id=" + superfluousOperator.id + ")");
 			}
 		}
 	}

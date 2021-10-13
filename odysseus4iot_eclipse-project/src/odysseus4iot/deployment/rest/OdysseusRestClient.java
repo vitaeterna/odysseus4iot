@@ -29,6 +29,8 @@ public class OdysseusRestClient
 	public static final String URI_LOGIN    = "/services/login";
 	public static final String URI_QUERY    = "/queries";
 	
+	public static final Integer timeout     = 15;
+	
 	public static Token post_login(String socket, User user)
 	{
 	    //Create and configure a HTTP Request
@@ -38,7 +40,7 @@ public class OdysseusRestClient
 	    
 	    httpRequestBuilder.uri(URI.create(URI_PROTOCOL + socket + URI_LOGIN));
 	    httpRequestBuilder.version(HttpClient.Version.HTTP_2);
-	    httpRequestBuilder.timeout(Duration.of(10, ChronoUnit.SECONDS));
+	    httpRequestBuilder.timeout(Duration.of(timeout, ChronoUnit.SECONDS));
 	    httpRequestBuilder.header("Content-Type", "application/json");
 	    httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(OdysseusJsonClient.getJsonFromUser(user)));
 	    
@@ -90,7 +92,7 @@ public class OdysseusRestClient
 	    
 	    httpRequestBuilder.uri(URI.create(URI_PROTOCOL + socket + URI_QUERY));
 	    httpRequestBuilder.version(HttpClient.Version.HTTP_2);
-	    httpRequestBuilder.timeout(Duration.of(10, ChronoUnit.SECONDS));
+	    httpRequestBuilder.timeout(Duration.of(timeout, ChronoUnit.SECONDS));
 	    httpRequestBuilder.header("Content-Type", "application/json");
 	    httpRequestBuilder.header("Authorization", "Bearer " + token.getToken());
 	    httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(OdysseusJsonClient.getJsonFromQuery(query)));
@@ -147,7 +149,7 @@ public class OdysseusRestClient
 	    
 	    httpRequestBuilder.uri(URI.create(URI_PROTOCOL + socket + URI_QUERY + "/" + query.getId()));
 	    httpRequestBuilder.version(HttpClient.Version.HTTP_2);
-	    httpRequestBuilder.timeout(Duration.of(10, ChronoUnit.SECONDS));
+	    httpRequestBuilder.timeout(Duration.of(timeout, ChronoUnit.SECONDS));
 	    httpRequestBuilder.header("Content-Type", "application/json");
 	    httpRequestBuilder.header("Authorization", "Bearer " + token.getToken());
 	    httpRequestBuilder.DELETE();

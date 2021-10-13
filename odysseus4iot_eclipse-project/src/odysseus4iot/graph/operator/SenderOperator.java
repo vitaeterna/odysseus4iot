@@ -31,6 +31,21 @@ public class SenderOperator extends Operator
 		type = Type.SINK;
 	}
 	
+	public SenderOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public SenderOperator copy()
+	{
+		SenderOperator operator = new SenderOperator(super.copy());
+		
+		operator.host = this.host;
+		operator.port = this.port.intValue();
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

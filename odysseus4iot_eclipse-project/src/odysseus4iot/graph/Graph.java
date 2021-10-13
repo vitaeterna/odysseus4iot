@@ -38,7 +38,7 @@ public abstract class Graph
 		currentVertexGroup = 0;
 	}
 	
-	public void addVertex(Vertex vertex)
+	public void addVertex(Vertex vertex, boolean keepIDs)
 	{
 		if(vertex == null)
 		{
@@ -47,22 +47,17 @@ public abstract class Graph
 		
 		if(!this.vertices.contains(vertex))
 		{
-			vertex.id = this.getNextVertexID();
-			vertex.group = this.getCurrentGroup();
+			if(!keepIDs)
+			{
+				vertex.id = this.getNextVertexID();
+				vertex.group = this.getCurrentGroup();
+			}
 			
 			this.vertices.add(vertex);
 		}
 		else
 		{
 			System.err.println("Graph already contains vertex " + vertex.id + "!");
-		}
-	}
-	
-	public void addAllVertices(List<Vertex> vertices)
-	{
-		for(int index = 0; index < vertices.size(); index++)
-		{
-			this.addVertex(vertices.get(index));
 		}
 	}
 	

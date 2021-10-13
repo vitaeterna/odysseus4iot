@@ -42,7 +42,7 @@ public class PhysicalGraphGenerator
 			
 			nodes.add(node);
 			
-			physicalGraph.addVertex(node);
+			physicalGraph.addVertex(node, false);
 		}
 		
 		List<Connection> connections = new ArrayList<>();

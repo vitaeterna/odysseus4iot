@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/de.uniol.inf.is.odysseus.activityclassify.feature_1.0.0.202110130230.jar" id="de.uniol.inf.is.odysseus.activityclassify.feature" version="1.0.0.202110130230">
+      <category name="ActivityClassify"/>
+   </feature>
+   <category-def name="ActivityClassify" label="ActivityClassify"/>
+</site>

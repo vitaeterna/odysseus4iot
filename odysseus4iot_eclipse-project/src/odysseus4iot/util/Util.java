@@ -92,7 +92,7 @@ public class Util
 	
     /**
      * 
-     * @param sizeInBits in Bit/s
+     * @param sizeInBits in bits
      * @return
      */
     public static String formatSizeInBits(Double sizeInBits)

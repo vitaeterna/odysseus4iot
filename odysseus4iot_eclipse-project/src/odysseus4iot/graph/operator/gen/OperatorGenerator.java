@@ -19,7 +19,6 @@ import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.TimewindowOperator;
 import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Schema;
-import odysseus4iot.graph.operator.meta.StartTimestamp;
 import odysseus4iot.main.Main;
 import odysseus4iot.model.Feature;
 
@@ -37,7 +36,7 @@ public class OperatorGenerator
 		
 		Schema attributes = new Schema();
 		attributes.addColumn(new Column("cattle_id", Integer.class));
-		attributes.addColumn(new Column("timestamp", StartTimestamp.class));
+		//attributes.addColumn(new Column("timestamp", StartTimestamp.class));
 		
 		String columnName = null;
 		
@@ -61,7 +60,7 @@ public class OperatorGenerator
 	{
 		MergeOperator mergeOperator = new MergeOperator();
 		
-		mergeOperator.inputStreams = inputStreams;
+		mergeOperator.inputStreams = new ArrayList<>(inputStreams);
 		
 		mergeOperator.outputSchema = null;
 		mergeOperator.outputRate = null;
@@ -125,7 +124,7 @@ public class OperatorGenerator
 		
 		timewindowOperator.outputSchema = null;
 		timewindowOperator.outputRate = null;
-		timewindowOperator.outputName = "sensor_data_map_window";
+		timewindowOperator.outputName = "sensor_data_map_window_" + size;
 		
 		return timewindowOperator;
 	}
@@ -165,7 +164,7 @@ public class OperatorGenerator
 		
 		aggregateOperator.outputSchema = outputSchema;
 		aggregateOperator.outputRate = null;
-		aggregateOperator.outputName = "features";
+		aggregateOperator.outputName = null;
 		
 		return aggregateOperator;
 	}
@@ -237,7 +236,7 @@ public class OperatorGenerator
 		
 		Schema outputSchema = new Schema();
 		outputSchema.addColumn(new Column("cattle_id", Integer.class));
-		outputSchema.addColumn(new Column("prediction", String.class));
+		outputSchema.addColumn(new Column("activity", String.class));
 		
 		classificationOperator.outputSchema = outputSchema;
 		classificationOperator.outputRate = null;
@@ -265,7 +264,7 @@ public class OperatorGenerator
 	{
 		ChangedetectOperator changedetectOperator = new ChangedetectOperator();
 		
-		changedetectOperator.attr = "prediction";
+		changedetectOperator.attr = "activity";
 		changedetectOperator.group_by = "cattle_id";
 		
 		changedetectOperator.outputSchema = null;
@@ -286,7 +285,7 @@ public class OperatorGenerator
 		
 		databasesinkOperator.outputSchema = null;
 		databasesinkOperator.outputRate = null;
-		databasesinkOperator.outputName = "prediction_sink";
+		databasesinkOperator.outputName = "activity_sink";
 		
 		return databasesinkOperator;
 	}

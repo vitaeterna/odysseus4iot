@@ -28,6 +28,18 @@ public class SelectOperator extends Operator
 		type = Type.NOP;
 	}
 	
+	public SelectOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public SelectOperator copy()
+	{
+		SelectOperator operator = new SelectOperator(super.copy());
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

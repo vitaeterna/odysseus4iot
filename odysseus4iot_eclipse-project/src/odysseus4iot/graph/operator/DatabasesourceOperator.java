@@ -21,6 +21,25 @@ public class DatabasesourceOperator extends Operator
 		type = Type.SOURCE;
 	}
 	
+	public DatabasesourceOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public DatabasesourceOperator copy()
+	{
+		DatabasesourceOperator operator = new DatabasesourceOperator(super.copy());
+		
+		operator.table = this.table;
+		operator.jdbc = this.jdbc;
+		operator.user = this.user;
+		operator.password = this.password;
+		operator.attributes = this.attributes.copy();
+		operator.waiteach = this.waiteach.intValue();
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

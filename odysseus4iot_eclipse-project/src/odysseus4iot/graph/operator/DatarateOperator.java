@@ -30,6 +30,20 @@ public class DatarateOperator extends Operator
 		type = Type.BENCHMARK;
 	}
 	
+	public DatarateOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public DatarateOperator copy()
+	{
+		DatarateOperator operator = new DatarateOperator(super.copy());
+		
+		operator.key = this.key;
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

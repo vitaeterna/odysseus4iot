@@ -6,6 +6,7 @@ import java.util.List;
 import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.graph.operator.AccessOperator;
+import odysseus4iot.graph.operator.DatabasesinkOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.SenderOperator;
 import odysseus4iot.graph.operator.gen.OperatorGenerator;
@@ -98,7 +99,7 @@ public class OperatorPlacementPartitioning
 					
 					operator0.assignedOperators1.add(senderOperator);
 					
-					operatorGraph.addVertex(senderOperator);
+					operatorGraph.addVertex(senderOperator, false);
 					
 					edgesToAdd.add(new DataFlow(operator0, senderOperator));
 				}
@@ -155,7 +156,7 @@ public class OperatorPlacementPartitioning
 						
 						operator1.assignedOperators0.add(accessOperator);
 						
-						operatorGraph.addVertex(accessOperator);
+						operatorGraph.addVertex(accessOperator, false);
 						
 						edgesToAdd.add(new DataFlow(accessOperator, operator1));
 					}
@@ -220,7 +221,7 @@ public class OperatorPlacementPartitioning
 				
 				if(currentNode.id.intValue() == operator0.assignedID.intValue())
 				{
-					subGraph.addVertex(operator0);
+					subGraph.addVertex(operator0.copy(), true);
 				}
 			}
 			
@@ -233,6 +234,11 @@ public class OperatorPlacementPartitioning
 				
 				if(operator0.assignedID.intValue() == currentNode.id.intValue() && operator1.assignedID.intValue() == currentNode.id.intValue())
 				{
+					currentDataFlow = currentDataFlow.copy();
+					
+					currentDataFlow.vertex0 = subGraph.getVertexByID(operator0.id);
+					currentDataFlow.vertex1 = subGraph.getVertexByID(operator1.id);
+					
 					subGraph.addEdge(currentDataFlow);
 				}
 			}
@@ -247,7 +253,19 @@ public class OperatorPlacementPartitioning
 					
 					subGraph2 = new OperatorGraph(operator0.outputName);
 					
-					subGraph2.addAllVertices(subGraph.getVerticesBreadthFirst(operator0));
+					List<Vertex> breadthFirstVertices = subGraph.getVerticesBreadthFirst(operator0);
+					
+					for(int index3 = 0; index3 < breadthFirstVertices.size(); index3++)
+					{
+						operator1 = ((Operator)breadthFirstVertices.get(index3)).copy();
+						
+						if(operator1 instanceof DatabasesinkOperator)
+						{
+							((DatabasesinkOperator)operator1).table = ((DatabasesinkOperator)operator1).table.replace("node1", subGraph2.label);
+						}
+						
+						subGraph2.addVertex(operator1, true);
+					}
 					
 					for(int index3 = 0; index3 < subGraph.edges.size(); index3++)
 					{
@@ -256,65 +274,14 @@ public class OperatorPlacementPartitioning
 						operator0 = (Operator)currentDataFlow.vertex0;
 						operator1 = (Operator)currentDataFlow.vertex1;
 						
-						if(subGraph2.vertices.contains(operator0) && subGraph2.vertices.contains(operator1))
+						if(subGraph2.getVertexByID(operator0.id) != null && subGraph2.getVertexByID(operator1.id) != null)
 						{
+							currentDataFlow = currentDataFlow.copy();
+							
+							currentDataFlow.vertex0 = subGraph2.getVertexByID(operator0.id);
+							currentDataFlow.vertex1 = subGraph2.getVertexByID(operator1.id);
+							
 							subGraph2.addEdge(currentDataFlow);
-						}
-					}
-					
-					List<Vertex> mergeOperators = subGraph2.getVerticesByType(MergeOperator.class);
-					
-					List<Edge> inputEdges = null;
-					List<Edge> inputEdgesNew = null;
-					List<Edge> outputEdges = null;
-					List<Edge> outputEdgesNew = null;
-					
-					MergeOperator mergeOperator = null;
-					MergeOperator mergeOperatorNew = null;
-					
-					//TODO: _ This copying is no longer needed. Remove in future commit?
-					for(int index3 = 0; index3 < mergeOperators.size(); index3++)
-					{
-						mergeOperator = (MergeOperator)mergeOperators.get(index3);
-						
-						inputEdges = subGraph2.getInputEdges(mergeOperator);
-						outputEdges = subGraph2.getOutputEdges(mergeOperator);
-						
-						mergeOperatorNew = mergeOperator.copy();
-						
-						inputEdgesNew = new ArrayList<>();
-						
-						for(int index4 = 0; index4 < inputEdges.size(); index4++)
-						{
-							currentDataFlow = ((DataFlow)inputEdges.get(index4)).copy();
-							
-							currentDataFlow.vertex1 = mergeOperatorNew;
-							
-							inputEdgesNew.add(currentDataFlow);
-						}
-						
-						outputEdgesNew = new ArrayList<>();
-						
-						for(int index4 = 0; index4 < outputEdges.size(); index4++)
-						{
-							currentDataFlow = ((DataFlow)outputEdges.get(index4)).copy();
-							
-							currentDataFlow.vertex0 = mergeOperatorNew;
-							
-							outputEdgesNew.add(currentDataFlow);
-						}
-						
-						subGraph2.vertices.remove(mergeOperator);
-						subGraph2.addVertex(mergeOperatorNew);
-						subGraph2.edges.removeAll(inputEdges);
-						subGraph2.addAllEdges(inputEdgesNew);
-						subGraph2.edges.removeAll(outputEdges);
-						subGraph2.addAllEdges(outputEdgesNew);
-						
-						if(mergeOperatorNew.inputStreams.contains(subGraph2.label))
-						{
-							mergeOperatorNew.inputStreams.clear();
-							mergeOperatorNew.inputStreams.add(subGraph2.label);
 						}
 					}
 					
@@ -328,6 +295,8 @@ public class OperatorPlacementPartitioning
 			}
 			else
 			{
+				subGraph.removeSuperfluousOperators();
+				
 				if(!subGraph.isEmpty())
 				{
 					subGraphs.add(subGraph);

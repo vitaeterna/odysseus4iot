@@ -21,6 +21,28 @@ public class ClassificationOperator extends Operator
 		type = Type.PROCESSING;
 	}
 	
+	public ClassificationOperator(Operator operator)
+	{
+		super(operator);
+	}
+	
+	public ClassificationOperator copy()
+	{
+		ClassificationOperator operator = new ClassificationOperator(super.copy());
+		
+		operator.database = this.database;
+		operator.host = this.host;
+		operator.port = this.port.intValue();
+		operator.rpcServer = this.rpcServer;
+		operator.table = this.table;
+		operator.username = this.username;
+		operator.password = this.password;
+		operator.selectmodelbycolumn = this.selectmodelbycolumn;
+		operator.selectmodelbyvalue = this.selectmodelbyvalue;
+		
+		return operator;
+	}
+	
 	@Override
 	public String toString()
 	{

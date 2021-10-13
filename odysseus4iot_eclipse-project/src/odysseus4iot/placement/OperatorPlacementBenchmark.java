@@ -139,7 +139,7 @@ public class OperatorPlacementBenchmark
 				datarateOperator.outputSchema = datarateOperator.inputSchema.copy();
 				datarateOperator.outputRate = datarateOperator.inputRate;
 
-				operatorGraph.addVertex(datarateOperator);
+				operatorGraph.addVertex(datarateOperator, false);
 				operatorGraph.addEdge(new DataFlow(operator0, datarateOperator));
 				
 				//MapOperator
@@ -173,7 +173,7 @@ public class OperatorPlacementBenchmark
 				mapOperator.outputRate = mapOperator.inputRate;
 				mapOperator.outputName = "datarate_map_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount();
 				
-				operatorGraph.addVertex(mapOperator);
+				operatorGraph.addVertex(mapOperator, false);
 				operatorGraph.addEdge(new DataFlow(datarateOperator, mapOperator));
 				
 				//DatabasesinkOperator
@@ -191,7 +191,7 @@ public class OperatorPlacementBenchmark
 				databasesinkOperator.outputRate = databasesinkOperator.inputRate;
 				databasesinkOperator.outputName = "datarate_sink_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount();
 				
-				operatorGraph.addVertex(databasesinkOperator);
+				operatorGraph.addVertex(databasesinkOperator, false);
 				operatorGraph.addEdge(new DataFlow(mapOperator, databasesinkOperator));
 			}
 		}

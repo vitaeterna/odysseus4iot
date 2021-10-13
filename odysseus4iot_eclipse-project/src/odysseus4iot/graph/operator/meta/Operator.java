@@ -83,9 +83,9 @@ public class Operator extends Vertex
 		
 		operator.models = new ArrayList<>(this.models); //References to list elements are kept
 		
-		operator.inputSchema = this.inputSchema.copy();
-		operator.inputRate = this.inputRate.doubleValue();
-		operator.inputName = this.inputName;;
+		operator.inputSchema = this.inputSchema==null?null:this.inputSchema.copy();
+		operator.inputRate = this.inputRate==null?null:this.inputRate.doubleValue();
+		operator.inputName = this.inputName;
 		
 		operator.outputSchema = this.outputSchema.copy();
 		operator.outputRate = this.outputRate.doubleValue();
@@ -98,7 +98,7 @@ public class Operator extends Vertex
 		operator.cpuConsumption = this.cpuConsumption.longValue();
 		operator.memConsumption = this.memConsumption.longValue();
 		
-		return this;
+		return operator;
 	}
 	
 	@Override
