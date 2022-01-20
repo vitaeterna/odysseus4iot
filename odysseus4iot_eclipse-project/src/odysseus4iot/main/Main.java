@@ -53,13 +53,13 @@ public class Main
 	public static Properties properties = null;
 	
 	//Parameters
-	public static String configProperties = "./config_efc_docker.properties";
-	public static Integer evalCase = 3;
+	public static String configProperties = "./config_ec_docker.properties";
+	public static Integer evalCase = 1;
 	
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
 	
-	public static boolean dotpng = false;
+	public static boolean dotpng = true;
 	public static boolean distributed = true;
 	public static boolean benchmark = true;
 
@@ -155,8 +155,15 @@ public class Main
 		
 		switch(evalCase.intValue())
 		{
-			case 1:
-			case 2:
+			case 0: //Test case
+				List<Integer> modelsetIDsCase0_1 = new ArrayList<>();
+				modelsetIDsCase0_1.add(44088);
+				modelsetIDsCase0_1.add(44089);
+				
+				modelsetIDs.add(modelsetIDsCase0_1);
+				break;
+			case 1: //Manually selected models deployed on            cloud (no operator placement) - using config_ec_docker.properties  -> 142ms latency cloud (e->c)
+			case 2: //Manually selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> 147ms latency fog (e->f)
 				List<Integer> modelsetIDsCase12_1 = new ArrayList<>();
 				modelsetIDsCase12_1.add(44086);
 				modelsetIDsCase12_1.add(44088);
@@ -164,7 +171,7 @@ public class Main
 				
 				modelsetIDs.add(modelsetIDsCase12_1);
 				break;
-			case 3:
+			case 3: //MLMM 1.0 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> 122ms latency fog (e->f)
 				List<Integer> modelsetIDsCase13_1 = new ArrayList<>();
 				modelsetIDsCase13_1.add(9925);
 				modelsetIDsCase13_1.add(15875);
@@ -184,7 +191,7 @@ public class Main
 				modelsetIDs.add(modelsetIDsCase13_2);
 				modelsetIDs.add(modelsetIDsCase13_3);
 				break;
-			case 4:
+			case 4: //MLMM 0.7 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> XXXms latency fog (e->f)
 				List<Integer> modelsetIDsCase14_1 = new ArrayList<>();
 				modelsetIDsCase14_1.add(9925);
 				modelsetIDsCase14_1.add(15640);
@@ -204,7 +211,7 @@ public class Main
 				modelsetIDs.add(modelsetIDsCase14_2);
 				modelsetIDs.add(modelsetIDsCase14_3);
 				break;
-			case 5:
+			case 5: //MLMM 0.5 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> ms latency cloud (e->f,f->c)
 				List<Integer> modelsetIDsCase15_1 = new ArrayList<>();
 				modelsetIDsCase15_1.add(5940);
 				modelsetIDsCase15_1.add(15305);
@@ -238,6 +245,12 @@ public class Main
 				modelsetIDs.add(modelsetIDsCase16_1);
 				modelsetIDs.add(modelsetIDsCase16_2);
 				modelsetIDs.add(modelsetIDsCase16_3);
+				break;
+			case 7: //sample case
+				List<Integer> modelsetIDsCase17_1 = new ArrayList<>();
+				modelsetIDsCase17_1.add(44088);
+				
+				modelsetIDs.add(modelsetIDsCase17_1);
 				break;
 			default:
 				modelsetIDs.add(ids);
@@ -323,7 +336,7 @@ public class Main
 			models = modelsets.get(index);
 			
 			//5 - Generating Merged Logical Operator Graph for all models
-			operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing, true);
+			operatorGraph = OperatorGraphGenerator.generateOperatorGraph(sensors, models, postprocessing);
 			
 			operatorGraphs.add(operatorGraph);
 			

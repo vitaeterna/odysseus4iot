@@ -305,6 +305,17 @@ public class GlobalQueryScript
 					        		printlnSynced("Deploying of global query '" + globalQuery.getName() + "' failed. There is no rollback mechanic implemented so far.", System.err);
 				        		}
 				        	}
+				        	
+//				        	try
+//				        	{
+//				        		printlnSynced("Waiting for 3 seconds...", System.out);
+//				        		
+//								TimeUnit.SECONDS.sleep(3);
+//							}
+//				        	catch (InterruptedException e)
+//				        	{
+//								e.printStackTrace();
+//							}
 	    				}
 	    				
 	    				if(deployed)

@@ -1,2 +1,2 @@
-docker build -t docker-python-rpc-classification .
+docker build -t percom2022-python-rpc-classification .
 pause

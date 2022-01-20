@@ -258,7 +258,8 @@ public class Util
 		
 		stringBuilder.append("#PARSER PQL\r\n\r\n");
 		stringBuilder.append("#METADATA TimeInterval\r\n");
-		stringBuilder.append("#METADATA Datarate\r\n\r\n");
+		stringBuilder.append("#METADATA Datarate\r\n");
+		stringBuilder.append("#METADATA Latency\r\n\r\n");
 		stringBuilder.append("#REQUIRED de.uniol.inf.is.odysseus.database.feature.feature.group false\r\n\r\n");
 		stringBuilder.append("#RUNQUERY\r\n\r\n");
 		
@@ -587,7 +588,7 @@ public class Util
 			
 			stringBuilder.append("   " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + ":\r\n");
 			stringBuilder.append("      container_name: " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + "\r\n");
-			stringBuilder.append("      image: docker-python-rpc-classification\r\n");
+			stringBuilder.append("      image: percom2022-python-rpc-classification\r\n");
 			stringBuilder.append("      ports:\r\n");
 			stringBuilder.append("         - \"" + (index + 9001) + ":" + currentRPCServerSocketSplit[1] + "\"\r\n");
 			stringBuilder.append("      command: [\"" + currentRPCServerSocketSplit[1] + "\"]\r\n");
@@ -603,7 +604,7 @@ public class Util
 			
 			stringBuilder.append("   odysseus_" + currentSensor + ":\r\n");
 			stringBuilder.append("      container_name: odysseus_" + currentSensor + "\r\n");
-			stringBuilder.append("      image: docker-odysseus\r\n");
+			stringBuilder.append("      image: percom2022-odysseus\r\n");
 			stringBuilder.append("      ports:\r\n");
 			stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
 		}
@@ -621,7 +622,7 @@ public class Util
 				
 				stringBuilder.append("   " + currentNodeSocketSplit[0] + ":\r\n");
 				stringBuilder.append("      container_name: " + currentNodeSocketSplit[0] + "\r\n");
-				stringBuilder.append("      image: docker-odysseus\r\n");
+				stringBuilder.append("      image: percom2022-odysseus\r\n");
 				stringBuilder.append("      ports:\r\n");
 				stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
 				stringBuilder.append("      expose:\r\n");

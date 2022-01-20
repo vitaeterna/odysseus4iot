@@ -181,7 +181,7 @@ public class OperatorPlacementPartitioning
 		operatorGraph.edges.removeAll(edgesToRemove);
 		operatorGraph.addAllEdges(edgesToAdd);
 		
-		operatorGraph.setControlFlowDatarates();
+		operatorGraph.setDataFlowDatarates();
 		
 		operatorGraph.setLabels();
 		
@@ -306,7 +306,7 @@ public class OperatorPlacementPartitioning
 		
 		for(int index = 0; index < subGraphs.size(); index++)
 		{
-			subGraphs.get(index).setControlFlowDatarates();
+			subGraphs.get(index).setDataFlowDatarates();
 			subGraphs.get(index).setLabels();
 		}
 		

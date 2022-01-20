@@ -301,7 +301,7 @@ public class OperatorGraph extends Graph
 		return requestedOperators;
 	}
 	
-	public void setControlFlowDatarates()
+	public void setDataFlowDatarates()
 	{
 		DataFlow currentDataFlow = null;
 		

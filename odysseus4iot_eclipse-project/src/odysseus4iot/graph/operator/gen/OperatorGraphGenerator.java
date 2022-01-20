@@ -29,7 +29,7 @@ public class OperatorGraphGenerator
 {
 	public static String suffix = "_car";
 	
-	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing, boolean merge)
+	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing)
 	{
 		if(sensors == null || sensors.isEmpty() || models == null || models.isEmpty())
 		{
@@ -89,41 +89,38 @@ public class OperatorGraphGenerator
 		//1.5 - MergeOperator
 		MergeOperator mergeOperator = null;
 		
-		if(merge)
+		if(previousOperators.size() > 1)
 		{
-			if(previousOperators.size() > 1)
+			operatorGraph.getNextGroup();
+			
+			mergeOperator = OperatorGenerator.generateMergeOperator(sensors);
+			
+			operatorGraph.addVertex(mergeOperator, false);
+			
+			outputRateSum = 0.0d;
+			
+			for(int index = 0; index < previousOperators.size(); index++)
 			{
-				operatorGraph.getNextGroup();
+				previousOperator = previousOperators.get(index);
 				
-				mergeOperator = OperatorGenerator.generateMergeOperator(sensors);
+				operatorGraph.addEdge(new DataFlow(previousOperator, mergeOperator));
 				
-				operatorGraph.addVertex(mergeOperator, false);
-				
-				outputRateSum = 0.0d;
-				
-				for(int index = 0; index < previousOperators.size(); index++)
-				{
-					previousOperator = previousOperators.get(index);
-					
-					operatorGraph.addEdge(new DataFlow(previousOperator, mergeOperator));
-					
-					outputRateSum += previousOperator.outputRate;
-				}
-				
-				mergeOperator.inputSchema = previousOperator.outputSchema.copy();
-				mergeOperator.inputRate = outputRateSum;
-				mergeOperator.inputName = null;
-	
-				mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
-				mergeOperator.outputRate = mergeOperator.inputRate;
-				
-				previousOperators.clear();
-				previousOperators.add(mergeOperator);
-				previousOperator = mergeOperator;
+				outputRateSum += previousOperator.outputRate;
 			}
 			
-			System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
+			mergeOperator.inputSchema = previousOperator.outputSchema.copy();
+			mergeOperator.inputRate = outputRateSum;
+			mergeOperator.inputName = null;
+
+			mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
+			mergeOperator.outputRate = mergeOperator.inputRate;
+			
+			previousOperators.clear();
+			previousOperators.add(mergeOperator);
+			previousOperator = mergeOperator;
 		}
+		
+		System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
 		
 		//2 - MapOperator
 		MapOperator mapOperator = null;
@@ -565,41 +562,38 @@ public class OperatorGraphGenerator
 		//8.5 - MergeOperator
 		mergeOperator = null;
 		
-		if(merge)
+		if(previousOperators.size() > 1)
 		{
-			if(previousOperators.size() > 1)
+			operatorGraph.getNextGroup();
+			
+			mergeOperator = OperatorGenerator.generateMergeOperator(outputStreams);
+			
+			operatorGraph.addVertex(mergeOperator, false);
+			
+			outputRateSum = 0.0d;
+			
+			for(int index = 0; index < previousOperators.size(); index++)
 			{
-				operatorGraph.getNextGroup();
+				previousOperator = previousOperators.get(index);
 				
-				mergeOperator = OperatorGenerator.generateMergeOperator(outputStreams);
+				operatorGraph.addEdge(new DataFlow(previousOperator, mergeOperator));
 				
-				operatorGraph.addVertex(mergeOperator, false);
-				
-				outputRateSum = 0.0d;
-				
-				for(int index = 0; index < previousOperators.size(); index++)
-				{
-					previousOperator = previousOperators.get(index);
-					
-					operatorGraph.addEdge(new DataFlow(previousOperator, mergeOperator));
-					
-					outputRateSum += previousOperator.outputRate;
-				}
-				
-				mergeOperator.inputSchema = previousOperator.outputSchema.copy();
-				mergeOperator.inputRate = outputRateSum;
-				mergeOperator.inputName = null;
-	
-				mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
-				mergeOperator.outputRate = mergeOperator.inputRate;
-				
-				previousOperators.clear();
-				previousOperators.add(mergeOperator);
-				previousOperator = mergeOperator;
+				outputRateSum += previousOperator.outputRate;
 			}
 			
-			System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
+			mergeOperator.inputSchema = previousOperator.outputSchema.copy();
+			mergeOperator.inputRate = outputRateSum;
+			mergeOperator.inputName = null;
+
+			mergeOperator.outputSchema = mergeOperator.inputSchema.copy();
+			mergeOperator.outputRate = mergeOperator.inputRate;
+			
+			previousOperators.clear();
+			previousOperators.add(mergeOperator);
+			previousOperator = mergeOperator;
 		}
+		
+		System.out.println("Generated " + (mergeOperator==null?"0":"1") + " MergeOperators");
 		
 		//9 - DatabasesinkOperator
 		operatorGraph.getNextGroup();
@@ -628,7 +622,7 @@ public class OperatorGraphGenerator
 		
 		System.out.println("Generated 1 DatabasesinkOperator");
 		
-		operatorGraph.setControlFlowDatarates();
+		operatorGraph.setDataFlowDatarates();
 		
 		operatorGraph.setLabels();
 		

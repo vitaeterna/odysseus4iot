@@ -3,6 +3,7 @@ package odysseus4iot.placement;
 import java.util.ArrayList;
 import java.util.List;
 
+import odysseus4iot.graph.operator.CalcLatencyOperator;
 import odysseus4iot.graph.operator.DatabasesinkOperator;
 import odysseus4iot.graph.operator.DatarateOperator;
 import odysseus4iot.graph.operator.MapOperator;
@@ -84,7 +85,7 @@ public class OperatorPlacementBenchmark
 		operatorGraph.edges.removeAll(edgesToRemove);
 		operatorGraph.edges.addAll(edgesToAdd);
 		
-		operatorGraph.setControlFlowDatarates();
+		operatorGraph.setDataFlowDatarates();
 		
 		operatorGraph.setLabels();
 		
@@ -109,6 +110,113 @@ public class OperatorPlacementBenchmark
 		
 		Node currentNode = null;
 		
+		List<DataFlow> edgesToAdd = new ArrayList<>();
+		List<DataFlow> edgesToRemove = new ArrayList<>();
+		
+		for(int index = 0; index < operatorGraph.edges.size(); index++)
+		{
+			currentDataFlow = (DataFlow)operatorGraph.edges.get(index);
+			
+			operator0 = (Operator)currentDataFlow.vertex0;
+			operator1 = (Operator)currentDataFlow.vertex1;
+			
+			currentNode = physicalGraph.getNodeByID(operator0.assignedID);
+			
+			if(operator0.assignedID.intValue() == operator1.assignedID.intValue())
+			{
+				if(operator1 instanceof DatabasesinkOperator)
+				{
+					edgesToRemove.add(currentDataFlow);
+					
+					//CalcLatencyOperator
+					CalcLatencyOperator calclatencyOperator = new CalcLatencyOperator();
+					
+					calclatencyOperator.type = Type.BENCHMARK;
+					
+					calclatencyOperator.assignedID = operator0.assignedID;
+					
+					calclatencyOperator.inputSchema = operator0.outputSchema.copy();
+					calclatencyOperator.inputRate = operator0.outputRate;
+					calclatencyOperator.inputName = operator0.outputName;
+
+					calclatencyOperator.outputSchema = calclatencyOperator.inputSchema.copy();
+					calclatencyOperator.outputRate = calclatencyOperator.inputRate;
+					calclatencyOperator.outputName = "latency_" + currentNode.name + "_" + (DatarateOperator.getCurrentDatarateCount() + 1);
+					
+					operatorGraph.addVertex(calclatencyOperator, false);
+					edgesToAdd.add(new DataFlow(operator0, calclatencyOperator));
+					
+					//Datarate Operator
+					DatarateOperator datarateOperator = OperatorGenerator.generateDatarateOperator(currentNode.name);
+
+					datarateOperator.type = Type.BENCHMARK;
+					
+					datarateOperator.assignedID = operator0.assignedID;
+					
+					datarateOperator.inputSchema = calclatencyOperator.outputSchema.copy();
+					datarateOperator.inputRate = calclatencyOperator.outputRate;
+					datarateOperator.inputName = calclatencyOperator.outputName;
+
+					datarateOperator.outputSchema = datarateOperator.inputSchema.copy();
+					datarateOperator.outputRate = datarateOperator.inputRate;
+
+					operatorGraph.addVertex(datarateOperator, false);
+					edgesToAdd.add(new DataFlow(calclatencyOperator, datarateOperator));
+					
+					//MapOperator
+					MapOperator mapOperator = new MapOperator();
+					
+					mapOperator.type = Type.BENCHMARK;
+					
+					mapOperator.assignedID = operator0.assignedID;
+					
+					mapOperator.inputSchema = datarateOperator.outputSchema.copy();
+					mapOperator.inputRate = datarateOperator.outputRate;
+					mapOperator.inputName = datarateOperator.outputName;
+					
+					List<String> epressions = mapOperator.inputSchema.toStringList();
+					
+					mapOperator.expressions = new ArrayList<>();
+					
+					for(int index2 = 0; index2 < epressions.size(); index2++)
+					{
+						mapOperator.expressions.add("'" + epressions.get(index2) + "'");
+					}
+					
+					mapOperator.expressions.add("['TimeInterval.start', 'time_start']");
+					mapOperator.expressions.add("['TimeInterval.end', 'time_end']");
+					mapOperator.expressions.add("['ToInteger(elementAt(Datarate.Measurements[0],1))', 'bytes_sent']");
+					mapOperator.expressions.add("['ToLong((Latency.lend-Latency.minlstart)/1000000)','minLatencyInMS']");
+					mapOperator.expressions.add("['ToLong((Latency.lend-Latency.maxlstart)/1000000)','maxLatencyInMS']");
+					
+					mapOperator.outputSchema = mapOperator.inputSchema.copy();
+					mapOperator.outputSchema.addColumn(new Column("time_start", Long.class));
+					mapOperator.outputSchema.addColumn(new Column("time_end", Long.class));
+					mapOperator.outputSchema.addColumn(new Column("bytes_sent", Integer.class));
+					mapOperator.outputSchema.addColumn(new Column("minLatencyInMS", Long.class));
+					mapOperator.outputSchema.addColumn(new Column("maxLatencyInMS", Long.class));
+					mapOperator.outputRate = mapOperator.inputRate;
+					mapOperator.outputName = "datarate_map_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount();
+					
+					operatorGraph.addVertex(mapOperator, false);
+					edgesToAdd.add(new DataFlow(datarateOperator, mapOperator));
+					
+					//DatabasesinkOperator
+					operator1.inputSchema = mapOperator.outputSchema.copy();
+					operator1.inputRate = mapOperator.outputRate;
+					operator1.inputName = mapOperator.outputName;
+					
+					operator1.outputSchema = operator1.inputSchema.copy();
+					operator1.outputRate = operator1.inputRate;
+					
+					edgesToAdd.add(new DataFlow(mapOperator, operator1));
+				}
+			}
+		}
+		
+		operatorGraph.edges.removeAll(edgesToRemove);
+		operatorGraph.edges.addAll(edgesToAdd);
+		
 		for(int index = 0; index < operatorGraph.edges.size(); index++)
 		{
 			currentDataFlow = (DataFlow)operatorGraph.edges.get(index);
@@ -125,6 +233,24 @@ public class OperatorPlacementBenchmark
 					operator0 = (Operator)operatorGraph.getPredecessors(operator0).get(0);
 				}
 				
+				//CalcLatencyOperator
+				CalcLatencyOperator calclatencyOperator = new CalcLatencyOperator();
+				
+				calclatencyOperator.type = Type.BENCHMARK;
+				
+				calclatencyOperator.assignedID = operator0.assignedID;
+				
+				calclatencyOperator.inputSchema = operator0.outputSchema.copy();
+				calclatencyOperator.inputRate = operator0.outputRate;
+				calclatencyOperator.inputName = operator0.outputName;
+
+				calclatencyOperator.outputSchema = calclatencyOperator.inputSchema.copy();
+				calclatencyOperator.outputRate = calclatencyOperator.inputRate;
+				calclatencyOperator.outputName = "latency_" + currentNode.name + "_" + (DatarateOperator.getCurrentDatarateCount() + 1);
+				
+				operatorGraph.addVertex(calclatencyOperator, false);
+				operatorGraph.addEdge(new DataFlow(operator0, calclatencyOperator));
+				
 				//Datarate Operator
 				DatarateOperator datarateOperator = OperatorGenerator.generateDatarateOperator(currentNode.name);
 
@@ -132,15 +258,15 @@ public class OperatorPlacementBenchmark
 				
 				datarateOperator.assignedID = operator0.assignedID;
 				
-				datarateOperator.inputSchema = operator0.outputSchema.copy();
-				datarateOperator.inputRate = operator0.outputRate;
-				datarateOperator.inputName = operator0.outputName;
+				datarateOperator.inputSchema = calclatencyOperator.outputSchema.copy();
+				datarateOperator.inputRate = calclatencyOperator.outputRate;
+				datarateOperator.inputName = calclatencyOperator.outputName;
 
 				datarateOperator.outputSchema = datarateOperator.inputSchema.copy();
 				datarateOperator.outputRate = datarateOperator.inputRate;
 
 				operatorGraph.addVertex(datarateOperator, false);
-				operatorGraph.addEdge(new DataFlow(operator0, datarateOperator));
+				operatorGraph.addEdge(new DataFlow(calclatencyOperator, datarateOperator));
 				
 				//MapOperator
 				MapOperator mapOperator = new MapOperator();
@@ -165,11 +291,15 @@ public class OperatorPlacementBenchmark
 				mapOperator.expressions.add("['TimeInterval.start', 'time_start']");
 				mapOperator.expressions.add("['TimeInterval.end', 'time_end']");
 				mapOperator.expressions.add("['ToInteger(elementAt(Datarate.Measurements[0],1))', 'bytes_sent']");
+				mapOperator.expressions.add("['ToLong((Latency.lend-Latency.minlstart)/1000000)','minLatencyInMS']");
+				mapOperator.expressions.add("['ToLong((Latency.lend-Latency.maxlstart)/1000000)','maxLatencyInMS']");
 				
 				mapOperator.outputSchema = mapOperator.inputSchema.copy();
 				mapOperator.outputSchema.addColumn(new Column("time_start", Long.class));
 				mapOperator.outputSchema.addColumn(new Column("time_end", Long.class));
 				mapOperator.outputSchema.addColumn(new Column("bytes_sent", Integer.class));
+				mapOperator.outputSchema.addColumn(new Column("minLatencyInMS", Long.class));
+				mapOperator.outputSchema.addColumn(new Column("maxLatencyInMS", Long.class));
 				mapOperator.outputRate = mapOperator.inputRate;
 				mapOperator.outputName = "datarate_map_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount();
 				
@@ -196,7 +326,7 @@ public class OperatorPlacementBenchmark
 			}
 		}
 		
-		operatorGraph.setControlFlowDatarates();
+		operatorGraph.setDataFlowDatarates();
 		
 		operatorGraph.setLabels();
 		
