@@ -307,7 +307,7 @@ public class OperatorPlacementBenchmark
 				operatorGraph.addEdge(new DataFlow(datarateOperator, mapOperator));
 				
 				//DatabasesinkOperator
-				DatabasesinkOperator databasesinkOperator = OperatorGenerator.generateDatabasesinkOperator(currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount());
+				DatabasesinkOperator databasesinkOperator = OperatorGenerator.generateDatabasesinkOperator("_result_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount());
 				
 				databasesinkOperator.type = Type.BENCHMARK;
 				

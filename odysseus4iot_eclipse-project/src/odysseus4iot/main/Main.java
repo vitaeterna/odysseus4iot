@@ -24,6 +24,7 @@ import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
 //TODO: _ Window problem with window slide
+//TODO: _ Sleep via Map-Operator
 /*
  * Operator Placement Query Optimization
  * 
@@ -53,13 +54,13 @@ public class Main
 	public static Properties properties = null;
 	
 	//Parameters
-	public static String configProperties = "./config_ec_docker.properties";
-	public static Integer evalCase = 1;
+	public static Integer evalCase = 2;
+	public static String configProperties = null;
 	
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
 	
-	public static boolean dotpng = true;
+	public static boolean dotpng = false;
 	public static boolean distributed = true;
 	public static boolean benchmark = true;
 
@@ -69,6 +70,23 @@ public class Main
 		Long endTimestamp = null;
 		
 		Util.charsetUTF8();
+		
+		switch(evalCase.intValue())
+		{
+			case 0:
+			case 1:
+				configProperties = "./config_ec_docker.properties";
+				break;
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				configProperties = "./config_efc_docker.properties";
+				break;
+			default:
+				configProperties = "./config_efc_docker.properties";
+				break;
+		}
 		
 		//1 - Input to System (sensors/nodes/labels)
 		InputStream input = null;
@@ -144,7 +162,8 @@ public class Main
 		System.out.println(Util.toJson(modelManagementRequest)+"\n");*/
 		
 		//2 - Retrieving Model Information from Model Management System
-		PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
+		//PostgresImport.url = "jdbc:postgresql://" + properties.getProperty("modeldb.host") + ":" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
+		PostgresImport.url = "jdbc:postgresql://localhost:" + properties.getProperty("modeldb.port") + "/" + properties.getProperty("modeldb.database");
 		PostgresImport.table = properties.getProperty("modeldb.table");
 		PostgresImport.user = properties.getProperty("modeldb.user");
 		PostgresImport.password = properties.getProperty("modeldb.password");
@@ -158,12 +177,11 @@ public class Main
 			case 0: //Test case
 				List<Integer> modelsetIDsCase0_1 = new ArrayList<>();
 				modelsetIDsCase0_1.add(44088);
-				modelsetIDsCase0_1.add(44089);
 				
 				modelsetIDs.add(modelsetIDsCase0_1);
 				break;
-			case 1: //Manually selected models deployed on            cloud (no operator placement) - using config_ec_docker.properties  -> 142ms latency cloud (e->c)
-			case 2: //Manually selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> 147ms latency fog (e->f)
+			case 1: //Manually selected models deployed on            cloud (no operator placement) - using config_ec_docker.properties
+			case 2: //Manually selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties
 				List<Integer> modelsetIDsCase12_1 = new ArrayList<>();
 				modelsetIDsCase12_1.add(44086);
 				modelsetIDsCase12_1.add(44088);
@@ -171,7 +189,7 @@ public class Main
 				
 				modelsetIDs.add(modelsetIDsCase12_1);
 				break;
-			case 3: //MLMM 1.0 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> 122ms latency fog (e->f)
+			case 3: //MLMM 1.0 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties
 				List<Integer> modelsetIDsCase13_1 = new ArrayList<>();
 				modelsetIDsCase13_1.add(9925);
 				modelsetIDsCase13_1.add(15875);
@@ -191,7 +209,7 @@ public class Main
 				modelsetIDs.add(modelsetIDsCase13_2);
 				modelsetIDs.add(modelsetIDsCase13_3);
 				break;
-			case 4: //MLMM 0.7 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> XXXms latency fog (e->f)
+			case 4: //MLMM 0.7 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties
 				List<Integer> modelsetIDsCase14_1 = new ArrayList<>();
 				modelsetIDsCase14_1.add(9925);
 				modelsetIDsCase14_1.add(15640);
@@ -211,7 +229,7 @@ public class Main
 				modelsetIDs.add(modelsetIDsCase14_2);
 				modelsetIDs.add(modelsetIDsCase14_3);
 				break;
-			case 5: //MLMM 0.5 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties -> ms latency cloud (e->f,f->c)
+			case 5: //MLMM 0.5 selected models deployed on edge, fog, cloud (   operator placement) - using config_efc_docker.properties
 				List<Integer> modelsetIDsCase15_1 = new ArrayList<>();
 				modelsetIDsCase15_1.add(5940);
 				modelsetIDsCase15_1.add(15305);
@@ -227,30 +245,6 @@ public class Main
 				modelsetIDs.add(modelsetIDsCase15_1);
 				modelsetIDs.add(modelsetIDsCase15_2);
 				modelsetIDs.add(modelsetIDsCase15_3);
-				break;
-			case 6:
-				List<Integer> modelsetIDsCase16_1 = new ArrayList<>();
-				modelsetIDsCase16_1.add(4938);
-				modelsetIDsCase16_1.add(13262);
-				
-				List<Integer> modelsetIDsCase16_2 = new ArrayList<>();
-				modelsetIDsCase16_2.add(4940);
-				modelsetIDsCase16_2.add(13262);
-				
-				List<Integer> modelsetIDsCase16_3 = new ArrayList<>();
-				modelsetIDsCase16_3.add(4938);
-				modelsetIDsCase16_3.add(13262);
-				modelsetIDsCase16_3.add(21600);
-				
-				modelsetIDs.add(modelsetIDsCase16_1);
-				modelsetIDs.add(modelsetIDsCase16_2);
-				modelsetIDs.add(modelsetIDsCase16_3);
-				break;
-			case 7: //sample case
-				List<Integer> modelsetIDsCase17_1 = new ArrayList<>();
-				modelsetIDsCase17_1.add(44088);
-				
-				modelsetIDs.add(modelsetIDsCase17_1);
 				break;
 			default:
 				modelsetIDs.add(ids);

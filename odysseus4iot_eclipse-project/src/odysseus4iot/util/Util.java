@@ -257,6 +257,7 @@ public class Util
 		StringBuilder stringBuilder = new StringBuilder();
 		
 		stringBuilder.append("#PARSER PQL\r\n\r\n");
+		stringBuilder.append("#DOQUERYSHARING false\r\n\r\n");
 		stringBuilder.append("#METADATA TimeInterval\r\n");
 		stringBuilder.append("#METADATA Datarate\r\n");
 		stringBuilder.append("#METADATA Latency\r\n\r\n");
@@ -589,6 +590,8 @@ public class Util
 			stringBuilder.append("   " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + ":\r\n");
 			stringBuilder.append("      container_name: " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + "\r\n");
 			stringBuilder.append("      image: percom2022-python-rpc-classification\r\n");
+			stringBuilder.append("      networks:\r\n");
+			stringBuilder.append("         - percom2022-network\r\n");
 			stringBuilder.append("      ports:\r\n");
 			stringBuilder.append("         - \"" + (index + 9001) + ":" + currentRPCServerSocketSplit[1] + "\"\r\n");
 			stringBuilder.append("      command: [\"" + currentRPCServerSocketSplit[1] + "\"]\r\n");
@@ -605,6 +608,8 @@ public class Util
 			stringBuilder.append("   odysseus_" + currentSensor + ":\r\n");
 			stringBuilder.append("      container_name: odysseus_" + currentSensor + "\r\n");
 			stringBuilder.append("      image: percom2022-odysseus\r\n");
+			stringBuilder.append("      networks:\r\n");
+			stringBuilder.append("         - percom2022-network\r\n");
 			stringBuilder.append("      ports:\r\n");
 			stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
 		}
@@ -623,10 +628,12 @@ public class Util
 				stringBuilder.append("   " + currentNodeSocketSplit[0] + ":\r\n");
 				stringBuilder.append("      container_name: " + currentNodeSocketSplit[0] + "\r\n");
 				stringBuilder.append("      image: percom2022-odysseus\r\n");
+				stringBuilder.append("      networks:\r\n");
+				stringBuilder.append("         - percom2022-network\r\n");
 				stringBuilder.append("      ports:\r\n");
 				stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
 				stringBuilder.append("      expose:\r\n");
-				stringBuilder.append("         - \"" + currentNodeSocketSplit[1] + "\"\r\n");
+				//stringBuilder.append("         - \"" + currentNodeSocketSplit[1] + "\"\r\n");
 				
 				for(int index2 = 0; index2 < currentNode.ports.size(); index2++)
 				{
@@ -634,6 +641,10 @@ public class Util
 				}
 			}
 		}
+		
+		stringBuilder.append("networks:\r\n");
+		stringBuilder.append("   percom2022-network:\r\n");
+		stringBuilder.append("      external: true");
 		
 		Util.writeFile("./docker/docker-compose.yml", stringBuilder.toString(), Charset.defaultCharset());
 		

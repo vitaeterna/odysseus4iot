@@ -17,14 +17,14 @@ public class RPCTestMain
 	public static Integer connectionTimeout = 10000;
 	
 	//DB Properties
-	public static String host = "141.13.162.179";
+	public static String host = "localhost";
 	public static String port = "5432";
-	public static String database = "CARModels";
-	public static String username = "script";
-	public static String password = "pAhXHnnFf6jgxO85";
+	public static String database = "cattledb";
+	public static String username = "postgres";
+	public static String password = "postgres";
 	public static String table = "trained_models";
 	public static String selectModelByColumn = "model_content";
-	public static String selectModelByValue = "4585";
+	public static String selectModelByValue = null;
 	
 	public static void main(String[] args) throws MalformedURLException, XmlRpcException
 	{

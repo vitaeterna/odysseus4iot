@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+   postgres_cattledb:
+      container_name: postgres_cattledb
+      image: percom2022-postgres
+      networks:
+         - percom2022-network
+      ports:
+         - "5432:5432"
+      environment:
+         POSTGRES_USER: postgres
+         POSTGRES_PASSWORD: postgres
+         PGDATA: /postgres
+networks:
+   percom2022-network:
+      name: percom2022-network

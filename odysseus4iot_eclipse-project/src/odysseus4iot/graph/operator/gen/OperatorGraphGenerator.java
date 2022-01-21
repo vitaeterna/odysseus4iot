@@ -598,7 +598,7 @@ public class OperatorGraphGenerator
 		//9 - DatabasesinkOperator
 		operatorGraph.getNextGroup();
 		
-		DatabasesinkOperator databasesinkOperator = OperatorGenerator.generateDatabasesinkOperator("activity");
+		DatabasesinkOperator databasesinkOperator = OperatorGenerator.generateDatabasesinkOperator("_result_sink_1");
 		
 		operatorGraph.addVertex(databasesinkOperator, false);
 		
