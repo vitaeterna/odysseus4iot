@@ -6,6 +6,7 @@ import odysseus4iot.util.Util;
 
 public class Connection extends Edge
 {
+	public Integer delay = null;
 	public Integer datarateCapacity = null;
 	public Double datarateConsumed = null;
 	
@@ -14,9 +15,11 @@ public class Connection extends Edge
 		super(vertex0, vertex1);
 	}
 	
-	public Connection(Vertex vertex0, Vertex vertex1, Integer datarateCapacity)
+	public Connection(Vertex vertex0, Vertex vertex1, Integer datarateCapacity, Integer delay)
 	{
 		super(vertex0, vertex1);
+		
+		this.delay = delay;
 		
 		this.datarateCapacity = datarateCapacity;
 		
@@ -26,6 +29,6 @@ public class Connection extends Edge
 	@Override
 	public void setLabel()
 	{
-		this.label = String.format("%s/s/%s/s", Util.formatSizeInBits(datarateConsumed), Util.formatSizeInBits((double)this.datarateCapacity));
+		this.label = String.format("%s/s / %s/s | %dms", Util.formatSizeInBits(datarateConsumed), Util.formatSizeInBits((double)this.datarateCapacity),this.delay);
 	}
 }

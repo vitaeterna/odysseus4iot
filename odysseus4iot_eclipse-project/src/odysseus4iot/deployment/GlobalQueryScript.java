@@ -23,6 +23,7 @@ import odysseus4iot.deployment.store.GlobalQueryStore;
 import odysseus4iot.deployment.store.model.GlobalQuery;
 import odysseus4iot.deployment.store.model.PartialQuery;
 import odysseus4iot.deployment.store.model.Server;
+import odysseus4iot.util.Util;
 
 public class GlobalQueryScript
 {
@@ -37,8 +38,10 @@ public class GlobalQueryScript
 	
 	public static void main(String[] args)
 	{
+		Util.charsetUTF8();
+		
 		//For testing
-		args = new String[] {"./script1.gqs"};
+		//args = new String[] {"./script1.gqs"};
 		
 		printlnSynced("Welcome to GlobalQueryScript(GQS) for Odysseus\n", System.out);
 		printlnSynced("This tool can be used in two different modes:", System.out);

@@ -24,7 +24,7 @@ import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
 //TODO: _ Window problem with window slide
-//TODO: _ Sleep via Map-Operator
+//TODO: _ Improve .dot generation
 /*
  * Operator Placement Query Optimization
  * 
@@ -54,13 +54,13 @@ public class Main
 	public static Properties properties = null;
 	
 	//Parameters
-	public static Integer evalCase = 2;
+	public static Integer evalCase = 1;
 	public static String configProperties = null;
 	
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
 	
-	public static boolean dotpng = false;
+	public static boolean dotpng = true;
 	public static boolean distributed = true;
 	public static boolean benchmark = true;
 
@@ -71,9 +71,20 @@ public class Main
 		
 		Util.charsetUTF8();
 		
+		if(args.length > 0)
+		{
+			evalCase = Integer.parseInt(args[0]);
+		}
+		else
+		{
+			System.out.println("Please provide the number of an evaluation case as command line parameter. [1-5]");
+			//System.exit(0);
+		}
+		
 		switch(evalCase.intValue())
 		{
 			case 0:
+				distributed = false;
 			case 1:
 				configProperties = "./config_ec_docker.properties";
 				break;
@@ -127,6 +138,7 @@ public class Main
 		List<String> nodeMemCaps = Arrays.asList(properties.getProperty("input.nodememcaps").split(","));
 		List<String> edges = Arrays.asList(properties.getProperty("input.edges").split(","));
 		List<String> edgeRateCaps = Arrays.asList(properties.getProperty("input.edgeratecaps").split(","));
+		List<String> edgeDelays = Arrays.asList(properties.getProperty("input.edgedelays").split(","));
 		
 		System.out.println("Input - Nodes");
 		System.out.println("nodenames    = " + nodeNames);
@@ -176,7 +188,9 @@ public class Main
 		{
 			case 0: //Test case
 				List<Integer> modelsetIDsCase0_1 = new ArrayList<>();
+				modelsetIDsCase0_1.add(44086);
 				modelsetIDsCase0_1.add(44088);
+				modelsetIDsCase0_1.add(44089);
 				
 				modelsetIDs.add(modelsetIDsCase0_1);
 				break;
@@ -310,7 +324,7 @@ public class Main
 		}*/
 		
 		//4 - Generating Physical Graph
-		PhysicalGraph physicalGraph = PhysicalGraphGenerator.generatePhysicalGraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps);
+		PhysicalGraph physicalGraph = PhysicalGraphGenerator.generatePhysicalGraph(nodeNames, nodeSockets, nodeTypes, nodeCPUCaps, nodeMemCaps, edges, edgeRateCaps, edgeDelays);
 		
 		if(dotpng)
 		{
@@ -446,7 +460,7 @@ public class Main
 				}
 			}
 			
-			//9 - Generation of Docker Compose YAMNL
+			//9 - Generation of Docker Compose YAML
 			Util.exportDockerComposeYAML(rpcServerSockets, sensors, physicalGraph);
 			
 			//10 - Generation of Global Query Script (Deployment File)

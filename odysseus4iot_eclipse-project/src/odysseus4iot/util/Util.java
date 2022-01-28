@@ -160,6 +160,7 @@ public class Util
 		requiredProperties.add("input.nodememcaps");
 		requiredProperties.add("input.edges");
 		requiredProperties.add("input.edgeratecaps");
+		requiredProperties.add("input.edgedelays");
 		requiredProperties.add("input.ids");
 		requiredProperties.add("pythonrpc.sockets");
 		requiredProperties.add("sensordb.url");
@@ -218,10 +219,11 @@ public class Util
 		
 		int edgeCount = Main.properties.getProperty("input.edges").split(",").length;
 		int edgeRateCount = Main.properties.getProperty("input.edgeratecaps").split(",").length;
+		int edgeDelayCount = Main.properties.getProperty("input.edgedelays").split(",").length;
 		
-		if(edgeCount != edgeRateCount)
+		if(edgeCount != edgeRateCount || edgeCount != edgeDelayCount)
 		{
-			System.err.println("The length of the arrays 'input.edges' and 'input.edgeratecaps' needs to be equal.");
+			System.err.println("The length of the arrays 'input.edges', 'input.edgeratecaps' and 'input.edgedelays'needs to be equal.");
 			
 			System.exit(0);
 		}

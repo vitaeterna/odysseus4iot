@@ -100,10 +100,10 @@ public class OperatorPlacementOptimization
 						operatorPlacement.placement = printPlacementOnVertexList(operatorGraph.vertices);
 						operatorPlacement.id = placementCounter;
 						
-						operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate(physicalGraph);
+						operatorPlacement.datarateTotal = operatorGraph.getTotalDatarate();
 						operatorPlacement.numberOfConnections = operatorGraph.getNumberOfConnections();
 						operatorPlacement.numberOfEdgeOperators = operatorGraph.getNumberOfEdgeOperators(physicalGraph);
-						operatorPlacement.memConsumptionEdge = physicalGraph.getMemConsumptionEdge();
+						operatorPlacement.memConsumptionEdge = physicalGraph.getMemConsumptionOfEdgeNodes();
 						
 						operatorPlacement.operatorGraph = operatorGraph;
 						operatorPlacement.physicalGraph = physicalGraph;

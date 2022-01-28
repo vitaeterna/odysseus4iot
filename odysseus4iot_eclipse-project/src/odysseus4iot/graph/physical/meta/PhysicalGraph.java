@@ -32,7 +32,7 @@ public class PhysicalGraph extends Graph
 		return null;
 	}
 	
-	public Long getMemConsumptionEdge()
+	public Long getMemConsumptionOfEdgeNodes()
 	{
 		Node currentNode = null;
 		

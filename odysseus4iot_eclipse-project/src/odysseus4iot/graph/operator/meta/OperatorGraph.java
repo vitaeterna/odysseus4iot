@@ -36,7 +36,7 @@ public class OperatorGraph extends Graph
 		SelectOperator.resetSelectCount();
 	}
 	
-	public Double getTotalDatarate(PhysicalGraph physicalGraph)
+	public Double getTotalDatarate()
 	{
 		DataFlow currentDataFlow = null;
 		

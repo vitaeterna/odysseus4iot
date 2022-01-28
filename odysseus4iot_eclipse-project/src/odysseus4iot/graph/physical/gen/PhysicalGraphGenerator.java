@@ -11,7 +11,7 @@ import odysseus4iot.util.Util;
 
 public class PhysicalGraphGenerator
 {
-	public static PhysicalGraph generatePhysicalGraph(List<String> nodeNames, List<String> nodeSockets, List<String> nodeTypes, List<String> nodeCPUCaps, List<String> nodeMemCaps, List<String> edges, List<String> edgeRateCaps)
+	public static PhysicalGraph generatePhysicalGraph(List<String> nodeNames, List<String> nodeSockets, List<String> nodeTypes, List<String> nodeCPUCaps, List<String> nodeMemCaps, List<String> edges, List<String> edgeRateCaps, List<String> edgeDelays)
 	{
 		Long startTimestamp = System.currentTimeMillis();
 		Long endTimestamp = null;
@@ -51,6 +51,7 @@ public class PhysicalGraphGenerator
 		
 		String currentEdge = null;
 		Integer currentEdgeRateCap = null;
+		Integer currentEdgeDelay = null;
 		
 		String[] currentEdgeSplit = null;
 		
@@ -58,6 +59,7 @@ public class PhysicalGraphGenerator
 		{
 			currentEdge = edges.get(index);
 			currentEdgeRateCap = Integer.parseInt(edgeRateCaps.get(index));
+			currentEdgeDelay = Integer.parseInt(edgeDelays.get(index));
 			
 			currentEdgeSplit = currentEdge.split("~");
 			
@@ -68,7 +70,7 @@ public class PhysicalGraphGenerator
 				System.exit(0);
 			}
 			
-			connection = new Connection(physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[0])), physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[1])), currentEdgeRateCap);
+			connection = new Connection(physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[0])), physicalGraph.getVertexByID(Integer.parseInt(currentEdgeSplit[1])), currentEdgeRateCap, currentEdgeDelay);
 			
 			connections.add(connection);
 			

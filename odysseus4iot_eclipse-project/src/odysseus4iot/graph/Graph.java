@@ -34,8 +34,8 @@ public abstract class Graph
 		this.vertices = new ArrayList<>();
 		this.edges = new ArrayList<>();
 		
-		currentVertexID = 0;
-		currentVertexGroup = 0;
+		this.currentVertexID = 0;
+		this.currentVertexGroup = 0;
 	}
 	
 	public void addVertex(Vertex vertex, boolean keepIDs)
@@ -226,7 +226,7 @@ public abstract class Graph
 	{
 		if(this.vertices == null)
 		{
-			
+			return null;
 		}
 		
 		List<Vertex> startingVertices = new ArrayList<>();
@@ -307,7 +307,7 @@ public abstract class Graph
 		
 		for(int index = 0; index < this.edges.size(); index++)
 		{
-			currentEdge = edges.get(index);
+			currentEdge = this.edges.get(index);
 			
 			if(currentEdge.vertex1 == vertex)
 			{
@@ -326,7 +326,7 @@ public abstract class Graph
 		
 		for(int index = 0; index < this.edges.size(); index++)
 		{
-			currentEdge = edges.get(index);
+			currentEdge = this.edges.get(index);
 			
 			if(currentEdge.vertex0 == vertex)
 			{
@@ -343,9 +343,26 @@ public abstract class Graph
 		
 		for(int index = 0; index < this.edges.size(); index++)
 		{
-			currentEdge = edges.get(index);
+			currentEdge = this.edges.get(index);
 			
 			if(currentEdge.vertex0 == vertex0 && currentEdge.vertex1 == vertex1)
+			{
+				return currentEdge;
+			}
+		}
+		
+		return null;
+	}
+	
+	public Edge getEdge(int id0, int id1)
+	{
+		Edge currentEdge = null;
+		
+		for(int index = 0; index < this.edges.size(); index++)
+		{
+			currentEdge = this.edges.get(index);
+			
+			if(currentEdge.vertex0.id == id0 && currentEdge.vertex1.id == id1)
 			{
 				return currentEdge;
 			}
