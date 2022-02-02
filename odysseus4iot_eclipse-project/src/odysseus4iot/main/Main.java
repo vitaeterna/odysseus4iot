@@ -446,15 +446,11 @@ public class Main
 		if(distributed)
 		{
 			//8 - Generation of subgraphs for distribution
-			List<String> partialPQLQueries = new ArrayList<>();
-			
 			List<OperatorGraph> subGraphs = OperatorPlacementPartitioning.buildSubgraphs(operatorGraph, physicalGraph);
 			
-			for(int index = 0; index < subGraphs.size(); index++)
+			if(dotpng)
 			{
-				partialPQLQueries.add(Util.exportPQL(subGraphs.get(index)));
-				
-				if(dotpng)
+				for(int index = 0; index < subGraphs.size(); index++)
 				{
 					Util.exportOperatorGraphToDOTPNG(subGraphs.get(index));
 				}
@@ -464,7 +460,7 @@ public class Main
 			Util.exportDockerComposeYAML(rpcServerSockets, sensors, physicalGraph);
 			
 			//10 - Generation of Global Query Script (Deployment File)
-			Util.exportGlobalQueryScript(partialPQLQueries);
+			Util.exportGlobalQueryScript(subGraphs);
 			
 			System.out.print("\r\n");
 		}

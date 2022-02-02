@@ -2,7 +2,7 @@ version: "3.9"
 services:
    postgres_cattledb:
       container_name: postgres_cattledb
-      image: percom2022-postgres
+      image: percom2022-postgres:latest
       networks:
          - percom2022-network
       ports:
@@ -11,6 +11,39 @@ services:
          POSTGRES_USER: postgres
          POSTGRES_PASSWORD: postgres
          PGDATA: /postgres
+   odysseus_webstudio_frontend:
+      container_name: odysseus_webstudio_frontend
+      image: percom2022-odysseus-webstudio-frontend:latest
+      networks:
+         - percom2022-network
+      ports:
+         - "4200:80"
+      environment:
+         NODE_ENV: production
+      depends_on:
+         - backend
+   odysseus_webstudio_backend:
+      container_name: backend
+      image: percom2022-odysseus-webstudio-backend:latest
+      networks:
+         - percom2022-network
+      ports:
+         - "3000:3000"
+      environment:
+         NODE_ENV: production
+         MONGODB_URI: mongodb://odysseus_webstudio_mongo:27017/webstudio
+         SECRET_TOKEN: jwtSecretToken
+         DOWNLOAD_TOKEN: downloadToken
+         PROJECTS_FOLDER: projects
+      depends_on:
+         - odysseus_webstudio_mongo
+   odysseus_webstudio_mongo:
+      container_name: odysseus_webstudio_mongo
+      image: percom2022-odysseus-webstudio-mongo:latest
+      networks:
+         - percom2022-network
+      ports:
+         - "27017:27017"
 networks:
    percom2022-network:
       name: percom2022-network

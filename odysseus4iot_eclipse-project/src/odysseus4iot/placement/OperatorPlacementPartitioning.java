@@ -209,6 +209,8 @@ public class OperatorPlacementPartitioning
 		
 		Node currentNode = null;
 		
+		int edgeNodes = 0;
+		
 		for(int index = 0; index < physicalGraph.vertices.size(); index++)
 		{
 			currentNode = (Node)physicalGraph.vertices.get(index);
@@ -289,6 +291,8 @@ public class OperatorPlacementPartitioning
 					
 					if(!subGraph2.isEmpty())
 					{
+						subGraph2.socket = currentNode.socket.split(":")[0] + ":" + (Integer.parseInt(currentNode.socket.split(":")[1]) + edgeNodes++);
+						
 						subGraphs.add(subGraph2);
 					}
 				}
@@ -299,6 +303,8 @@ public class OperatorPlacementPartitioning
 				
 				if(!subGraph.isEmpty())
 				{
+					subGraph.socket = currentNode.socket;
+					
 					subGraphs.add(subGraph);
 				}
 			}

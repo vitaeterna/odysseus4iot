@@ -9,7 +9,6 @@ import odysseus4iot.graph.operator.AccessOperator;
 import odysseus4iot.graph.operator.AggregateOperator;
 import odysseus4iot.graph.operator.ChangedetectOperator;
 import odysseus4iot.graph.operator.ClassificationOperator;
-import odysseus4iot.graph.operator.DatarateOperator;
 import odysseus4iot.graph.operator.MapOperator;
 import odysseus4iot.graph.operator.MergeOperator;
 import odysseus4iot.graph.operator.OutlierRemovingOperator;
@@ -24,6 +23,8 @@ import odysseus4iot.placement.model.OperatorPlacement;
 
 public class OperatorGraph extends Graph
 {
+	public String socket = null;
+	
 	public OperatorGraph(String label)
 	{
 		super(label);
@@ -32,7 +33,6 @@ public class OperatorGraph extends Graph
 		ProjectOperator.resetProjectCount();
 		SenderOperator.resetSenderCount();
 		AccessOperator.resetAccessCount();
-		DatarateOperator.resetDatarateCount();
 		SelectOperator.resetSelectCount();
 	}
 	

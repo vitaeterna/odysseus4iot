@@ -319,7 +319,7 @@ public class OperatorGenerator
 	public static DatarateOperator generateDatarateOperator(String key)
 	{
 		DatarateOperator datarateOperator = new DatarateOperator();
-		datarateOperator.key = "datarate_" + key + "_" + DatarateOperator.getNextDatarateCount();
+		datarateOperator.key = key;
 		
 		datarateOperator.outputSchema = null;
 		datarateOperator.outputRate = null;

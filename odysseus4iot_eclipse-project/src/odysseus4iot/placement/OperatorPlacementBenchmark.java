@@ -1,7 +1,9 @@
 package odysseus4iot.placement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import odysseus4iot.graph.operator.CalcLatencyOperator;
 import odysseus4iot.graph.operator.DatabasesinkOperator;
@@ -22,8 +24,12 @@ import odysseus4iot.util.Util;
 
 public class OperatorPlacementBenchmark
 {
+	private static Map<String, Integer> perNodeCount = new HashMap<>();
+	
 	public static void addBenchmarkOperators(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
 	{
+		perNodeCount.clear();
+		
 		Long startTimestamp = System.currentTimeMillis();
 		Long endTimestamp = null;
 		
@@ -81,8 +87,7 @@ public class OperatorPlacementBenchmark
 					edgesToAdd.add(new DataFlow(operator0, calclatencyOperator));
 					
 					//Datarate Operator
-					DatarateOperator datarateOperator = new DatarateOperator();
-					datarateOperator.key = "datarate_" + currentNode.name;
+					DatarateOperator datarateOperator = OperatorGenerator.generateDatarateOperator("datarate_" + currentNode.name);
 					
 					datarateOperator.type = Type.BENCHMARK;
 					
@@ -94,7 +99,6 @@ public class OperatorPlacementBenchmark
 
 					datarateOperator.outputSchema = datarateOperator.inputSchema.copy();
 					datarateOperator.outputRate = datarateOperator.inputRate;
-					datarateOperator.outputName = datarateOperator.key;
 
 					operatorGraph.addVertex(datarateOperator, false);
 					edgesToAdd.add(new DataFlow(calclatencyOperator, datarateOperator));
@@ -173,6 +177,8 @@ public class OperatorPlacementBenchmark
 			
 			if(operator0.assignedID.intValue() != operator1.assignedID.intValue())
 			{
+				int currentCount = getPerNodeCount(currentNode.name);
+				
 				if(operator0 instanceof SenderOperator)
 				{
 					int edgeDelay = ((Connection)physicalGraph.getEdge(operator0.assignedID.intValue(), operator1.assignedID.intValue())).delay;
@@ -199,7 +205,7 @@ public class OperatorPlacementBenchmark
 
 						sleepOperator.outputSchema = sleepOperator.inputSchema.copy();
 						sleepOperator.outputRate = sleepOperator.inputRate;
-						sleepOperator.outputName = "sleep_" + currentNode.name + "_" + (DatarateOperator.getCurrentDatarateCount() + 1);
+						sleepOperator.outputName = "sleep_" + currentNode.name + "_" + currentCount;
 						
 						operator1.inputName = sleepOperator.outputName;
 						
@@ -222,13 +228,13 @@ public class OperatorPlacementBenchmark
 
 				calclatencyOperator.outputSchema = calclatencyOperator.inputSchema.copy();
 				calclatencyOperator.outputRate = calclatencyOperator.inputRate;
-				calclatencyOperator.outputName = "latency_" + currentNode.name + "_" + (DatarateOperator.getCurrentDatarateCount() + 1);
+				calclatencyOperator.outputName = "latency_" + currentNode.name + "_" + currentCount;
 				
 				operatorGraph.addVertex(calclatencyOperator, false);
 				edgesToAdd.add(new DataFlow(operator0, calclatencyOperator));
 				
 				//Datarate Operator
-				DatarateOperator datarateOperator = OperatorGenerator.generateDatarateOperator(currentNode.name);
+				DatarateOperator datarateOperator = OperatorGenerator.generateDatarateOperator("datarate_" + currentNode.name + "_" + currentCount);
 
 				datarateOperator.type = Type.BENCHMARK;
 				
@@ -277,13 +283,13 @@ public class OperatorPlacementBenchmark
 				mapOperator.outputSchema.addColumn(new Column("minLatencyInMS", Long.class));
 				mapOperator.outputSchema.addColumn(new Column("maxLatencyInMS", Long.class));
 				mapOperator.outputRate = mapOperator.inputRate;
-				mapOperator.outputName = "metadata_map_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount();
+				mapOperator.outputName = "metadata_map_" + currentNode.name + "_" + currentCount;
 				
 				operatorGraph.addVertex(mapOperator, false);
 				edgesToAdd.add(new DataFlow(datarateOperator, mapOperator));
 				
 				//DatabasesinkOperator
-				DatabasesinkOperator databasesinkOperator = OperatorGenerator.generateDatabasesinkOperator("_result_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount());
+				DatabasesinkOperator databasesinkOperator = OperatorGenerator.generateDatabasesinkOperator("_result_" + currentNode.name + "_" + currentCount);
 				
 				databasesinkOperator.type = Type.BENCHMARK;
 				
@@ -295,7 +301,7 @@ public class OperatorPlacementBenchmark
 				
 				databasesinkOperator.outputSchema = databasesinkOperator.inputSchema.copy();
 				databasesinkOperator.outputRate = databasesinkOperator.inputRate;
-				databasesinkOperator.outputName = "sink_" + currentNode.name + "_" + DatarateOperator.getCurrentDatarateCount();
+				databasesinkOperator.outputName = "sink_" + currentNode.name + "_" + currentCount;
 				
 				operatorGraph.addVertex(databasesinkOperator, false);
 				edgesToAdd.add(new DataFlow(mapOperator, databasesinkOperator));
@@ -312,5 +318,23 @@ public class OperatorPlacementBenchmark
 		endTimestamp = System.currentTimeMillis();
 		
 		System.out.println("...Adding benchmark operators finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
+	}
+	
+	private static int getPerNodeCount(String nodeName)
+	{
+		Integer value = null;
+		
+		if(perNodeCount.containsKey(nodeName))
+		{
+			value = perNodeCount.get(nodeName);
+		}
+		else
+		{
+			value = 1;
+		}
+		
+		perNodeCount.put(nodeName, value + 1);
+		
+		return value;
 	}
 }

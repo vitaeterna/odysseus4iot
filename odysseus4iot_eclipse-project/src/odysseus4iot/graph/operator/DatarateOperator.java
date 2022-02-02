@@ -4,23 +4,6 @@ import odysseus4iot.graph.operator.meta.Operator;
 
 public class DatarateOperator extends Operator
 {
-	private static Integer datarateCount = 0;
-	
-	public static Integer getCurrentDatarateCount()
-	{
-		return datarateCount;
-	}
-	
-	public static Integer getNextDatarateCount()
-	{
-		return ++datarateCount;
-	}
-	
-	public static void resetDatarateCount()
-	{
-		datarateCount = 0;
-	}
-	
 	public String key = null;
 	
 	public DatarateOperator()

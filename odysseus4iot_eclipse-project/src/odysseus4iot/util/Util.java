@@ -591,7 +591,7 @@ public class Util
 			
 			stringBuilder.append("   " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + ":\r\n");
 			stringBuilder.append("      container_name: " + ((currentRPCServerSocketSplit[0].equals("localhost"))?("rpc_classification_" + (index + 1)):currentRPCServerSocketSplit[0]) + "\r\n");
-			stringBuilder.append("      image: percom2022-python-rpc-classification\r\n");
+			stringBuilder.append("      image: percom2022-python-rpc-classification:latest\r\n");
 			stringBuilder.append("      networks:\r\n");
 			stringBuilder.append("         - percom2022-network\r\n");
 			stringBuilder.append("      ports:\r\n");
@@ -609,7 +609,7 @@ public class Util
 			
 			stringBuilder.append("   odysseus_" + currentSensor + ":\r\n");
 			stringBuilder.append("      container_name: odysseus_" + currentSensor + "\r\n");
-			stringBuilder.append("      image: percom2022-odysseus\r\n");
+			stringBuilder.append("      image: percom2022-odysseus-server:latest\r\n");
 			stringBuilder.append("      networks:\r\n");
 			stringBuilder.append("         - percom2022-network\r\n");
 			stringBuilder.append("      ports:\r\n");
@@ -629,17 +629,20 @@ public class Util
 				
 				stringBuilder.append("   " + currentNodeSocketSplit[0] + ":\r\n");
 				stringBuilder.append("      container_name: " + currentNodeSocketSplit[0] + "\r\n");
-				stringBuilder.append("      image: percom2022-odysseus\r\n");
+				stringBuilder.append("      image: percom2022-odysseus-server:latest\r\n");
 				stringBuilder.append("      networks:\r\n");
 				stringBuilder.append("         - percom2022-network\r\n");
 				stringBuilder.append("      ports:\r\n");
 				stringBuilder.append("         - \"" + (9101 + nodeCount++) + ":8888\"\r\n");
-				stringBuilder.append("      expose:\r\n");
-				//stringBuilder.append("         - \"" + currentNodeSocketSplit[1] + "\"\r\n");
 				
-				for(int index2 = 0; index2 < currentNode.ports.size(); index2++)
+				if(!currentNode.ports.isEmpty())
 				{
-					stringBuilder.append("         - \"" + currentNode.ports.get(index2) + "\"\r\n");
+					stringBuilder.append("      expose:\r\n");
+
+					for(int index2 = 0; index2 < currentNode.ports.size(); index2++)
+					{
+						stringBuilder.append("         - \"" + currentNode.ports.get(index2) + "\"\r\n");
+					}
 				}
 			}
 		}
@@ -653,30 +656,30 @@ public class Util
 		System.out.print("Written to ./docker/docker-compose.yml\n");
     }
     
-    public static void exportGlobalQueryScript(List<String> partialPQLQueries)
+    public static void exportGlobalQueryScript(List<OperatorGraph> subGraphs)
     {
     	List<PartialQuery> partialQueries = new ArrayList<>();
     	
-    	String currentPartialPQLQuery = null;
+    	OperatorGraph currentSubGraph = null;
     	
-    	for(int index = 0; index < partialPQLQueries.size(); index++)
+    	for(int index = 0; index < subGraphs.size(); index++)
     	{
-    		currentPartialPQLQuery = partialPQLQueries.get(index);
+    		currentSubGraph = subGraphs.get(index);
     		
         	Server server = new Server();
-        	server.setSocket("localhost:" + (9101 + index));
+        	server.setSocket("localhost:" + currentSubGraph.socket.split(":")[1]);
         	server.setUsername("System");
         	server.setPassword("manager");
         	
         	PartialQuery partialQuery = new PartialQuery();
         	partialQuery.setName("partialQuery_" + (index + 1));
         	partialQuery.setParser("OdysseusScript");
-        	partialQuery.setQueryText(currentPartialPQLQuery);
+        	partialQuery.setQueryText(Util.exportPQL(currentSubGraph));
         	partialQuery.setServer(server);
         	
         	partialQueries.add(partialQuery);
     	}
-    	
+
     	GlobalQuery globalQuery = new GlobalQuery();
     	globalQuery.setName("globalQuery_1");
     	globalQuery.setPartialQueries(partialQueries);
