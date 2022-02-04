@@ -22,6 +22,11 @@ import odysseus4iot.graph.operator.meta.Schema;
 import odysseus4iot.main.Main;
 import odysseus4iot.model.Feature;
 
+/**
+ * The {@code OperatorGenerator} provides methods to generate specific {@link Operator} objects.
+ * 
+ * @author Michael Sünkel
+ */
 public class OperatorGenerator
 {
 	public static DatabasesourceOperator generateDatabasesourceOperator(String sensor, List<String> schema, Integer waiteach)

@@ -4,6 +4,11 @@ import java.util.List;
 
 import odysseus4iot.deployment.rest.model.Query;
 
+/**
+ * POJO representing a Partial Query. Partial queries are sub queries of global queries.
+ * 
+ * @author Michael Sünkel
+ */
 public class PartialQuery
 {
 	private String name         = null;

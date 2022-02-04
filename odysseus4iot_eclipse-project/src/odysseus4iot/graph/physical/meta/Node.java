@@ -5,6 +5,11 @@ import java.util.List;
 
 import odysseus4iot.graph.Vertex;
 
+/**
+ * POJO representing the vertex of a physical graph.
+ * 
+ * @author Michael Sünkel
+ */
 public class Node extends Vertex
 {
 	public enum Type

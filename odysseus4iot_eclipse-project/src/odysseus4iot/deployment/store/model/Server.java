@@ -1,5 +1,10 @@
 package odysseus4iot.deployment.store.model;
 
+/**
+ * POJO representing a Odysseus Server (socket and credentials).
+ * 
+ * @author Michael Sünkel
+ */
 public class Server
 {
 	private String socket = null;

@@ -3,6 +3,9 @@ package odysseus4iot.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Michael Sünkel
+ */
 public class Model
 {
 	//Columns in ExperimentResult Table

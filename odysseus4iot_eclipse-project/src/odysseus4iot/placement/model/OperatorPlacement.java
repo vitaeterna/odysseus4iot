@@ -4,6 +4,11 @@ import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.util.Util;
 
+/**
+ * The {@code OperatorPlacement} represents a single mapping of operators to nodes.
+ * 
+ * @author Michael Sünkel
+ */
 public class OperatorPlacement implements Comparable<OperatorPlacement>
 {
 	public Integer id = null;

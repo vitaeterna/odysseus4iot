@@ -1,5 +1,10 @@
 package odysseus4iot.graph;
 
+/**
+ * POJO representing the vertex of a graph.
+ * 
+ * @author Michael Sünkel
+ */
 public abstract class Vertex
 {
 	public Integer id = null;

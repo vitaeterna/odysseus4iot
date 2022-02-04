@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing a set of Odysseus Operators functioning as a simple outlier removing building block.
+ * 
+ * @author Michael Sünkel
+ */
 public class OutlierRemovingOperator extends Operator
 {
 	public String group_by = null;

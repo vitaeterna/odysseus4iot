@@ -6,6 +6,11 @@ import java.util.List;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.model.Model;
 
+/**
+ * POJO representing the vertex of an operator graph.
+ * 
+ * @author Michael Sünkel
+ */
 public class Operator extends Vertex
 {
 	public enum Type

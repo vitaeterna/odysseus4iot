@@ -3,6 +3,11 @@ package odysseus4iot.graph.operator;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.main.Main;
 
+/**
+ * POJO representing the Odysseus Operator TIMEWINDOW.
+ * 
+ * @author Michael Sünkel
+ */
 public class TimewindowOperator extends Operator
 {
 	public Integer size = null;

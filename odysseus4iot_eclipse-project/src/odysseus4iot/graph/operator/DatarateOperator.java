@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator DATARATE.
+ * 
+ * @author Michael Sünkel
+ */
 public class DatarateOperator extends Operator
 {
 	public String key = null;

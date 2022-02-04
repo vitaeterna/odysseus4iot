@@ -9,6 +9,11 @@ import odysseus4iot.graph.physical.meta.Node.Type;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.util.Util;
 
+/**
+ * The {@code PhysicalGraphGenerator} provides methods to generate {@link PhysicalGraph} objects.
+ * 
+ * @author Michael Sünkel
+ */
 public class PhysicalGraphGenerator
 {
 	public static PhysicalGraph generatePhysicalGraph(List<String> nodeNames, List<String> nodeSockets, List<String> nodeTypes, List<String> nodeCPUCaps, List<String> nodeMemCaps, List<String> edges, List<String> edgeRateCaps, List<String> edgeDelays)

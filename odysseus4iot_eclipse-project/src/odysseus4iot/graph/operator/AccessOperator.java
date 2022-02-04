@@ -4,6 +4,11 @@ import odysseus4iot.graph.operator.meta.Column;
 import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.Schema;
 
+/**
+ * POJO representing the Odysseus Operator ACCESS.
+ * 
+ * @author Michael Sünkel
+ */
 public class AccessOperator extends Operator
 {
 	private static Integer accessCount = 0;

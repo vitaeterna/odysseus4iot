@@ -1,5 +1,10 @@
 package odysseus4iot.deployment.rest.model;
 
+/**
+ * POJO representing a Odysseus-REST User
+ * 
+ * @author Michael Sünkel
+ */
 public class User
 {
 	private String username = null;

@@ -25,10 +25,27 @@ import odysseus4iot.util.Util;
 //TODO: _ generate invisible filler nodes/ranks/groups for visualization - project operator
 //TODO: _ handle metadata correctly!
 //TODO: ___ Pinned operators -> Range of available nodes e.g. sink to fog or cloud
+/**
+ * The {@code OperatorGraphGenerator} provides methods to generate {@link OperatorGraph} objects. Redundancy Elimination is taking place here.
+ * 
+ * @author Michael Sünkel
+ */
 public class OperatorGraphGenerator
 {
 	public static String suffix = "_car";
 	
+	/**
+	 * An operator graph is generated representing all processing steps of several given models providing the given sensors as input. The typical processing steps are preprocessing, windowing, aggregation, classification and postprocessing.
+	 * 
+	 * The usage of auxiliary operators is needed. Such operators are e.g. merge, project, and select.
+	 * 
+	 * Redundancy Elimination is taking place here.
+	 * 
+	 * @param sensors
+	 * @param models
+	 * @param postprocessing
+	 * @return
+	 */
 	public static OperatorGraph generateOperatorGraph(List<String> sensors, List<Model> models, boolean postprocessing)
 	{
 		if(sensors == null || sensors.isEmpty() || models == null || models.isEmpty())

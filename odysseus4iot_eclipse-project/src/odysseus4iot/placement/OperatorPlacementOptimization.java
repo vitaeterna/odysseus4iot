@@ -11,6 +11,11 @@ import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.placement.model.OperatorPlacement;
 import odysseus4iot.util.Util;
 
+/**
+ * The {@code OperatorPlacementOptimization} provides methods to perform operator placement optimization.
+ * 
+ * @author Michael Sünkel
+ */
 public class OperatorPlacementOptimization
 {
 	private static Integer minID = null;
@@ -20,7 +25,14 @@ public class OperatorPlacementOptimization
 	private static Integer placementSearchSpaceSize = null;
 	private static List<OperatorPlacement> operatorPlacements = null;
 	
-	public static List<OperatorPlacement> optimize(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
+	/**
+	 * Brute force algorithm to find the optimal operator placement solution for the given operator and physical graph by minimizing costs and fulfilling resource constraints.
+	 * 
+	 * @param operatorGraph
+	 * @param physicalGraph
+	 * @return - A sorted list of all viable operator placements.
+	 */
+	public static List<OperatorPlacement> optimize(OperatorGraph operatorGraph, PhysicalGraph physicalGraph, List<Long> optimizationTimes)
 	{
 		Long startTimestamp = System.currentTimeMillis();
 		Long endTimestamp = null;
@@ -136,11 +148,18 @@ public class OperatorPlacementOptimization
 		
 		endTimestamp = System.currentTimeMillis();
 		
+		optimizationTimes.add(endTimestamp - startTimestamp);
+		
 		System.out.println("...Operator Placement Optimization finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
 	
 		return operatorPlacements;
 	}
 	
+	/**
+	 * Configure the next operator placement mapping.
+	 * 
+	 * @return - {@code true} if a next mapping exists, {@code false} otherwise.
+	 */
 	private static boolean nextPlacement()
 	{
 		Operator currentOperator = null;
@@ -182,6 +201,12 @@ public class OperatorPlacementOptimization
 		}
 	}
 	
+	/**
+	 * Creates a string representation of a specific operator placement mapping.
+	 * 
+	 * @param vertices
+	 * @return
+	 */
 	private static String printPlacementOnVertexList(List<Vertex> vertices)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

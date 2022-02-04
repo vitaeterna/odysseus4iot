@@ -2,6 +2,11 @@ package odysseus4iot.deployment.store.model;
 
 import java.util.List;
 
+/**
+ * POJO representing a Global Query. Global queries consist of several partial queries which are supposed to be distributed.
+ * 
+ * @author Michael Sünkel
+ */
 public class GlobalQuery
 {
 	private String name = null;

@@ -21,6 +21,11 @@ import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.placement.model.OperatorPlacement;
 
+/**
+ * Representation of an operator graph.
+ * 
+ * @author Michael Sünkel
+ */
 public class OperatorGraph extends Graph
 {
 	public String socket = null;

@@ -10,6 +10,11 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 import com.google.gson.JsonObject;
 
+/**
+ * The {@code RPCClient} provides a simple RPC client for testing purposes.
+ * 
+ * @author Michael Sünkel
+ */
 public class RPCClient
 {
 	//XMLRPC Properties

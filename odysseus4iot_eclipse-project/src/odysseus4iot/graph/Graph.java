@@ -1,5 +1,10 @@
 package odysseus4iot.graph;
 
+/**
+ * POJO representing a graph.
+ * 
+ * @author Michael Sünkel
+ */
 import java.util.ArrayList;
 import java.util.List;
 

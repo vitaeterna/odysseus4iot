@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator SELECT.
+ * 
+ * @author Michael Sünkel
+ */
 public class SelectOperator extends Operator
 {
 	private static Integer selectCount = 0;

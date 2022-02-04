@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator SENDER.
+ * 
+ * @author Michael Sünkel
+ */
 public class SenderOperator extends Operator
 {
 	private static Integer senderCount = 0;

@@ -5,6 +5,11 @@ import java.util.List;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator MAP.
+ * 
+ * @author Michael Sünkel
+ */
 public class MapOperator extends Operator
 {
 	public List<String> expressions = null;

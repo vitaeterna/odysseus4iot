@@ -28,6 +28,11 @@ import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.graph.physical.meta.Node.Type;
 import odysseus4iot.main.Main;
 
+/**
+ * This class contains general purpose utility functions. Various export functions are currently also listed here.
+ * 
+ * @author Michael Sünkel
+ */
 public class Util
 {
 	public static String readFile(String path, Charset encoding)
@@ -689,7 +694,7 @@ public class Util
 		System.out.print("Written to ./generated/globalQuery_1.json\n");
     }
     
-    /*
+    /**
      * Source: https://stackoverflow.com/questions/1001290/console-based-progress-in-java
      * 
      * Eclipse Console Bug:
@@ -731,7 +736,7 @@ public class Util
 	    System.out.print(percentage + "% (" + progress + "/" + goal + ")");
 	}
     
-    /*
+    /**
      * Source: http://www.java2s.com/example/java/reflection/find-the-closest-common-superclass-of-multiple-classes.html
      * 
      * Example Call:

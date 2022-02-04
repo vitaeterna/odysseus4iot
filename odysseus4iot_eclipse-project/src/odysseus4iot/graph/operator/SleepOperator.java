@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator SLEEP.
+ * 
+ * @author Michael Sünkel
+ */
 public class SleepOperator extends Operator
 {
 	public Integer time = null;

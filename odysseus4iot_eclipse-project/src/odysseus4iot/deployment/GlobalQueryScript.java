@@ -25,6 +25,11 @@ import odysseus4iot.deployment.store.model.PartialQuery;
 import odysseus4iot.deployment.store.model.Server;
 import odysseus4iot.util.Util;
 
+/**
+ * The {@code GlobalQueryScript} provides a small command line tool to deploy/undeploy queries to/from Odysseus Server nodes.
+ * 
+ * @author Michael Sünkel
+ */
 public class GlobalQueryScript
 {
 	public static final String COMMAND_PROMPT   = ">";
@@ -36,6 +41,11 @@ public class GlobalQueryScript
 	public static final String COMMAND_EXIT_0   = "exit";
 	public static final String COMMAND_EXIT_1   = "quit";
 	
+	/**
+	 * The main entrypoint of the {@code GlobalQueryScript}. When an argument is passed the tool starts in script mode, interpreting and executing the instructions in the given .gqs file. If no argument is passed, the tools starts in interactive mode.
+	 * 
+	 * @param args - The first argument is the path to an existing .gqs file.
+	 */
 	public static void main(String[] args)
 	{
 		Util.charsetUTF8();
@@ -165,6 +175,11 @@ public class GlobalQueryScript
 		}
 	}
 	
+	/**
+	 * GlobalQueryScript instructions are interpreted and executed line by line. The given input line is interpreted and executed.
+	 * 
+	 * @param lineOfScript
+	 */
 	private static void executeCommand(String lineOfScript)
 	{
 		String[] splitCommand = lineOfScript.split("\\s+(?=(?:[^\\'\"]*[\\'\"][^\\'\"]*[\\'\"])*[^\\'\"]*$)"); //TODO: minor - REMOVE QUOTE MIXTURE
@@ -308,17 +323,6 @@ public class GlobalQueryScript
 					        		printlnSynced("Deploying of global query '" + globalQuery.getName() + "' failed. There is no rollback mechanic implemented so far.", System.err);
 				        		}
 				        	}
-				        	
-//				        	try
-//				        	{
-//				        		printlnSynced("Waiting for 3 seconds...", System.out);
-//				        		
-//								TimeUnit.SECONDS.sleep(3);
-//							}
-//				        	catch (InterruptedException e)
-//				        	{
-//								e.printStackTrace();
-//							}
 	    				}
 	    				
 	    				if(deployed)
@@ -455,11 +459,23 @@ public class GlobalQueryScript
         }
 	}
 	
+	/**
+	 * Synchronized print-ing of the given content to the given stream.
+	 * 
+	 * @param content
+	 * @param printStream
+	 */
 	public static synchronized void printSynced(String content, PrintStream printStream)
 	{
 		printStream.print(content);
 	}
 	
+	/**
+	 * Synchronized println-ing of the given content to the given stream.
+	 * 
+	 * @param content
+	 * @param printStream
+	 */
 	public static synchronized void printlnSynced(String content, PrintStream printStream)
 	{
 		printStream.println(content);

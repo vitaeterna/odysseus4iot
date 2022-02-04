@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator ACTIVITYCLASSIFY.
+ * 
+ * @author Michael Sünkel
+ */
 public class ClassificationOperator extends Operator
 {
 	public String database = null;

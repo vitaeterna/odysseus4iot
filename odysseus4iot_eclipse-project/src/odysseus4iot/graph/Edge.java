@@ -1,5 +1,10 @@
 package odysseus4iot.graph;
 
+/**
+ * POJO representing the edge of a graph.
+ * 
+ * @author Michael Sünkel
+ */
 public abstract class Edge
 {
 	public Vertex vertex0 = null;

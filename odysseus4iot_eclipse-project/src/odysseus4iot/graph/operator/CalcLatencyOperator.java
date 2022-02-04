@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator CALCLATENCY.
+ * 
+ * @author Michael Sünkel
+ */
 public class CalcLatencyOperator extends Operator
 {
 	public CalcLatencyOperator()

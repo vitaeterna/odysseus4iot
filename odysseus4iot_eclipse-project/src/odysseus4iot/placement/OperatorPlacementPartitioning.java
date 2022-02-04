@@ -18,8 +18,19 @@ import odysseus4iot.graph.physical.meta.Node.Type;
 import odysseus4iot.util.Util;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 
+/**
+ * The {@code OperatorPlacementPartitioning} provides methods to partition global queries given as operator graph to partial queries (operator subgraphs).
+ * 
+ * @author Michael Sünkel
+ */
 public class OperatorPlacementPartitioning
 {
+	/**
+	 * Regarding the given mapping of operators to nodes the operator graph is enriched by sender and access operators.
+	 * 
+	 * @param operatorGraph
+	 * @param physicalGraph
+	 */
 	public static void transformOperatorGraphToDistributed(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
 	{
 		Long startTimestamp = System.currentTimeMillis();
@@ -190,6 +201,13 @@ public class OperatorPlacementPartitioning
 		System.out.println("...Converting to Distributed Graph finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "\n");
 	}
 	
+	/**
+	 * Splits an operator graph into subgraphs regarding the given mapping of operators to nodes.
+	 * 
+	 * @param operatorGraph
+	 * @param physicalGraph
+	 * @return
+	 */
 	public static List<OperatorGraph> buildSubgraphs(OperatorGraph operatorGraph, PhysicalGraph physicalGraph)
 	{
 		Long startTimestamp = System.currentTimeMillis();

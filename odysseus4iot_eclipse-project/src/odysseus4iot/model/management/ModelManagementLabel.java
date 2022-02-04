@@ -1,5 +1,8 @@
 package odysseus4iot.model.management;
 
+/**
+ * @author Michael Sünkel
+ */
 public class ModelManagementLabel
 {
 	public String label = null;

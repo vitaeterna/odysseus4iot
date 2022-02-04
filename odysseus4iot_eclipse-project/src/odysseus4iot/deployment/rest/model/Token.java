@@ -1,5 +1,10 @@
 package odysseus4iot.deployment.rest.model;
 
+/**
+ * POJO representing a Odysseus-REST Token
+ * 
+ * @author Michael Sünkel
+ */
 public class Token
 {
 	private String token = null;

@@ -10,6 +10,9 @@ import odysseus4iot.model.management.ModelManagementRequestData;
 import odysseus4iot.model.management.ModelManagementResponse;
 import odysseus4iot.util.Util;
 
+/**
+ * @author Michael Sünkel
+ */
 public class ModelManagementImport
 {
 	public static String host = null;

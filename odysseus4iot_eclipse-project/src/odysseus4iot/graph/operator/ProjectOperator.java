@@ -5,6 +5,11 @@ import java.util.List;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator PROJECT.
+ * 
+ * @author Michael Sünkel
+ */
 public class ProjectOperator extends Operator
 {
 	private static Integer projectCount = 0;

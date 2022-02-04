@@ -10,10 +10,20 @@ import odysseus4iot.deployment.store.model.PartialQuery;
 import odysseus4iot.deployment.store.model.Server;
 
 //TODO: medium - persist global query store!
+/**
+ * The {@code GlobalQueryStore} manages global queries by name using a {@code Map}. The validity of global queries, partial queries and server information is checked.
+ * 
+ * @author Michael Sünkel
+ */
 public class GlobalQueryStore
 {
 	private static Map<String, GlobalQuery> globalQueries = new HashMap<String, GlobalQuery>();
 	
+	/**
+	 * Loads a given global query into the query store.
+	 * 
+	 * @param globalQuery
+	 */
 	public static void loadGlobalQuery(GlobalQuery globalQuery)
 	{
 		if(globalQueryIsValid(globalQuery))
@@ -35,6 +45,11 @@ public class GlobalQueryStore
 		}
 	}
 	
+	/**
+	 * Unloads a global query from the query store by a given global query name.
+	 * 
+	 * @param globalQuery
+	 */
 	public static void unloadGlobalQuery(String globalQueryName)
 	{
 		if(getGlobalQueryByName(globalQueryName) != null)
@@ -49,6 +64,9 @@ public class GlobalQueryStore
 		}
 	}
 	
+	/**
+	 * Prints all global queries currently in the query store.
+	 */
 	public static void printAllGlobalQueries()
 	{
 		GlobalQuery globalQuery = null;
@@ -63,11 +81,23 @@ public class GlobalQueryStore
 		}
 	}
 	
+	/**
+	 * Retrieves a global query from the query store by the given global query namne.
+	 * 
+	 * @param globalQueryName
+	 * @return
+	 */
 	public static GlobalQuery getGlobalQueryByName(String globalQueryName)
 	{
 		return globalQueries.get(globalQueryName);
 	}
 	
+	/**
+	 * Checks whether the given global query and contained partial queries are valid.
+	 * 
+	 * @param globalQuery
+	 * @return
+	 */
 	private static boolean globalQueryIsValid(GlobalQuery globalQuery)
 	{
 		if(globalQuery.getName() != null)
@@ -126,6 +156,12 @@ public class GlobalQueryStore
 		return true;
 	}
 	
+	/**
+	 * Checks whether the given partial query is valid.
+	 * 
+	 * @param partialQuery
+	 * @return
+	 */
 	private static boolean partialQueryIsValid(PartialQuery partialQuery)
 	{
 		if(partialQuery.getName() != null)
@@ -204,6 +240,12 @@ public class GlobalQueryStore
 		return true;
 	}
 	
+	/**
+	 * Checks whether the given server information is valid.
+	 * 
+	 * @param server
+	 * @return
+	 */
 	private static boolean serverIsValid(Server server)
 	{
 		if(server.getSocket() != null)

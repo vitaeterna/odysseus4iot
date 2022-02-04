@@ -8,6 +8,11 @@ import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.OperatorGraph;
 import odysseus4iot.graph.physical.meta.Node.Type;
 
+/**
+ * Representation of a physical graph.
+ * 
+ * @author Michael Sünkel
+ */
 public class PhysicalGraph extends Graph
 {
 	public PhysicalGraph(String label)

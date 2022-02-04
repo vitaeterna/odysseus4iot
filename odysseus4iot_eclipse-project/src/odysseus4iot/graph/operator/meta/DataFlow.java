@@ -4,6 +4,11 @@ import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.util.Util;
 
+/**
+ * POJO representing the edge of an operator graph.
+ * 
+ * @author Michael Sünkel
+ */
 public class DataFlow extends Edge
 {
 	public Double datarateConsumption = null;

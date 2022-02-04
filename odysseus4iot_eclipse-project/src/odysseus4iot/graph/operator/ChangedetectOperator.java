@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator CHANGEDETECT.
+ * 
+ * @author Michael Sünkel
+ */
 public class ChangedetectOperator extends Operator
 {
 	public String attr = null;

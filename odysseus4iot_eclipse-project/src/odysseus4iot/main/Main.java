@@ -49,6 +49,11 @@ import odysseus4iot.util.Util;
  *             6. Queries are created for that placement strategy
  * Output:     Queries for each single node
  */
+/**
+ * This is the main entrypoint of the Odysseus4IoT query optimization module.
+ * 
+ * @author Michael Sünkel
+ */
 public class Main
 {
 	public static Properties properties = null;
@@ -60,10 +65,15 @@ public class Main
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
 	
-	public static boolean dotpng = true;
+	public static boolean dotpng = false;
 	public static boolean distributed = true;
 	public static boolean benchmark = true;
 
+	/**
+	 * This is the main entrypoint of the Odysseus4IoT query optimization module.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
 		Long startTimestamp = System.currentTimeMillis();
@@ -78,7 +88,7 @@ public class Main
 		else
 		{
 			System.out.println("Please provide the number of an evaluation case as command line parameter. [1-5]");
-			//System.exit(0);
+			System.exit(0);
 		}
 		
 		switch(evalCase.intValue())
@@ -339,6 +349,8 @@ public class Main
 		
 		OperatorGraph operatorGraph = null;
 		
+		List<Long> optimizationTimes = new ArrayList<>();
+		
 		for(int index = 0; index < modelsets.size(); index++)
 		{
 			models = modelsets.get(index);
@@ -360,7 +372,7 @@ public class Main
 			if(distributed)
 			{
 				//6 - Perform Operator Placement Optimization for merged operator graph and physical graph
-				List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph);
+				List<OperatorPlacement> operatorPlacements = OperatorPlacementOptimization.optimize(operatorGraph, physicalGraph, optimizationTimes);
 				
 				operatorPlacementsGlobal.addAll(operatorPlacements);
 			}
@@ -467,6 +479,8 @@ public class Main
 		
 		endTimestamp = System.currentTimeMillis();
 		
-		System.out.println("Finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + "OperatorCounts: " + operatorGraph.getNumberOfOperatorsPerPipelineStep());
+		System.out.println("Operator Placement Optimization took " + Util.formatTimestamp(optimizationTimes.stream().mapToLong(Long::longValue).sum()) + "\r\n");
+		
+		System.out.println("Finished after " + Util.formatTimestamp(endTimestamp - startTimestamp) + " OperatorCounts: " + operatorGraph.getNumberOfOperatorsPerPipelineStep());
 	}
 }

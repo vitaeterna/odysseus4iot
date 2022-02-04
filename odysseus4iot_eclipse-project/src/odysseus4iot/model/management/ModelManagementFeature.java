@@ -3,6 +3,9 @@ package odysseus4iot.model.management;
 import odysseus4iot.main.Main;
 import odysseus4iot.model.Feature;
 
+/**
+ * @author Michael Sünkel
+ */
 public class ModelManagementFeature implements Comparable<ModelManagementFeature>
 {
 	public String function = null;

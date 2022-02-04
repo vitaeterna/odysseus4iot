@@ -3,6 +3,11 @@ package odysseus4iot.graph.operator.meta;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * POJO representing a data schema.
+ * 
+ * @author Michael Sünkel
+ */
 public class Schema
 {
 	public List<Column> columns = null;

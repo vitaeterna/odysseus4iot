@@ -23,6 +23,11 @@ import odysseus4iot.deployment.rest.model.Token;
 import odysseus4iot.deployment.rest.model.User;
 import odysseus4iot.deployment.store.model.PartialQuery;
 
+/**
+ * Simple REST-Client for communication with Odysseus Server
+ * 
+ * @author Michael Sünkel
+ */
 public class OdysseusRestClient
 {
 	public static final String URI_PROTOCOL = "http://";
@@ -31,6 +36,13 @@ public class OdysseusRestClient
 	
 	public static final Integer timeout     = 15;
 	
+	/**
+	 * Performs a POST-Request to the login endpoint of the Odysseus Server at hostname:port specified by {@code socket} using the credentials specified in {@code user}. Returns a token of authentication in case of successful login and {@code null} otherwise. This token needs to be included into the following requests.
+	 * 
+	 * @param socket - The socket of the Odysseus Server
+	 * @param user - The user credentials ({@link User})
+	 * @return - The token of authentication ({@link Token})
+	 */
 	public static Token post_login(String socket, User user)
 	{
 	    //Create and configure a HTTP Request
@@ -83,6 +95,15 @@ public class OdysseusRestClient
 	    }
 	}
 	
+	/**
+	 * Performs a POST-Request to the query endpoint of the Odysseus Server at hostname:port specified by {@code socket} using the token of authentication specified in {@code token} and tries to install the query specified in {@code query}.
+	 * 
+	 * @param socket - The socket of the Odysseus Server
+	 * @param token - The token of authentication ({@link Token})
+	 * @param query - The query to install ({@link Query})
+	 * @param partialQuery - On success the query is added to the given ({@link PartialQuery})
+	 * @return - {@code true} when query was installed successfully and {@code false} otherwise.
+	 */
 	public static boolean post_query(String socket, Token token, Query query, PartialQuery partialQuery)
 	{
 	    //Create and configure a HTTP Request
@@ -140,6 +161,16 @@ public class OdysseusRestClient
 	    }
 	}
 	
+	
+	/**
+	 * Performs a DELETE-Request to the query endpoint of the Odysseus Server at hostname:port specified by {@code socket} using the token of authentication specified in {@code token} and tries to install the query specified in {@code query}.
+	 * 
+	 * @param socket - The socket of the Odysseus Server
+	 * @param token - The token of authentication ({@link Token})
+	 * @param query - The query to remove ({@link Query})
+	 * @param partialQuery - On success the query is removed from the given ({@link PartialQuery})
+	 * @return - {@code true} when query was removed successfully and {@code false} otherwise.
+	 */
 	public static boolean delete_query(String socket, Token token, Query query, PartialQuery partialQuery)
 	{
 	    //Create and configure a HTTP Request
@@ -195,6 +226,11 @@ public class OdysseusRestClient
 	    }
 	}
 	
+	/**
+	 * Prints debug information of the given {@code HttpResponse}.
+	 * 
+	 * @param httpResponse
+	 */
 	public static void printDebugInfo(HttpResponse<String> httpResponse)
 	{
 	    GlobalQueryScript.printlnSynced("http url: " + httpResponse.uri().getScheme() + "://" + httpResponse.uri().getHost() + ":" + httpResponse.uri().getPort() + httpResponse.uri().getPath(), System.out);

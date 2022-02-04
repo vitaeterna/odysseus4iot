@@ -3,6 +3,9 @@ package odysseus4iot.model.management;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Michael Sünkel
+ */
 public class ModelManagementRequestData
 {
 	public String sensor_system = null;

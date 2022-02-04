@@ -11,6 +11,11 @@ import odysseus4iot.deployment.rest.model.Token;
 import odysseus4iot.deployment.rest.model.User;
 import odysseus4iot.deployment.store.model.GlobalQuery;
 
+/**
+ * A simple JSON-POJO converter for Odysseus-REST API
+ * 
+ * @author Michael Sünkel
+ */
 public class OdysseusJsonClient
 {
 	public static Token getTokenFromJson(String json)

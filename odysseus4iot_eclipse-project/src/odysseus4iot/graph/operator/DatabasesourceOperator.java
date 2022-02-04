@@ -5,6 +5,11 @@ import odysseus4iot.graph.operator.meta.Operator;
 import odysseus4iot.graph.operator.meta.Schema;
 import odysseus4iot.main.Main;
 
+/**
+ * POJO representing the Odysseus Operator DATABASESOURCE.
+ * 
+ * @author Michael Sünkel
+ */
 public class DatabasesourceOperator extends Operator
 {
 	public String table = null;

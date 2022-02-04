@@ -5,6 +5,11 @@ import java.util.List;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator MERGE.
+ * 
+ * @author Michael Sünkel
+ */
 public class MergeOperator extends Operator
 {
 	private static Integer mergeCount = 0;

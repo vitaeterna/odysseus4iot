@@ -2,6 +2,11 @@ package odysseus4iot.graph.operator;
 
 import odysseus4iot.graph.operator.meta.Operator;
 
+/**
+ * POJO representing the Odysseus Operator DATABASESINK.
+ * 
+ * @author Michael Sünkel
+ */
 public class DatabasesinkOperator extends Operator
 {
 	public String table = null;

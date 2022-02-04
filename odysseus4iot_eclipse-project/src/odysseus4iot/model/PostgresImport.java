@@ -18,6 +18,9 @@ import odysseus4iot.main.Main;
 import odysseus4iot.model.management.ModelManagementFeatures;
 import odysseus4iot.util.Util;
 
+/**
+ * @author Michael Sünkel
+ */
 public class PostgresImport
 {
 	public static String url = null;

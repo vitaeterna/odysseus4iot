@@ -1,5 +1,10 @@
 package odysseus4iot.graph.operator.meta;
 
+/**
+ * POJO representing an attribute of a data schema.
+ * 
+ * @author Michael Sünkel
+ */
 public class Column
 {
 	public String name = null;

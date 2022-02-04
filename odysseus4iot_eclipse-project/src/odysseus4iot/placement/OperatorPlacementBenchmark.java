@@ -22,6 +22,11 @@ import odysseus4iot.graph.physical.meta.Node;
 import odysseus4iot.graph.physical.meta.PhysicalGraph;
 import odysseus4iot.util.Util;
 
+/**
+ * The {@code OperatorPlacementBenchmark} provides methods to enrich an operator graph by measurement operators like e.g. CalcLatency or Datarate.
+ * 
+ * @author Michael Sünkel
+ */
 public class OperatorPlacementBenchmark
 {
 	private static Map<String, Integer> perNodeCount = new HashMap<>();

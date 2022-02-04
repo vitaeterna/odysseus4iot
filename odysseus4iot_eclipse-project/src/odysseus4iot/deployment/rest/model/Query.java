@@ -2,6 +2,11 @@ package odysseus4iot.deployment.rest.model;
 
 import java.util.Objects;
 
+/**
+ * POJO representing a Odysseus-REST Query
+ * 
+ * @author Michael Sünkel
+ */
 public class Query
 {
 	private Integer id       = null;

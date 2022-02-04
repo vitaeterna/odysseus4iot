@@ -4,6 +4,11 @@ import odysseus4iot.graph.Edge;
 import odysseus4iot.graph.Vertex;
 import odysseus4iot.util.Util;
 
+/**
+ * POJO representing the edge of a physical graph.
+ * 
+ * @author Michael Sünkel
+ */
 public class Connection extends Edge
 {
 	public Integer delay = null;

@@ -6,6 +6,9 @@ import java.util.List;
 import odysseus4iot.model.Feature;
 import odysseus4iot.model.Model;
 
+/**
+ * @author Michael Sünkel
+ */
 public class ModelManagementModel
 {
 	public Integer model_id = null;
