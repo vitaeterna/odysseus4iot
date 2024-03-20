@@ -252,6 +252,8 @@ public class PostgresImport
 				model.setPreprocessing(preprocessing);
 				model.setFeatures(features);
 				
+				System.out.println(model.getList_of_predicted_classes() + " - " + model.getWindow_size() + " - " + model.getFeatures().size());
+				
 				models.add(model);
 			}
 			

@@ -65,8 +65,8 @@ public class Main
 	public static Double evaluationSpeedupFactor = 1.0d;
 	public static boolean postprocessing = false;
 	
-	public static boolean dotpng = false;
-	public static boolean distributed = true;
+	public static boolean dotpng = true;
+	public static boolean distributed = false;
 	public static boolean benchmark = true;
 
 	/**
@@ -88,7 +88,7 @@ public class Main
 		else
 		{
 			System.out.println("Please provide the number of an evaluation case as command line parameter. [1-5]");
-			System.exit(0);
+			//System.exit(0);
 		}
 		
 		switch(evalCase.intValue())
